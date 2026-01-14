@@ -1,0 +1,11 @@
+use PrePost
+CREATE SCHEMA auth; 
+GO
+CREATE SCHEMA ingestion; 
+GO
+CREATE SCHEMA analytics; 
+GO
+CREATE SCHEMA ml; 
+GO
+CREATE SCHEMA audit; 
+GO
