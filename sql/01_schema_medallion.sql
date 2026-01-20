@@ -19,7 +19,7 @@ DATABASE: SQL Server
 
 
 /*****************************************************************************************
-SECTION 1 — SCHEMA CREATION
+SECTION 1 — DATABASE & SCHEMA CREATION
 ------------------------------------------------------------------------------------------
 Each schema represents a logical responsibility:
 - auth   : authentication & user identity
@@ -29,6 +29,14 @@ Each schema represents a logical responsibility:
 - audit  : logging, monitoring, security events
 *****************************************************************************************/
 
+-- Database Creation
+CREATE DATABASE PrePostAnalytics;
+GO
+
+-- Switch context to the new database
+USE PrePostAnalytics;
+GO
+  
 CREATE SCHEMA auth;
 GO
 
