@@ -1,4 +1,5 @@
 import { FiTwitter, FiLinkedin, FiGithub } from 'react-icons/fi';
+import { Link } from 'react-router-dom'; // ADD THIS IMPORT
 
 export default function Footer() {
   return (
@@ -43,8 +44,9 @@ export default function Footer() {
           <div>
             <h3 className="font-semibold text-charcoal mb-4">Legal</h3>
             <ul className="space-y-2 text-sm text-gray-600">
-              <li><a href="/privacy" className="hover:text-green-600 transition-colors">Privacy Policy</a></li>
-              <li><a href="/terms" className="hover:text-green-600 transition-colors">Terms of Service</a></li>
+              {/* CHANGE THESE TWO LINES: */}
+              <li><Link to="/privacy" className="hover:text-green-600 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/terms" className="hover:text-green-600 transition-colors">Terms of Service</Link></li>
               <li><a href="#" className="hover:text-green-600 transition-colors">Cookie Policy</a></li>
             </ul>
           </div>
@@ -56,8 +58,9 @@ export default function Footer() {
             © {new Date().getFullYear()} PrePost Analytics. All rights reserved.
           </span>
           <div className="flex gap-6 text-sm text-gray-500">
-            <a href="/terms" className="hover:text-green-600 transition-colors">Terms</a>
-            <a href="/privacy" className="hover:text-green-600 transition-colors">Privacy</a>
+            {/* CHANGE THESE TWO LINES: */}
+            <Link to="/terms" className="hover:text-green-600 transition-colors">Terms</Link>
+            <Link to="/privacy" className="hover:text-green-600 transition-colors">Privacy</Link>
             <a href="#" className="hover:text-green-600 transition-colors">Cookies</a>
             <a href="#" className="hover:text-green-600 transition-colors">Status</a>
           </div>
