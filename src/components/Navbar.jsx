@@ -62,7 +62,6 @@ export default function Navbar() {
             <div className="flex flex-col gap-4">
               <a href="#" className="text-gray-600 hover:text-charcoal font-medium py-2">Platform</a>
               <a href="#" className="text-gray-600 hover:text-charcoal font-medium py-2">Features</a>
-              <a href="#" className="text-gray-600 hover:text-charcoal font-medium py-2">Pricing</a>
               <a href="#" className="text-gray-600 hover:text-charcoal font-medium py-2">About</a>
               <div className="flex flex-col gap-3 pt-4 border-t border-gray-100">
                 <a href="/login" className="text-gray-600 hover:text-charcoal font-medium py-2">Log In</a>
