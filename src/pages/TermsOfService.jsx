@@ -55,7 +55,7 @@ export default function TermsOfService() {
             Terms of Service
           </h1>
           <div className="flex items-center gap-4 text-gray-500">
-            <span>Last Updated: October 24, 2023</span>
+            <span>Last Updated: January 26, 2023</span>
             <span className="h-4 w-px bg-gray-300"></span>
             <span className="font-medium">Version 2.0</span>
           </div>
@@ -146,7 +146,7 @@ export default function TermsOfService() {
           <footer className="pt-16 mt-12 border-t border-gray-200">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <p className="text-gray-600 mb-4 md:mb-0">
-                © 2023 PrePost Analytics. All rights reserved.
+                © 2026 PrePost Analytics. All rights reserved.
               </p>
               <div className="flex gap-6 text-sm">
                 <a href="/privacy" className="text-gray-600 hover:text-green-600 transition-colors">
