@@ -102,7 +102,7 @@ export default function SignUpPage() {
           Create Account
         </h1>
         <p className="text-slate-600 text-sm font-normal leading-normal pb-8 text-center">
-          Join thousands of creators using PrePost Analytics
+          Join creators using PrePost Analytics
         </p>
 
         {/* Sign Up Form */}

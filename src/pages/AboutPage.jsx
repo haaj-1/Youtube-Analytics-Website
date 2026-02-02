@@ -93,12 +93,8 @@ export default function AboutPage() {
     <main className="flex-1 w-full max-w-[1200px] mx-auto px-6 py-12 md:py-20 flex flex-col gap-24">
       
       {/* Hero Section */}
-      <section className="flex flex-col md:flex-row items-center gap-12">
-        <div className="flex-1 flex flex-col gap-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/20 text-slate-900 text-xs font-bold uppercase tracking-wider">
-            <span className="size-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-600"></span>
-            Precision Driven
-          </div>
+      <section className="bg-gradient-to-r from-green-50 to-green-100 border-b border-green-200">
+        <div className="max-w-7xl mx-auto px-10 py-16">
           <h1 className="text-slate-900 text-5xl md:text-6xl font-black leading-[1.1] tracking-[-0.03em]">
             Empowering Instagram Creators with{" "}
             <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
@@ -122,17 +118,6 @@ export default function AboutPage() {
             >
               Get Started
             </Link>
-          </div>
-        </div>
-        <div className="flex-1 relative">
-          <div className="absolute -top-10 -right-10 w-64 h-64 bg-pink-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-green-500/10 rounded-full blur-3xl"></div>
-          <div className="relative w-full aspect-square rounded-[32px] bg-gradient-to-br from-blue-500/20 to-purple-600/20 border-8 border-white shadow-2xl flex items-center justify-center">
-            <div className="text-center p-8">
-              <div className="text-6xl font-black text-slate-900 mb-4">86.4%</div>
-              <div className="text-slate-600 font-medium">Prediction Accuracy</div>
-              <div className="text-sm text-slate-500 mt-2">Based on 2.4M+ analyzed posts</div>
-            </div>
           </div>
         </div>
       </section>

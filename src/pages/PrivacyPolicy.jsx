@@ -2,7 +2,7 @@ import Sidebar from "../components/Sidebar";
 
 export default function PrivacyPolicy() {
   return (
-    <div className="max-w-7xl mx-auto px-6 mt-12 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-10">
+    <div className="max-w-7xl mx-auto px-6 mt-12 grid grid-cols-[260px_1fr] gap-10">
       <Sidebar
         items={["Data Collection", "Instagram API", "Encryption", "User Rights"]}
       />

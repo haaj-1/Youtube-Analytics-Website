@@ -11,10 +11,10 @@ export default function TermsOfService() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-6 mt-12 grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-10">
+    <div className="max-w-7xl mx-auto px-6 mt-12 grid grid-cols-[260px_1fr] gap-10">
       {/* Sidebar */}
-      <aside className="hidden lg:block">
-        <div className="sticky top-24">
+      <aside className="block w-64 flex-shrink-0">
+        <div className="sticky top-24 flex flex-col items-start">
           <h4 className="text-xs font-semibold text-gray-500 mb-6 uppercase tracking-wider">
             ON THIS PAGE
           </h4>

@@ -5,11 +5,10 @@ import PostPredictor from '../components/tools/PostPredictor/PostPredictor';
 const PostPerformancePage = () => {
   return (
     <div className="min-h-screen bg-white">
-      {/* Header - matches your inspect */}
-      <header className="bg-slate-bg border-b border-slate-50 py-10 px-10">
+      <header className="bg-gradient-to-r from-green-50 to-green-100 border-b border-green-200 py-12 px-10">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Post Performance Predictor</h1>
-          <p className="text-slate-600">
+          <h1 className="text-3xl font-bold text-green-900 mb-2">Post Performance Predictor</h1>
+          <p className="text-green-700">
             Predict Instagram engagement before posting. Get data-driven insights to optimize your content strategy.
           </p>
         </div>
