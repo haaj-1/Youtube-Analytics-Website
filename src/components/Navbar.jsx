@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { FiMenu, FiX } from 'react-icons/fi';
 import { Link } from 'react-router-dom';
-import logo from '../assets/prepost-logo.svg';
 
 
 export default function Navbar() {
@@ -14,8 +13,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 flex items-center justify-center">
-              <img src={logo} alt="PrePost logo" className="w-8 h-8 object-contain" />
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center">
+              <span className="text-white font-bold text-lg">P</span>
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-xl text-slate-900">PrePost</span>
