@@ -11,7 +11,7 @@ const PerformanceHistory = () => {
     { id: 2, date: '2024-01-18', time: '16:45', caption: 'Behind the scenes of our photoshoot', likes: 1800, comments: 120, saves: 320, reach: 9800, engagement: '4.2%', media: 'video' },
     { id: 3, date: '2024-01-15', time: '11:15', caption: 'AMA Session Q&A - Ask me anything!', likes: 3400, comments: 312, saves: 890, reach: 21800, engagement: '7.2%', media: 'photo' },
     { id: 4, date: '2024-01-12', time: '19:30', caption: 'Weekend vibes and coffee breaks ☕', likes: 1250, comments: 45, saves: 210, reach: 7600, engagement: '3.8%', media: 'photo' },
-    { id: 5, date: '2024-01-10', time: '13:00', caption: 'New tutorial: Mastering Instagram Reels', likes: 2900, comments: 156, saves: 670, reach: 15200, engagement: '5.6%', media: 'video' },
+    { id: 5, date: '2024-01-10', time: '13:00', caption: 'New tutorial: Mastering YouTube Shorts', likes: 2900, comments: 156, saves: 670, reach: 15200, engagement: '5.6%', media: 'video' },
     { id: 6, date: '2024-01-08', time: '09:45', caption: 'Throwback to our best performing post', likes: 1500, comments: 78, saves: 340, reach: 8900, engagement: '4.0%', media: 'carousel' },
   ];
 
@@ -41,7 +41,7 @@ const PerformanceHistory = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
           <div>
             <h2 className="text-2xl font-bold text-slate-900">Performance History</h2>
-            <p className="text-slate-600 mt-1">Track and analyze your historical Instagram performance</p>
+            <p className="text-slate-600 mt-1">Track and analyze your historical YouTube performance</p>
           </div>
           <div className="flex items-center space-x-2 mt-4 md:mt-0">
             {['7d', '30d', '90d', 'all'].map((range) => (

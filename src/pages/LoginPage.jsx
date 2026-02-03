@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+import { AuthService } from '../services/authService';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -75,18 +76,20 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleLogin = async () => {
     setLoading(true);
-    // Simulate Google OAuth
-    setTimeout(() => {
-      localStorage.setItem('token', 'google-oauth-demo-token');
-      localStorage.setItem('user', JSON.stringify({
-        email: 'user@example.com',
-        name: 'Google User'
-      }));
+    try {
+      await AuthService.initializeGoogleAuth();
+      const user = await AuthService.signIn();
+      
+      localStorage.setItem('token', user.accessToken);
+      localStorage.setItem('user', JSON.stringify(user));
       navigate('/');
+    } catch (error) {
+      setErrors({ general: 'Google login failed' });
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -95,8 +98,8 @@ export default function LoginPage() {
         
         {/* Lock Icon */}
         <div className="mb-6">
-          <div className="size-12 bg-gradient-to-r from-blue-500/10 to-purple-600/10 rounded-xl flex items-center justify-center">
-            <FiLock className="w-6 h-6 text-blue-600" />
+          <div className="size-12 bg-gradient-to-r from-red-500/10 to-red-600/10 rounded-xl flex items-center justify-center">
+            <FiLock className="w-6 h-6 text-red-600" />
           </div>
         </div>
 
@@ -112,7 +115,7 @@ export default function LoginPage() {
         <button
           onClick={handleGoogleLogin}
           disabled={loading}
-          className="w-full h-12 border-2 border-blue-500 hover:bg-blue-500/5 transition-colors rounded-full flex items-center justify-center gap-3 mb-6 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-12 border-2 border-red-500 hover:bg-red-500/5 transition-colors rounded-full flex items-center justify-center gap-3 mb-6 disabled:opacity-50 disabled:cursor-not-allowed"
           type="button"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -148,7 +151,7 @@ export default function LoginPage() {
               onChange={handleChange}
               className={`w-full h-12 rounded-full border ${
                 errors.email ? 'border-red-300' : 'border-[#e1e4dd]'
-              } bg-white focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 px-6 text-sm placeholder:text-slate-400 outline-none transition-all`}
+              } bg-white focus:ring-2 focus:ring-red-500/40 focus:border-red-500 px-6 text-sm placeholder:text-slate-400 outline-none transition-all`}
               placeholder="name@company.com"
               type="email"
               disabled={loading}
@@ -166,7 +169,7 @@ export default function LoginPage() {
               </label>
               <Link
                 to="/forgot-password"
-                className="text-xs font-medium text-purple-600 hover:opacity-80 transition-opacity"
+                className="text-xs font-medium text-red-600 hover:opacity-80 transition-opacity"
               >
                 Forgot Password?
               </Link>
@@ -179,7 +182,7 @@ export default function LoginPage() {
                 type={showPassword ? "text" : "password"}
                 className={`w-full h-12 rounded-full border ${
                   errors.password ? 'border-red-300' : 'border-[#e1e4dd]'
-                } bg-white focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 px-6 text-sm placeholder:text-slate-400 outline-none transition-all pr-12`}
+                } bg-white focus:ring-2 focus:ring-red-500/40 focus:border-red-500 px-6 text-sm placeholder:text-slate-400 outline-none transition-all pr-12`}
                 placeholder="••••••••"
                 disabled={loading}
               />
@@ -207,7 +210,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 mt-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:opacity-90 text-white font-bold text-sm rounded-full transition-all shadow-md shadow-blue-500/20 uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-12 mt-4 bg-gradient-to-r from-red-500 to-red-600 hover:opacity-90 text-white font-bold text-sm rounded-full transition-all shadow-md shadow-red-500/20 uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="flex items-center justify-center">
@@ -224,7 +227,7 @@ export default function LoginPage() {
         <div className="mt-6 text-center">
           <p className="text-slate-600 text-sm">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-blue-600 hover:text-blue-700 font-medium">
+            <Link to="/signup" className="text-red-600 hover:text-red-700 font-medium">
               Sign up
             </Link>
           </p>

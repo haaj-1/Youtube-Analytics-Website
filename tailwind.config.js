@@ -8,17 +8,22 @@ export default {
     extend: {
       colors: {
         charcoal: '#2D3436',
-        green: {
-          50: '#f0fdf4',
-          100: '#dcfce7',
-          200: '#bbf7d0',
-          300: '#86efac',
-          400: '#4ade80',
-          500: '#22c55e',
-          600: '#16a34a',
-          700: '#15803d',
-          800: '#166534',
-          900: '#14532d',
+        red: {
+          50: '#fef2f2',
+          100: '#fee2e2',
+          200: '#fecaca',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#b91c1c',
+          800: '#991b1b',
+          900: '#7f1d1d',
+        },
+        youtube: {
+          red: '#FF0000',
+          'red-dark': '#CC0000',
+          'red-light': '#FF4444',
         },
         
         slate: {
@@ -65,7 +70,7 @@ export default {
       },
       backgroundImage: {
         // Add gradients
-        'gradient-instagram': 'linear-gradient(135deg, #405DE6, #833AB4)',
+        'gradient-youtube': 'linear-gradient(135deg, #FF0000, #CC0000)',
         'gradient-blue-purple': 'linear-gradient(135deg, #405DE6, #833AB4)',
         'gradient-light': 'linear-gradient(135deg, rgba(64, 93, 230, 0.1), rgba(131, 58, 180, 0.1))',
       },

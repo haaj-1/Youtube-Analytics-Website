@@ -23,7 +23,7 @@ CREATE TABLE gold.post_features (
     caption_embedding VARBINARY(MAX), -- BERT embedding
     created_at DATETIME2 DEFAULT SYSDATETIME(),
     CONSTRAINT fk_post_features_post
-        FOREIGN KEY (post_id) REFERENCES bronze.raw_instagram_posts(post_id)
+        FOREIGN KEY (post_id) REFERENCES bronze.raw_youtube_posts(post_id)
 );
 GO
 

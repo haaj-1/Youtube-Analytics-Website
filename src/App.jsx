@@ -60,7 +60,7 @@ function App() {
                 <p className="text-slate-600 mb-6">The page you're looking for doesn't exist.</p>
                 <Link 
                   to="/" 
-                  className="inline-block px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium rounded-lg hover:shadow-lg transition-shadow"
+                  className="inline-block px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-medium rounded-lg hover:shadow-lg transition-shadow"
                 >
                   Go Home
                 </Link>

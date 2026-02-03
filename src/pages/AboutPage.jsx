@@ -44,7 +44,7 @@ export default function AboutPage() {
     },
     {
       title: "Creator First",
-      description: "Tools designed specifically for Instagram creators' needs.",
+      description: "Tools designed specifically for YouTube creators' needs.",
       color: "bg-purple-500/20",
       textColor: "text-purple-600"
     },
@@ -66,7 +66,7 @@ export default function AboutPage() {
     {
       name: "Alex Johnson",
       role: "Founder & CEO",
-      expertise: "Ex-Instagram Growth Lead",
+      expertise: "Ex-YouTube Growth Lead",
       color: "from-blue-500 to-blue-600"
     },
     {
@@ -96,7 +96,7 @@ export default function AboutPage() {
       <section className="bg-gradient-to-r from-green-50 to-green-100 border-b border-green-200">
         <div className="max-w-7xl mx-auto px-10 py-16">
           <h1 className="text-slate-900 text-5xl md:text-6xl font-black leading-[1.1] tracking-[-0.03em]">
-            Empowering Instagram Creators with{" "}
+            Empowering YouTube Creators with{" "}
             <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
               Precision
             </span>
@@ -245,7 +245,7 @@ export default function AboutPage() {
             Ready to Grow?
           </div>
           <h2 className="text-4xl md:text-5xl font-black mb-6">
-            Start Optimizing Your Instagram Today
+            Start Optimizing Your YouTube Today
           </h2>
           <p className="text-blue-100 text-lg mb-8">
             Join thousands of creators using PrePost to make data-driven decisions

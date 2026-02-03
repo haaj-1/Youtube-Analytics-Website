@@ -2,15 +2,15 @@
 PROJECT: PrePost Analytics
 DESCRIPTION:
 PrePost Analytics is a data analytics and machine learning platform designed to help
-Instagram creators predict post engagement BEFORE publishing content.
+YouTube creators predict post engagement BEFORE publishing content.
 
 This database follows a MEDALLION ARCHITECTURE:
 
-- BRONZE  → Raw, immutable Instagram API ingestion
+- BRONZE  → Raw, immutable YouTube API ingestion
 - SILVER  → Cleaned, aggregated, analytics-ready data
 - GOLD    → ML features, predictions, and insights
 
-The system is batch-based, privacy-safe, and uses only first-party Instagram data.
+The system is batch-based, privacy-safe, and uses only first-party YouTube data.
 This schema supports analytics dashboards, ML training, and prediction APIs.
 
 ARCHITECTURE: Medallion (Bronze / Silver / Gold)

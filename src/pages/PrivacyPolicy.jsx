@@ -4,7 +4,7 @@ export default function PrivacyPolicy() {
   return (
     <div className="max-w-7xl mx-auto px-6 mt-12 grid grid-cols-[260px_1fr] gap-10">
       <Sidebar
-        items={["Data Collection", "Instagram API", "Encryption", "User Rights"]}
+        items={["Data Collection", "YouTube API", "Encryption", "User Rights"]}
       />
 
       <section>
@@ -37,7 +37,7 @@ export default function PrivacyPolicy() {
             </h2>
             <p className="text-gray-600 mb-6">
               To provide advanced predictive analytics, we collect specific
-              technical metadata from your professional Instagram presence:
+              technical metadata from your professional YouTube presence:
             </p>
             <ul className="space-y-2 text-gray-600">
               <li className="flex items-start">
@@ -66,20 +66,20 @@ export default function PrivacyPolicy() {
             </div>
           </div>
 
-          {/* Instagram API */}
+          {/* YouTube API */}
           <div>
-            <div id="instagram-api" className="scroll-mt-24"></div>
+            <div id="youtube-api" className="scroll-mt-24"></div>
             <h2 className="font-bold text-2xl mb-6 text-gray-900">
-              Instagram API Usage
+              YouTube API Usage
             </h2>
             <p className="text-gray-600 mb-6">
-              PrePost Analytics uses the official Instagram Graph API. Our
+              PrePost Analytics uses the official YouTube Data API. Our
               integration follows strict security guidelines:
             </p>
             <ul className="space-y-4 text-gray-600">
               <li>
                 <strong className="text-gray-900">Zero Password Storage:</strong> We never ask for or
-                store your Instagram password. All authentication is handled
+                store your YouTube password. All authentication is handled
                 via secure OAuth tokens.
               </li>
               <li>
@@ -304,11 +304,11 @@ export default function PrivacyPolicy() {
                   <div>
                     <h3 className="font-semibold text-lg text-gray-900 mb-1">Revoke Access</h3>
                     <p className="text-gray-600 mb-3">
-                      Disconnect your Instagram account instantly, which will trigger a secure wipe of all associated tokens.
+                      Disconnect your YouTube account instantly, which will trigger a secure wipe of all associated tokens.
                     </p>
                     <div className="flex flex-wrap gap-3">
                       <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium transition-colors">
-                        Revoke Instagram Access
+                        Revoke YouTube Access
                       </button>
                       <button className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors">
                         Manage Connected Accounts

@@ -1,11 +1,11 @@
 import requests
 import json
 
-print("🔍 Instagram API Test - PrePost Analytics")
+print("🔍 YouTube API Test - PrePost Analytics")
 print("=" * 50)
 
-def test_instagram_api():
-    """Test if we can access Instagram API"""
+def test_youtube_api():
+    """Test if we can access YouTube API"""
     
     print("1. Go to: https://developers.facebook.com/tools/explorer/")
     print("2. Get User Access Token")
@@ -14,10 +14,10 @@ def test_instagram_api():
     token = input("\nEnter access token (or press Enter for mock): ").strip()
     
     if not token:
-        print("\n📊 Using Mock Instagram Data...")
-        return get_mock_instagram_data()
+        print("\n📊 Using Mock YouTube Data...")
+        return get_mock_youtube_data()
     
-    print("\n🧪 Testing real Instagram API...")
+    print("\n🧪 Testing real YouTube API...")
     
     try:
         # Test basic API access
@@ -33,7 +33,7 @@ def test_instagram_api():
             print(f"   ID: {user_data.get('id')}")
             
             # Try to get pages
-                    # Try to get Instagram Business accounts via Facebook Pages
+                    # Try to get YouTube Business accounts via Facebook Pages
         accounts_response = requests.get(
             "https://graph.facebook.com/v24.0/me/accounts",
             params={
@@ -47,54 +47,54 @@ def test_instagram_api():
         if accounts_data:
             print(f"\n📄 Found {len(accounts_data)} Facebook Pages")
             
-            # Check which pages have Instagram accounts connected
-            instagram_accounts = []
+            # Check which pages have connected accounts
+            youtube_accounts = []
             for page in accounts_data:
                 if 'instagram_business_account' in page:
                     ig_account = page['instagram_business_account']
-                    instagram_accounts.append({
+                    youtube_accounts.append({
                         'page_id': page['id'],
                         'page_name': page.get('name'),
-                        'instagram_id': ig_account['id'],
-                        'instagram_username': ig_account.get('username'),
+                        'youtube_id': ig_account['id'],
+                        'youtube_username': ig_account.get('username'),
                         'profile_picture': ig_account.get('profile_picture_url')
                     })
                     print(f"   ✅ {page.get('name')} → @{ig_account.get('username')}")
             
-            if instagram_accounts:
-                print(f"\n🎯 Found {len(instagram_accounts)} Instagram Business Accounts!")
+            if youtube_accounts:
+                print(f"\n🎯 Found {len(youtube_accounts)} YouTube Business Accounts!")
                 
-                # Try to get Instagram posts from first account
+                # Try to get posts from first account
                 try:
-                    ig_posts = get_instagram_posts(token, instagram_accounts[0]['instagram_id'])
+                    yt_posts = get_youtube_posts(token, youtube_accounts[0]['youtube_id'])
                     return {
                         "status": "success", 
-                        "instagram_accounts": instagram_accounts,
-                        "data": ig_posts
+                        "youtube_accounts": youtube_accounts,
+                        "data": yt_posts
                     }
                 except Exception as e:
                     print(f"   ⚠️ Couldn't fetch posts: {e}")
                     return {
                         "status": "success_no_posts", 
-                        "instagram_accounts": instagram_accounts,
-                        "data": get_mock_instagram_data()
+                        "youtube_accounts": youtube_accounts,
+                        "data": get_mock_youtube_data()
                     }
             else:
-                print("   ⚠️ No Instagram Business Accounts found")
-                print("   ℹ️ Connect Instagram to a Facebook Page first")
-                return {"status": "no_instagram_account", "data": get_mock_instagram_data()}
+                print("   ⚠️ No YouTube Business Accounts found")
+                print("   ℹ️ Connect YouTube to a Facebook Page first")
+                return {"status": "no_youtube_account", "data": get_mock_youtube_data()}
         else:
             print("   ⚠️ No Facebook Pages found")
-            print("   ℹ️ Create a Facebook Page and connect Instagram to it")
-            return {"status": "no_pages", "data": get_mock_instagram_data()}
+            print("   ℹ️ Create a Facebook Page and connect YouTube to it")
+            return {"status": "no_pages", "data": get_mock_youtube_data()}
 
     except Exception as e:
         print(f"❌ Connection error: {e}")
-        return {"status": "error", "data": get_mock_instagram_data()}
+        return {"status": "error", "data": get_mock_youtube_data()}
 
-def get_mock_instagram_data():
-    """Return mock Instagram data for development"""
-    print("\n📊 Generating Mock Instagram Data...")
+def get_mock_youtube_data():
+    """Return mock YouTube data for development"""
+    print("\n📊 Generating Mock YouTube Data...")
     
     mock_data = {
         "posts": [
@@ -138,31 +138,31 @@ def get_mock_instagram_data():
 
 if __name__ == "__main__":
     print("Choose mode:")
-    print("1. Test real Instagram API")
+    print("1. Test real YouTube API")
     print("2. Use mock data only")
     
     choice = input("\nEnter choice (1 or 2): ").strip()
     
     if choice == "1":
-        result = test_instagram_api()
+        result = test_youtube_api()
     else:
-        result = {"status": "mock", "data": get_mock_instagram_data()}
+        result = {"status": "mock", "data": get_mock_youtube_data()}
     
     # Save data for ML model to use
-    with open("instagram_data.json", "w") as f:
+    with open("youtube_data.json", "w") as f:
         json.dump(result, f, indent=2)
     
-    print(f"\n📁 Data saved to: instagram_data.json")
+    print(f"\n📁 Data saved to: youtube_data.json")
     print("\n🎯 Next: Run ml_models.py to train ML model")
     
 
-def get_instagram_posts(access_token, instagram_user_id):
-    """Fetch real Instagram posts for a business account"""
-    print(f"\n📸 Fetching Instagram posts for account {instagram_user_id}...")
+def get_youtube_posts(access_token, youtube_user_id):
+    """Fetch real YouTube posts for a business account"""
+    print(f"\n📸 Fetching YouTube posts for account {youtube_user_id}...")
     
     # Get recent media
     media_response = requests.get(
-        f"https://graph.facebook.com/v24.0/{instagram_user_id}/media",
+        f"https://graph.facebook.com/v24.0/{youtube_user_id}/media",
         params={
             "access_token": access_token,
             "fields": "id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,like_count,comments_count",

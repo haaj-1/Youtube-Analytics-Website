@@ -25,7 +25,7 @@ CREATE TABLE silver.post_performance (
     engagement INT,              -- likes + comments + saves
     engagement_rate FLOAT,       -- engagement / reach
     CONSTRAINT fk_silver_post
-        FOREIGN KEY (post_id) REFERENCES bronze.raw_instagram_posts(post_id)
+        FOREIGN KEY (post_id) REFERENCES bronze.raw_youtube_posts(post_id)
 );
 GO
 

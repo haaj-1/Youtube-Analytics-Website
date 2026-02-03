@@ -1,0 +1,45 @@
+{
+  "status": "no_pages",
+  "data": {
+    "status": "mock",
+    "data": {
+      "posts": [
+        {
+          "id": "17895695668004550",
+          "caption": "Excited to launch our NEW collection! \ud83c\udf89 #fashion #new",
+          "media_type": "CAROUSEL_ALBUM",
+          "like_count": 2450,
+          "comments_count": 120,
+          "saves": 450,
+          "reach": 12500,
+          "timestamp": "2024-01-20T14:30:00+0000",
+          "engagement_rate": 4.5
+        },
+        {
+          "id": "17895695668004551",
+          "caption": "Behind the scenes of our photoshoot \ud83d\udcf8 #photography",
+          "media_type": "IMAGE",
+          "like_count": 1800,
+          "comments_count": 89,
+          "saves": 320,
+          "reach": 9800,
+          "timestamp": "2024-01-18T16:45:00+0000",
+          "engagement_rate": 4.2
+        }
+      ],
+      "stats": {
+        "total_posts": 1247,
+        "avg_engagement_rate": 4.2,
+        "total_likes": "2.4M",
+        "total_comments": "45K",
+        "best_posting_hours": [
+          14,
+          15,
+          16,
+          17
+        ],
+        "best_media_type": "carousel"
+      }
+    }
+  }
+}

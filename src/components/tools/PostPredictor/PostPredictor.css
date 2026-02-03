@@ -95,8 +95,8 @@
 
 .caption-input:focus {
   outline: none;
-  border-color: #405DE6;
-  box-shadow: 0 0 0 3px rgba(64, 93, 230, 0.1);
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .char-count {
@@ -134,9 +134,9 @@
 }
 
 .radio-input:checked + .radio-label {
-  border-color: #405DE6;
-  background-color: rgba(64, 93, 230, 0.05);
-  color: #405DE6;
+  border-color: #dc2626;
+  background-color: rgba(220, 38, 38, 0.05);
+  color: #dc2626;
 }
 
 /* Number input */
@@ -163,7 +163,7 @@
 .predict-button {
   width: 100%;
   padding: 1rem;
-  background: linear-gradient(135deg, #405DE6, #833AB4);
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
   color: white;
   border: none;
   border-radius: 12px;
@@ -176,7 +176,7 @@
 
 .predict-button:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(64, 93, 230, 0.3);
+  box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.3);
 }
 
 .predict-button:disabled {
@@ -198,7 +198,7 @@
   width: 40px;
   height: 40px;
   border: 3px solid rgb(241 245 249);
-  border-top: 3px solid #405DE6;
+  border-top: 3px solid #dc2626;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -279,7 +279,7 @@
 
 .insight-icon {
   margin-right: 0.75rem;
-  color: #405DE6;
+  color: #dc2626;
 }
 
 .insight-text {
@@ -330,7 +330,7 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 20px;
   height: 20px;
-  background: #405DE6;
+  background: #dc2626;
   border-radius: 50%;
   cursor: pointer;
   border: 3px solid white;
@@ -340,7 +340,7 @@ input[type="range"]::-webkit-slider-thumb {
 input[type="range"]::-moz-range-thumb {
   width: 20px;
   height: 20px;
-  background: #405DE6;
+  background: #dc2626;
   border-radius: 50%;
   cursor: pointer;
   border: 3px solid white;
@@ -352,8 +352,8 @@ input[type="range"]::-moz-range-thumb {
 .number-input:focus,
 .datetime-input:focus {
   outline: none;
-  border-color: #405DE6;
-  box-shadow: 0 0 0 3px rgba(64, 93, 230, 0.1);
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 /* Placeholder styling */
@@ -445,11 +445,11 @@ input[type="range"]::-moz-range-thumb {
 
 /* Gradient backgrounds */
 .gradient-bg {
-  background: linear-gradient(135deg, #405DE6, #833AB4);
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #405DE6, #833AB4);
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -31,8 +31,8 @@
   }
   
   .btn-primary {
-    /* CHANGE: Use Instagram gradient instead of green */
-    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white font-medium px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200;
+    /* YouTube red gradient */
+    @apply bg-gradient-to-r from-red-600 to-red-500 text-white font-medium px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200;
   }
   
   .btn-secondary {
@@ -145,8 +145,8 @@
     font-family: 'Inter', sans-serif;
   }
   
-  /* New button style for your navbar */
+  /* YouTube red button style */
   .btn-gradient {
-    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-2.5 rounded-lg font-medium hover:shadow-lg transition-shadow;
+    @apply bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2.5 rounded-lg font-medium hover:shadow-lg transition-shadow;
   }
 }

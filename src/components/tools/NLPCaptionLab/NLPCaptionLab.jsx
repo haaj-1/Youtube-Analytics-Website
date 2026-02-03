@@ -65,7 +65,7 @@ const NLPCaptionLab = () => {
       {/* Header */}
       <div className="border-b border-slate-100 p-6">
         <h2 className="text-2xl font-bold text-slate-900">NLP Caption Optimizer</h2>
-        <p className="text-slate-600 mt-1">Analyze and optimize your Instagram captions using Natural Language Processing</p>
+        <p className="text-slate-600 mt-1">Analyze and optimize your YouTube captions using Natural Language Processing</p>
       </div>
 
       {/* Main Content */}
@@ -81,7 +81,7 @@ const NLPCaptionLab = () => {
                 className="w-full min-h-[200px] p-4 border border-slate-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition resize-none"
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
-                placeholder="Paste your Instagram caption here for analysis..."
+                placeholder="Paste your YouTube caption here for analysis..."
               />
               <div className="text-sm text-slate-500 text-right mt-2">
                 {caption.length} characters

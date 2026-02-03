@@ -4,7 +4,7 @@ SECTION 2 — AUTHENTICATION & USER MANAGEMENT (auth)
 Purpose:
 - Manage application users
 - Support JWT authentication and refresh token rotation
-- Owns all downstream Instagram data
+- Owns all downstream YouTube data
 *****************************************************************************************/
 
 -- Stores application users

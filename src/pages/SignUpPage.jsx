@@ -92,8 +92,8 @@ export default function SignUpPage() {
         
         {/* User Icon */}
         <div className="mb-6">
-          <div className="size-12 bg-gradient-to-r from-blue-500/10 to-purple-600/10 rounded-xl flex items-center justify-center">
-            <FiUser className="w-6 h-6 text-blue-600" />
+          <div className="size-12 bg-gradient-to-r from-red-500/10 to-red-600/10 rounded-xl flex items-center justify-center">
+            <FiUser className="w-6 h-6 text-red-600" />
           </div>
         </div>
 
@@ -119,7 +119,7 @@ export default function SignUpPage() {
                 onChange={handleChange}
                 className={`w-full h-12 rounded-full border ${
                   errors.name ? 'border-red-300' : 'border-[#e1e4dd]'
-                } bg-white focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 px-6 pl-12 text-sm placeholder:text-slate-400 outline-none transition-all`}
+                } bg-white focus:ring-2 focus:ring-red-500/40 focus:border-red-500 px-6 pl-12 text-sm placeholder:text-slate-400 outline-none transition-all`}
                 placeholder="John Doe"
                 type="text"
                 disabled={loading}
@@ -143,7 +143,7 @@ export default function SignUpPage() {
                 onChange={handleChange}
                 className={`w-full h-12 rounded-full border ${
                   errors.email ? 'border-red-300' : 'border-[#e1e4dd]'
-                } bg-white focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 px-6 pl-12 text-sm placeholder:text-slate-400 outline-none transition-all`}
+                } bg-white focus:ring-2 focus:ring-red-500/40 focus:border-red-500 px-6 pl-12 text-sm placeholder:text-slate-400 outline-none transition-all`}
                 placeholder="name@company.com"
                 type="email"
                 disabled={loading}
@@ -168,7 +168,7 @@ export default function SignUpPage() {
                 type={showPassword ? "text" : "password"}
                 className={`w-full h-12 rounded-full border ${
                   errors.password ? 'border-red-300' : 'border-[#e1e4dd]'
-                } bg-white focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 px-6 pl-12 text-sm placeholder:text-slate-400 outline-none transition-all pr-12`}
+                } bg-white focus:ring-2 focus:ring-red-500/40 focus:border-red-500 px-6 pl-12 text-sm placeholder:text-slate-400 outline-none transition-all pr-12`}
                 placeholder="••••••••"
                 disabled={loading}
               />
@@ -199,7 +199,7 @@ export default function SignUpPage() {
                 type={showConfirmPassword ? "text" : "password"}
                 className={`w-full h-12 rounded-full border ${
                   errors.confirmPassword ? 'border-red-300' : 'border-[#e1e4dd]'
-                } bg-white focus:ring-2 focus:ring-blue-500/40 focus:border-blue-500 px-6 pl-12 text-sm placeholder:text-slate-400 outline-none transition-all pr-12`}
+                } bg-white focus:ring-2 focus:ring-red-500/40 focus:border-red-500 px-6 pl-12 text-sm placeholder:text-slate-400 outline-none transition-all pr-12`}
                 placeholder="••••••••"
                 disabled={loading}
               />
@@ -229,14 +229,14 @@ export default function SignUpPage() {
             <input
               type="checkbox"
               id="terms"
-              className="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-red-600 border-slate-300 rounded focus:ring-red-500"
               required
             />
             <label htmlFor="terms" className="ml-2 text-sm text-slate-600">
               I agree to the{' '}
-              <Link to="/terms" className="text-blue-600 hover:underline">Terms of Service</Link>{' '}
+              <Link to="/terms" className="text-red-600 hover:underline">Terms of Service</Link>{' '}
               and{' '}
-              <Link to="/privacy" className="text-blue-600 hover:underline">Privacy Policy</Link>
+              <Link to="/privacy" className="text-red-600 hover:underline">Privacy Policy</Link>
             </label>
           </div>
 
@@ -244,7 +244,7 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full h-12 mt-4 bg-gradient-to-r from-blue-500 to-purple-600 hover:opacity-90 text-white font-bold text-sm rounded-full transition-all shadow-md shadow-blue-500/20 uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-12 mt-4 bg-gradient-to-r from-red-500 to-red-600 hover:opacity-90 text-white font-bold text-sm rounded-full transition-all shadow-md shadow-red-500/20 uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="flex items-center justify-center">
@@ -261,7 +261,7 @@ export default function SignUpPage() {
         <div className="mt-6 text-center">
           <p className="text-slate-600 text-sm">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+            <Link to="/login" className="text-red-600 hover:text-red-700 font-medium">
               Sign in
             </Link>
           </p>

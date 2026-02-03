@@ -25,10 +25,10 @@ export default function GreenSidebar() {
       type: "heading"
     },
     {
-      title: "Post Performance Predictor",
+      title: "Video Performance Predictor",
       path: "/post-performance",
       icon: <FiBarChart2 className="w-5 h-5" />,
-      description: "Predict Instagram engagement"
+      description: "Predict YouTube engagement"
     },
     {
       title: "Predictive Accuracy",
@@ -70,17 +70,17 @@ export default function GreenSidebar() {
   ];
 
   return (
-    <aside className={`fixed inset-y-0 left-0 top-0 bg-gradient-to-b from-green-900 to-green-800 text-white h-screen transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'} z-[9999]`}> 
+    <aside className={`fixed inset-y-0 left-0 top-0 bg-gradient-to-b from-red-900 to-red-800 text-white h-screen transition-all duration-300 ${isCollapsed ? 'w-20' : 'w-64'} z-[9999]`}> 
       <div className="p-6 h-full flex flex-col">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center">
             <span className="text-white font-bold text-lg">P</span>
           </div>
           {!isCollapsed && (
             <div className="flex flex-col">
               <span className="font-bold text-xl">PrePost</span>
-              <span className="text-xs text-green-300 -mt-1">Analytics</span>
+              <span className="text-xs text-red-300 -mt-1">Analytics</span>
             </div>
           )}
         </div>
@@ -88,7 +88,7 @@ export default function GreenSidebar() {
         {/* Toggle Button */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-6 w-6 h-6 bg-green-700 rounded-full flex items-center justify-center text-white hover:bg-green-600 transition-colors"
+          className="absolute -right-3 top-6 w-6 h-6 bg-red-700 rounded-full flex items-center justify-center text-white hover:bg-red-600 transition-colors"
         >
           {isCollapsed ? '→' : '←'}
         </button>
@@ -100,7 +100,7 @@ export default function GreenSidebar() {
               if (item.type === 'heading') {
                 return !isCollapsed && (
                   <div key={index} className="pt-4">
-                    <h3 className="text-xs font-semibold text-green-300 uppercase tracking-wider px-3">
+                    <h3 className="text-xs font-semibold text-red-300 uppercase tracking-wider px-3">
                       {item.title}
                     </h3>
                   </div>
@@ -116,19 +116,19 @@ export default function GreenSidebar() {
                   to={item.path}
                   className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
                     isActive 
-                      ? 'bg-green-700 text-white' 
-                      : 'hover:bg-green-700/50 text-green-100'
+                      ? 'bg-red-700 text-white' 
+                      : 'hover:bg-red-700/50 text-red-100'
                   }`}
                   title={isCollapsed ? item.title : ''}
                 >
-                  <span className={`${isActive ? 'text-green-300' : 'text-green-400'}`}>
+                  <span className={`${isActive ? 'text-red-300' : 'text-red-400'}`}>
                     {item.icon}
                   </span>
                   {!isCollapsed && (
                     <div className="flex-1">
                       <div className="font-medium">{item.title}</div>
                       {item.description && (
-                        <div className="text-xs text-green-300 mt-0.5">
+                        <div className="text-xs text-red-300 mt-0.5">
                           {item.description}
                         </div>
                       )}
@@ -142,16 +142,16 @@ export default function GreenSidebar() {
 
         {/* Stats (Only when expanded) */}
         {!isCollapsed && (
-          <div className="mt-6 p-4 bg-green-800/50 rounded-xl">
-            <div className="text-xs text-green-300 mb-2">Quick Stats</div>
+          <div className="mt-6 p-4 bg-red-800/50 rounded-xl">
+            <div className="text-xs text-red-300 mb-2">Quick Stats</div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-green-200">Accuracy</span>
-                <span className="font-bold text-green-300">86.4%</span>
+                <span className="text-red-200">Accuracy</span>
+                <span className="font-bold text-red-300">86.4%</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-green-200">Posts Analyzed</span>
-                <span className="font-bold text-green-300">2.4M</span>
+                <span className="text-red-200">Posts Analyzed</span>
+                <span className="font-bold text-red-300">2.4M</span>
               </div>
             </div>
           </div>

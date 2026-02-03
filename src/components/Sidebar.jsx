@@ -1,9 +1,9 @@
 // src/components/Sidebar.jsx
-import { FaDatabase, FaInstagram, FaLock, FaUser } from "react-icons/fa";
+import { FaDatabase, FaYoutube, FaLock, FaUser } from "react-icons/fa";
 
 const iconMap = {
   "Data Collection": <FaDatabase className="w-5 h-5" />,
-  "Instagram API": <FaInstagram className="w-5 h-5" />,
+  "YouTube API": <FaYoutube className="w-5 h-5" />,
   "Encryption": <FaLock className="w-5 h-5" />,
   "User Rights": <FaUser className="w-5 h-5" />,
 };
@@ -16,7 +16,7 @@ export default function Sidebar({ items }) {
   return (
     <aside className="block w-64 flex-shrink-0">
       <div className="sticky top-24 flex flex-col items-start">
-        <h4 className="text-xs font-semibold text-green-600 mb-6 uppercase tracking-wider">
+        <h4 className="text-xs font-semibold text-red-600 mb-6 uppercase tracking-wider">
           ON THIS PAGE
         </h4>
         <nav className="space-y-2">
@@ -33,9 +33,9 @@ export default function Sidebar({ items }) {
                     element.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className="flex items-center gap-3 text-sm px-4 py-3 rounded-xl hover:bg-green-50 hover:text-green-700 text-gray-600 transition-colors group"
+                className="flex items-center gap-3 text-sm px-4 py-3 rounded-xl hover:bg-red-50 hover:text-red-700 text-gray-600 transition-colors group"
               >
-                <span className="text-green-500 group-hover:text-green-700">
+                <span className="text-red-500 group-hover:text-red-700">
                   {iconMap[item]}
                 </span>
                 <span className="font-medium">{item}</span>

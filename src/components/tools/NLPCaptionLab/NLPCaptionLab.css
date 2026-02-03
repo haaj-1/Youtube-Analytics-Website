@@ -45,8 +45,8 @@
 
 .caption-textarea:focus {
   outline: none;
-  border-color: #405DE6;
-  box-shadow: 0 0 0 3px rgba(64, 93, 230, 0.1);
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .caption-textarea::placeholder {
@@ -82,8 +82,8 @@
 }
 
 .nlp-tab.active {
-  color: #405DE6;
-  border-bottom-color: #405DE6;
+  color: #dc2626;
+  border-bottom-color: #dc2626;
 }
 
 /* Analysis cards */
@@ -131,8 +131,8 @@
   display: inline-flex;
   align-items: center;
   padding: 0.375rem 0.75rem;
-  background-color: rgb(239 246 255);
-  color: rgb(30 64 175);
+  background-color: rgb(254 242 242);
+  color: rgb(153 27 27);
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
@@ -141,7 +141,7 @@
 }
 
 .keyword-chip:hover {
-  background-color: rgb(219 234 254);
+  background-color: rgb(252 226 226);
   transform: translateY(-1px);
 }
 
@@ -162,13 +162,13 @@
 }
 
 .hashtag-suggestion:hover {
-  background-color: rgb(219 234 254);
-  color: rgb(30 64 175);
-  border-color: rgb(147 197 253);
+  background-color: rgb(254 242 242);
+  color: rgb(153 27 27);
+  border-color: rgb(252 165 165);
 }
 
 .hashtag-suggestion.selected {
-  background-color: rgb(59 130 246);
+  background-color: rgb(220 38 38);
   color: white;
 }
 
@@ -218,14 +218,14 @@
 }
 
 .alternative-caption:hover {
-  border-color: #405DE6;
-  background-color: rgb(239 246 255);
+  border-color: #dc2626;
+  background-color: rgb(254 242 242);
 }
 
 .alternative-caption.selected {
-  border-color: #405DE6;
-  background-color: rgb(239 246 255);
-  box-shadow: 0 0 0 3px rgba(64, 93, 230, 0.1);
+  border-color: #dc2626;
+  background-color: rgb(254 242 242);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 /* Loading animation */
@@ -241,7 +241,7 @@
   width: 3rem;
   height: 3rem;
   border: 3px solid rgb(226 232 240);
-  border-top-color: #405DE6;
+  border-top-color: #dc2626;
   border-radius: 50%;
   animation: nlp-spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -294,9 +294,9 @@
 }
 
 .tone-option.selected {
-  border-color: #405DE6;
-  background-color: rgb(239 246 255);
-  color: #405DE6;
+  border-color: #dc2626;
+  background-color: rgb(254 242 242);
+  color: #dc2626;
 }
 
 /* Score indicators */
@@ -319,7 +319,7 @@
 .score-fill {
   height: 100%;
   border-radius: 9999px;
-  background: linear-gradient(90deg, #405DE6, #833AB4);
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
   transition: width 0.5s ease;
 }
 
@@ -334,8 +334,8 @@
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.5rem;
-  background-color: rgb(239 246 255);
-  color: rgb(30 64 175);
+  background-color: rgb(254 242 242);
+  color: rgb(153 27 27);
   border-radius: 0.375rem;
   font-size: 0.75rem;
   font-weight: 500;
@@ -365,8 +365,8 @@
 /* Gradient backgrounds */
 .gradient-bg {
   background: linear-gradient(135deg, 
-    rgba(64, 93, 230, 0.1), 
-    rgba(131, 58, 180, 0.1));
+    rgba(220, 38, 38, 0.1), 
+    rgba(185, 28, 28, 0.1));
 }
 
 /* Responsive adjustments */
@@ -441,7 +441,7 @@
 
 .analysis-progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #405DE6, #833AB4);
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
   border-radius: 9999px;
   transition: width 0.3s ease;
 }

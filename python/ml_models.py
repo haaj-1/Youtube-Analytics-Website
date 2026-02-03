@@ -4,8 +4,8 @@ import json
 from datetime import datetime
 import random
 
-class InstagramPredictor:
-    """ML model for Instagram engagement prediction"""
+class YouTubePredictor:
+    """ML model for YouTube engagement prediction"""
     
     def __init__(self):
         print("🤖 PrePost Analytics ML Model Initialized")
@@ -13,9 +13,9 @@ class InstagramPredictor:
         self.load_training_data()
     
     def load_training_data(self):
-        """Load Instagram data for training"""
+        """Load YouTube data for training"""
         try:
-            with open("instagram_data.json", "r") as f:
+            with open("youtube_data.json", "r") as f:
                 self.data = json.load(f)
             print(f"✅ Loaded {len(self.data.get('data', {}).get('posts', []))} posts")
         except:
@@ -28,7 +28,7 @@ class InstagramPredictor:
         
         posts = []
         for i in range(num_samples):
-            # Realistic Instagram post patterns
+            # Realistic YouTube post patterns
             caption_length = random.randint(50, 2200)
             hashtag_count = random.randint(0, 30)
             hour = random.randint(0, 23)
@@ -185,7 +185,7 @@ class InstagramPredictor:
     
     def train_model(self):
         """Train the ML model (placeholder for real ML)"""
-        print("\n🧠 Training ML model on Instagram data...")
+        print("\n🧠 Training ML model on YouTube data...")
         
         # Simulate training process
         posts = self.data.get('data', {}).get('posts', [])
@@ -210,7 +210,7 @@ if __name__ == "__main__":
     print("=" * 50)
     
     # Initialize predictor
-    predictor = InstagramPredictor()
+    predictor = YouTubePredictor()
     
     # Train model
     predictor.train_model()
