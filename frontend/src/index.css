@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Spline+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-text-size-adjust: none;
+    -moz-text-size-adjust: none;
+    -ms-text-size-adjust: none;
+    text-size-adjust: none;
+    box-sizing: border-box;
+  }
+  
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 16px;
+  }
+  
+  body {
+    @apply bg-white text-slate-900 antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+  
+  .font-display {
+    font-family: 'Spline Sans', sans-serif;
+  }
+}
+
+@layer components {
+  .card {
+    /* CHANGE: Use slate-100 instead of gray-100 */
+    @apply bg-white rounded-2xl border border-slate-100 shadow-soft hover:shadow-md transition-shadow duration-200;
+  }
+  
+  .btn-primary {
+    /* YouTube red gradient */
+    @apply bg-gradient-to-r from-red-600 to-red-500 text-white font-medium px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    /* CHANGE: Use slate colors instead of gray */
+    @apply bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium px-6 py-3 rounded-lg transition-colors duration-200;
+  }
+  
+  .section-padding {
+    @apply px-10 py-10;
+  }
+  
+  /* ADD ALL THESE UTILITY CLASSES FROM YOUR INSPECT */
+  
+  /* Soft shadow from your inspect */
+  .shadow-soft {
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 4px 10px -5px rgba(0, 0, 0, 0.02);
+  }
+  
+  /* 32px border radius from your inspect */
+  .rounded-32 {
+    border-radius: 32px;
+  }
+  
+  /* Background colors from your inspect */
+  .bg-slate-bg {
+    background-color: rgb(241 245 249);
+  }
+  
+  .bg-background-light {
+    background-color: rgb(253 251 252);
+  }
+  
+  .bg-off-white {
+    background-color: rgb(253 253 253);
+  }
+  
+  /* Padding classes from your inspect */
+  .py-10 {
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+  
+  .px-10 {
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+  
+  .py-8 {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  
+  /* Flex utilities from your inspect */
+  .justify-between {
+    justify-content: space-between;
+  }
+  
+  .items-center {
+    align-items: center;
+  }
+  
+  .flex {
+    display: flex;
+  }
+  
+  /* Grid utilities from your inspect */
+  .grid {
+    display: grid;
+  }
+  
+  .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  
+  .gap-6 {
+    gap: 1.5rem;
+  }
+  
+  /* Text colors from your inspect */
+  .text-slate-800 {
+    color: rgb(30 41 59);
+  }
+  
+  .text-slate-900 {
+    color: rgb(15 23 42);
+  }
+  
+  /* Border colors from your inspect */
+  .border-slate-50 {
+    border-color: rgb(248 250 252);
+  }
+  
+  .border-slate-100 {
+    border-color: rgb(241 245 249);
+  }
+  
+  /* Border widths from your inspect */
+  .border-b {
+    border-bottom-width: 1px;
+  }
+  
+  /* Font smoothing from your inspect */
+  .antialiased {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Font families from your inspect */
+  .font-sans {
+    font-family: 'Inter', sans-serif;
+  }
+  
+  /* YouTube red button style */
+  .btn-gradient {
+    @apply bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-2.5 rounded-lg font-medium hover:shadow-lg transition-shadow;
+  }
+}
