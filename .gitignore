@@ -25,3 +25,7 @@ dist-ssr
 *.sw?
 
 .vercel
+
+# Docker
+.dockerignore
+docker-compose.override.yml

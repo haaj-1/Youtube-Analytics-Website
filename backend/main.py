@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from app.api.routes import auth, predictions, optimizer, dashboard
+from app.api.routes import auth, predictions, optimizer, dashboard, thumbnail, youtube, analytics, model_info
 from app.core.config import settings
 import traceback
 
@@ -46,7 +46,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # CORS middleware - Allows React frontend (localhost:3000/5173) to call this API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:5173"],
+    allow_origins=["http://localhost:3000", "http://localhost:5173", "http://localhost:5000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -57,6 +57,10 @@ app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 app.include_router(predictions.router, prefix="/predict", tags=["predictions"])
 app.include_router(optimizer.router, prefix="/optimizer", tags=["optimizer"])
 app.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
+app.include_router(thumbnail.router, prefix="/thumbnail", tags=["thumbnail"])
+app.include_router(youtube.router, prefix="/youtube", tags=["youtube"])
+app.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
+app.include_router(model_info.router, prefix="/model", tags=["model"])
 
 @app.get("/")
 @limiter.limit("100/minute")

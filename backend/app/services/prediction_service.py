@@ -3,12 +3,12 @@ import numpy as np
 import torch
 import joblib
 import json
+import re
 from transformers import BertTokenizer, BertModel
 from torchvision import transforms
 from PIL import Image
 import requests
 from io import BytesIO
-import re
 import pyodbc
 
 class PredictionService:
@@ -186,10 +186,20 @@ class PredictionService:
         
         # Only benchmark comparison - data-driven
         try:
+            database_url = os.getenv('DATABASE_URL')
+            if not database_url:
+                raise Exception("Database configuration not found")
+            
+            # Parse the DATABASE_URL to extract server and database name
+            parts = database_url.split('/')
+            server = parts[2]
+            db_parts = parts[3].split('?')
+            database = db_parts[0]
+            
             conn_str = (
                 "DRIVER={ODBC Driver 17 for SQL Server};"
-                "SERVER=LAPTOP-58649FBF;"
-                "DATABASE=prepost_analytics;"
+                f"SERVER={server};"
+                f"DATABASE={database};"
                 "Trusted_Connection=yes;"
             )
             conn = pyodbc.connect(conn_str)
@@ -225,5 +235,192 @@ class PredictionService:
                 })
         except:
             pass
+        
+        return recommendations
+
+    def train_personalized_model(self, videos, channel_info):
+        """Train a personalized model based on user's channel history"""
+        self.load_models()
+        
+        if len(videos) < 5:
+            raise ValueError("Need at least 5 videos to train personalized model")
+        
+        # Extract features from all videos
+        X_list = []
+        y_list = []
+        
+        for video in videos:
+            try:
+                title = video['snippet']['title']
+                description = video['snippet']['description']
+                thumbnail_url = video['snippet']['thumbnails'].get('high', {}).get('url', 
+                               video['snippet']['thumbnails']['default']['url'])
+                category_id = int(video['snippet']['categoryId'])
+                view_count = int(video['statistics']['viewCount'])
+                
+                # Parse duration
+                duration = video['contentDetails']['duration']
+                match = re.match(r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', duration)
+                hours = int(match.group(1) or 0)
+                minutes = int(match.group(2) or 0)
+                seconds = int(match.group(3) or 0)
+                duration_seconds = hours * 3600 + minutes * 60 + seconds
+                
+                # Extract features
+                combined_text = f"{title} {description}"
+                text_features = self.extract_text_features(combined_text)
+                thumbnail_features = self.extract_thumbnail_features(thumbnail_url)
+                
+                subscriber_count = channel_info['subscriber_count']
+                subscriber_range = self.get_subscriber_range(subscriber_count)
+                category_encoded = self.category_encoder.transform([category_id])[0]
+                subscriber_range_encoded = self.subscriber_encoder.transform([subscriber_range])[0]
+                
+                log_subscribers = np.log1p(subscriber_count)
+                log_duration = np.log1p(duration_seconds)
+                
+                # Use average temporal features
+                numerical_features = np.array([
+                    log_subscribers, log_duration, 0.02, 0.03, 0.005, 0.1,
+                    category_encoded, subscriber_range_encoded,
+                    0, 0, 0, 0, 6, 0  # Average temporal features
+                ])
+                
+                numerical_features = self.scaler.transform(numerical_features.reshape(1, -1))[0]
+                X = np.concatenate([text_features, thumbnail_features, numerical_features])
+                
+                X_list.append(X)
+                y_list.append(np.log1p(view_count))
+                
+            except Exception as e:
+                print(f"Error processing video: {e}")
+                continue
+        
+        if len(X_list) < 5:
+            raise ValueError("Not enough valid videos to train model")
+        
+        X_train = np.array(X_list)
+        y_train = np.array(y_list)
+        
+        # Train a new XGBoost model on user's data
+        import xgboost as xgb
+        self.personalized_model = xgb.XGBRegressor(
+            n_estimators=100,
+            max_depth=6,
+            learning_rate=0.1,
+            random_state=42
+        )
+        self.personalized_model.fit(X_train, y_train)
+        
+        # Calculate personalized statistics
+        predictions = self.personalized_model.predict(X_train)
+        actual_views = [int(np.expm1(y)) for y in y_train]
+        predicted_views = [int(np.expm1(p)) for p in predictions]
+        
+        # Calculate metrics
+        from sklearn.metrics import r2_score, mean_absolute_percentage_error
+        r2 = r2_score(y_train, predictions)
+        mape = mean_absolute_percentage_error(actual_views, predicted_views)
+        
+        avg_views = np.mean(actual_views)
+        median_views = np.median(actual_views)
+        
+        self.personalized_stats = {
+            'videos_analyzed': len(videos),
+            'r2_score': float(r2),
+            'mape': float(mape),
+            'avg_views': int(avg_views),
+            'median_views': int(median_views),
+            'channel_name': channel_info['title'],
+            'subscriber_count': channel_info['subscriber_count']
+        }
+        
+        return {
+            'success': True,
+            'message': f'Personalized model trained on {len(X_list)} videos',
+            'stats': self.personalized_stats,
+            'model_accuracy': f'{r2*100:.1f}%'
+        }
+    
+    def predict_with_personalized_model(self, title, description, thumbnail_url, 
+                                       category_id, subscriber_count, duration_seconds):
+        """Predict using personalized model"""
+        if not hasattr(self, 'personalized_model'):
+            raise ValueError("No personalized model available. Train one first.")
+        
+        self.load_models()
+        
+        # Extract features (same as regular prediction)
+        combined_text = f"{title} {description}"
+        text_features = self.extract_text_features(combined_text)
+        thumbnail_features = self.extract_thumbnail_features(thumbnail_url)
+        
+        subscriber_range = self.get_subscriber_range(subscriber_count)
+        category_encoded = self.category_encoder.transform([category_id])[0]
+        subscriber_range_encoded = self.subscriber_encoder.transform([subscriber_range])[0]
+        
+        log_subscribers = np.log1p(subscriber_count)
+        log_duration = np.log1p(duration_seconds)
+        
+        numerical_features = np.array([
+            log_subscribers, log_duration, 0.02, 0.03, 0.005, 0.1,
+            category_encoded, subscriber_range_encoded,
+            0, 0, 0, 0, 6, 0
+        ])
+        
+        numerical_features = self.scaler.transform(numerical_features.reshape(1, -1))[0]
+        X = np.concatenate([text_features, thumbnail_features, numerical_features])
+        
+        # Use personalized model
+        log_views = self.personalized_model.predict(X.reshape(1, -1))[0]
+        predicted_views = int(np.expm1(log_views))
+        
+        # Compare with channel average
+        comparison = {
+            'vs_channel_avg': f"{((predicted_views / self.personalized_stats['avg_views']) - 1) * 100:+.1f}%",
+            'vs_channel_median': f"{((predicted_views / self.personalized_stats['median_views']) - 1) * 100:+.1f}%"
+        }
+        
+        return {
+            'predicted_views': predicted_views,
+            'confidence_score': round(self.personalized_stats['r2_score'], 2),
+            'subscriber_range': subscriber_range,
+            'category_id': category_id,
+            'model_type': 'personalized',
+            'channel_stats': self.personalized_stats,
+            'comparison': comparison,
+            'recommendations': self._generate_personalized_recommendations(
+                predicted_views, self.personalized_stats
+            )
+        }
+    
+    def _generate_personalized_recommendations(self, predicted_views, stats):
+        """Generate recommendations based on channel's own performance"""
+        recommendations = []
+        
+        avg_views = stats['avg_views']
+        median_views = stats['median_views']
+        
+        if predicted_views > avg_views * 1.5:
+            recommendations.append({
+                'type': 'success',
+                'category': 'Performance',
+                'message': f'Predicted to perform {((predicted_views/avg_views - 1)*100):.0f}% above your channel average!',
+                'action': 'This content strategy aligns well with your audience'
+            })
+        elif predicted_views < avg_views * 0.5:
+            recommendations.append({
+                'type': 'warning',
+                'category': 'Performance',
+                'message': f'Predicted to perform {((1 - predicted_views/avg_views)*100):.0f}% below your channel average',
+                'action': 'Consider adjusting title, thumbnail, or topic to match your successful videos'
+            })
+        else:
+            recommendations.append({
+                'type': 'tip',
+                'category': 'Performance',
+                'message': 'Predicted to perform near your channel average',
+                'action': 'Solid content - consider A/B testing thumbnail for better results'
+            })
         
         return recommendations

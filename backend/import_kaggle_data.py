@@ -123,10 +123,22 @@ def import_kaggle_data(batch_size=1000, sample_size=50000):
     print(f"After filtering: {len(df)} rows")
     
     # Connect to database
+    import os
+    database_url = os.getenv('DATABASE_URL')
+    if not database_url:
+        raise Exception("DATABASE_URL environment variable not found")
+    
+    # Parse the DATABASE_URL to extract server and database name
+    # Format: mssql+pyodbc://SERVER/DATABASE?driver=...
+    parts = database_url.split('/')
+    server = parts[2]
+    db_parts = parts[3].split('?')
+    database = db_parts[0]
+    
     conn_str = (
         "DRIVER={ODBC Driver 17 for SQL Server};"
-        "SERVER=LAPTOP-58649FBF;"
-        "DATABASE=prepost_analytics;"
+        f"SERVER={server};"
+        f"DATABASE={database};"
         "Trusted_Connection=yes;"
     )
     conn = pyodbc.connect(conn_str)

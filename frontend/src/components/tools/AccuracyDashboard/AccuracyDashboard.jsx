@@ -2,202 +2,495 @@
 import React, { useState } from 'react';
 import './AccuracyDashboard.css';
 
-const AccuracyDashboard = () => {
-  const [timeRange, setTimeRange] = useState('30d');
+// Static model information - no API call needed
+const modelInfo = {
+  overview: {
+    accuracy_r2: 0.956,
+    training_samples: 51888,
+    model_type: "Ensemble (XGBoost + BERT + CNN)"
+  },
+  components: [
+    {
+      name: "BERT",
+      purpose: "Analyzes title and description text to understand semantic meaning and context",
+      model: "bert-base-uncased",
+      parameters: "110M",
+      output: "768-dim embeddings"
+    },
+    {
+      name: "CNN",
+      purpose: "Extracts visual features from thumbnails including colors, composition, and text presence",
+      model: "ResNet-18",
+      parameters: "11M",
+      output: "512-dim embeddings"
+    },
+    {
+      name: "XGBoost",
+      purpose: "Combines all features to predict view count with high accuracy",
+      model: "Gradient Boosting",
+      parameters: "200 trees",
+      output: "View prediction"
+    }
+  ],
+  features: {
+    text_features: {
+      description: "Title & Description Analysis",
+      importance: 45,
+      details: [
+        "Semantic meaning via BERT",
+        "Keyword relevance",
+        "Title length optimization",
+        "Clickbait detection"
+      ]
+    },
+    thumbnail_features: {
+      description: "Thumbnail Visual Analysis",
+      importance: 35,
+      details: [
+        "Color composition",
+        "Face detection",
+        "Text presence",
+        "Visual complexity"
+      ]
+    },
+    metadata_features: {
+      description: "Video Metadata",
+      importance: 20,
+      details: [
+        "Category",
+        "Duration",
+        "Subscriber count",
+        "Publishing time"
+      ]
+    }
+  },
+  how_it_works: [
+    {
+      step: 1,
+      title: "Text Processing",
+      description: "Your video title and description are analyzed using BERT, a state-of-the-art language model that understands context and meaning."
+    },
+    {
+      step: 2,
+      title: "Thumbnail Analysis",
+      description: "The thumbnail image is processed through a CNN to extract visual features like colors, composition, and text presence."
+    },
+    {
+      step: 3,
+      title: "Metadata Encoding",
+      description: "Video metadata (category, duration, subscriber count) is normalized and encoded for the model."
+    },
+    {
+      step: 4,
+      title: "Feature Combination",
+      description: "All features (768 from BERT + 512 from CNN + 14 metadata) are combined into a 1,294-dimensional feature vector."
+    },
+    {
+      step: 5,
+      title: "XGBoost Prediction",
+      description: "The XGBoost model processes the combined features and outputs a predicted view count with confidence score."
+    }
+  ],
+  performance_metrics: {
+    r2_score: {
+      value: 0.956,
+      description: "Coefficient of determination - measures how well predictions match actual values",
+      interpretation: "95.6% of variance in views is explained by the model"
+    },
+    mae: {
+      value: 685339,
+      description: "Mean Absolute Error - average prediction error",
+      interpretation: "Predictions are typically within ±685K views"
+    },
+    rmse: {
+      value: 1142231,
+      description: "Root Mean Squared Error - penalizes larger errors more",
+      interpretation: "Standard deviation of prediction errors"
+    }
+  },
+  training_details: {
+    dataset_size: 51888,
+    data_sources: [
+      "Kaggle YouTube Trending Dataset",
+      "Multiple categories and regions",
+      "Videos from 2017-2024"
+    ],
+    validation_split: "15%",
+    training_time: "~2 hours on GPU",
+    last_retrained: "February 2024"
+  },
+  limitations: [
+    {
+      title: "Cannot Predict Viral Content",
+      description: "The model predicts typical performance based on historical patterns. It cannot predict viral videos or unexpected trends."
+    },
+    {
+      title: "Historical Data Dependency",
+      description: "Predictions are based on past data. Sudden changes in YouTube's algorithm or viewer behavior may affect accuracy."
+    },
+    {
+      title: "Category-Specific Accuracy",
+      description: "Accuracy varies by category. Some categories (Gaming, Entertainment) have more training data than others."
+    },
+    {
+      title: "Subscriber Count Impact",
+      description: "Predictions are more accurate for channels with 10K-1M subscribers. Very small or very large channels may see different results."
+    },
+    {
+      title: "External Factors Not Considered",
+      description: "The model doesn't account for external promotion, collaborations, or current events that might boost views."
+    }
+  ],
+  ethical_considerations: [
+    "No personal data is stored or used for training",
+    "Model is designed to help creators, not manipulate viewers",
+    "Predictions should guide, not dictate content strategy",
+    "We encourage authentic content over optimization alone",
+    "Model transparency helps users understand limitations"
+  ]
+};
 
-  const accuracyData = {
-    overallAccuracy: 86.4,
-    modelVersion: 'v2.1.3',
-    lastUpdated: '2024-01-26',
-    metrics: [
-      { label: 'Likes Prediction', value: 88.2, trend: 'up' },
-      { label: 'Comments Prediction', value: 82.5, trend: 'up' },
-      { label: 'Saves Prediction', value: 84.7, trend: 'stable' },
-      { label: 'Engagement Rate', value: 85.9, trend: 'up' },
-    ],
-    dailyAccuracy: [
-      { date: 'Jan 20', accuracy: 85.2 },
-      { date: 'Jan 21', accuracy: 86.1 },
-      { date: 'Jan 22', accuracy: 84.8 },
-      { date: 'Jan 23', accuracy: 87.3 },
-      { date: 'Jan 24', accuracy: 86.5 },
-      { date: 'Jan 25', accuracy: 87.9 },
-      { date: 'Jan 26', accuracy: 86.4 },
-    ],
-    modelComparison: [
-      { version: 'v2.1.3', accuracy: 86.4, date: 'Jan 2024' },
-      { version: 'v2.1.2', accuracy: 84.7, date: 'Dec 2023' },
-      { version: 'v2.1.1', accuracy: 82.1, date: 'Nov 2023' },
-      { version: 'v2.1.0', accuracy: 79.8, date: 'Oct 2023' },
-    ]
-  };
+const AccuracyDashboard = () => {
+  const [activeTab, setActiveTab] = useState('overview');
 
   return (
     <div className="bg-white rounded-2xl border border-slate-100 shadow-soft overflow-hidden">
       {/* Header */}
       <div className="border-b border-slate-100 p-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-          <div>
-            <h2 className="text-2xl font-bold text-slate-900">Model Accuracy Dashboard</h2>
-            <p className="text-slate-600 mt-1">Track prediction accuracy and model performance over time</p>
-          </div>
-          <div className="flex items-center space-x-2 mt-4 md:mt-0">
-            {['7d', '30d', '90d', 'all'].map((range) => (
-              <button
-                key={range}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  timeRange === range
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-                onClick={() => setTimeRange(range)}
-              >
-                {range === '7d' ? '7 Days' : range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : 'All Time'}
-              </button>
-            ))}
-          </div>
+        <h2 className="text-2xl font-bold text-slate-900 mb-2">Model Transparency Dashboard</h2>
+        <p className="text-slate-600">
+          Understanding how our AI predicts YouTube video performance
+        </p>
+      </div>
+
+      {/* Tabs */}
+      <div className="border-b border-slate-200 px-6">
+        <div className="flex gap-4">
+          {[
+            { id: 'overview', label: 'Overview' },
+            { id: 'how-it-works', label: 'How It Works' },
+            { id: 'performance', label: 'Performance' },
+            { id: 'limitations', label: 'Limitations' }
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-3 font-medium border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Content */}
       <div className="p-6">
-        {/* Overall Accuracy Card */}
-        <div className="mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="col-span-1 md:col-span-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-6 text-white">
-              <div className="text-sm font-medium text-blue-100 mb-2">Overall Accuracy</div>
-              <div className="text-5xl font-bold mb-2">{accuracyData.overallAccuracy}%</div>
-              <div className="flex items-center text-blue-100">
-                <span className="mr-2">↑</span>
-                <span>+2.3% from last month</span>
+        {/* Overview Tab */}
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            {/* Hero Stats */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 text-white">
+                <div className="text-sm font-medium text-blue-100 mb-2">Model Accuracy (R²)</div>
+                <div className="text-4xl font-bold mb-2">
+                  {(modelInfo.overview.accuracy_r2 * 100).toFixed(1)}%
+                </div>
+                <div className="text-sm text-blue-100">
+                  Explains {(modelInfo.overview.accuracy_r2 * 100).toFixed(1)}% of variance in views
+                </div>
               </div>
-              <div className="text-sm text-blue-100/80 mt-4">
-                Model: {accuracyData.modelVersion} • Updated: {accuracyData.lastUpdated}
+
+              <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 text-white">
+                <div className="text-sm font-medium text-purple-100 mb-2">Training Data</div>
+                <div className="text-4xl font-bold mb-2">
+                  {(modelInfo.overview.training_samples / 1000).toFixed(0)}K
+                </div>
+                <div className="text-sm text-purple-100">
+                  Videos analyzed across all categories
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-6 text-white">
+                <div className="text-sm font-medium text-green-100 mb-2">Model Type</div>
+                <div className="text-2xl font-bold mb-2">
+                  Ensemble
+                </div>
+                <div className="text-sm text-green-100">
+                  BERT + CNN + XGBoost
+                </div>
               </div>
             </div>
-            
-            <div className="bg-slate-50 rounded-2xl p-6">
-              <div className="text-sm font-medium text-slate-600 mb-4">Accuracy Trend</div>
-              <div className="flex items-end h-24 space-x-2">
-                {accuracyData.dailyAccuracy.map((day, index) => (
-                  <div key={index} className="flex-1 flex flex-col items-center">
-                    <div 
-                      className="w-full bg-gradient-to-t from-blue-400 to-blue-300 rounded-t-lg"
-                      style={{ height: `${(day.accuracy - 80) * 4}px` }}
-                    ></div>
-                    <div className="text-xs text-slate-500 mt-2">{day.date}</div>
+
+            {/* Model Components */}
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Model Components</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {modelInfo.components.map((component, idx) => (
+                  <div key={idx} className="bg-slate-50 rounded-xl p-5 border border-slate-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-xl">
+                        {idx === 0 ? '📝' : idx === 1 ? '🖼️' : '🤖'}
+                      </div>
+                      <h4 className="font-bold text-slate-900">{component.name}</h4>
+                    </div>
+                    <p className="text-sm text-slate-700 mb-3">{component.purpose}</p>
+                    <div className="space-y-1 text-xs text-slate-600">
+                      <div className="flex justify-between">
+                        <span>Model:</span>
+                        <span className="font-medium">{component.model}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Parameters:</span>
+                        <span className="font-medium">{component.parameters}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Output:</span>
+                        <span className="font-medium">{component.output}</span>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
-            
-            <div className="bg-slate-50 rounded-2xl p-6">
-              <div className="text-sm font-medium text-slate-600 mb-4">Prediction Errors</div>
+
+            {/* Feature Importance */}
+            <div>
+              <h3 className="text-xl font-bold text-slate-900 mb-4">Feature Importance</h3>
               <div className="space-y-4">
-                <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-slate-700">RMSE</span>
-                    <span className="font-medium text-slate-900">142.3</span>
+                {Object.entries(modelInfo.features).map(([key, feature]) => (
+                  <div key={key} className="bg-white border border-slate-200 rounded-xl p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <div>
+                        <h4 className="font-bold text-slate-900 mb-1">{feature.description}</h4>
+                        <p className="text-sm text-slate-600">
+                          {feature.importance}% contribution to predictions
+                        </p>
+                      </div>
+                      <div className="text-3xl font-bold text-blue-600">{feature.importance}%</div>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-3 mb-3">
+                      <div
+                        className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full h-3"
+                        style={{ width: `${feature.importance}%` }}
+                      ></div>
+                    </div>
+                    <ul className="grid grid-cols-2 gap-2 text-sm text-slate-700">
+                      {feature.details.map((detail, idx) => (
+                        <li key={idx} className="flex items-start gap-2">
+                          <span className="text-blue-500 mt-0.5">•</span>
+                          <span>{detail}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <div className="w-full bg-slate-200 rounded-full h-2">
-                    <div className="bg-blue-500 rounded-full h-2" style={{ width: '75%' }}></div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* How It Works Tab */}
+        {activeTab === 'how-it-works' && (
+          <div className="space-y-6">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-blue-900 mb-2">Prediction Pipeline</h3>
+              <p className="text-sm text-blue-800">
+                Your video data goes through a 5-step process to generate accurate predictions
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {modelInfo.how_it_works.map((step, idx) => (
+                <div key={idx} className="flex gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                    {step.step}
+                  </div>
+                  <div className="flex-1 bg-slate-50 rounded-xl p-5 border border-slate-200">
+                    <h4 className="font-bold text-slate-900 mb-2">{step.title}</h4>
+                    <p className="text-sm text-slate-700">{step.description}</p>
                   </div>
                 </div>
+              ))}
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-purple-900 mb-3">Technical Details</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <div className="flex justify-between text-sm mb-1">
-                    <span className="text-slate-700">MAE</span>
-                    <span className="font-medium text-slate-900">89.7</span>
-                  </div>
-                  <div className="w-full bg-slate-200 rounded-full h-2">
-                    <div className="bg-purple-500 rounded-full h-2" style={{ width: '68%' }}></div>
-                  </div>
+                  <p className="font-semibold text-purple-900 mb-1">Input Dimensions</p>
+                  <p className="text-purple-800">1,294 features total</p>
+                  <ul className="mt-2 space-y-1 text-purple-700">
+                    <li>• 768 from BERT (text)</li>
+                    <li>• 512 from CNN (image)</li>
+                    <li>• 14 from metadata</li>
+                  </ul>
+                </div>
+                <div>
+                  <p className="font-semibold text-purple-900 mb-1">Processing Time</p>
+                  <p className="text-purple-800">~2-3 seconds per prediction</p>
+                  <ul className="mt-2 space-y-1 text-purple-700">
+                    <li>• BERT: ~1s</li>
+                    <li>• CNN: ~0.5s</li>
+                    <li>• XGBoost: ~0.1s</li>
+                  </ul>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Metrics Grid */}
-        <div className="mb-8">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Prediction Metrics</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {accuracyData.metrics.map((metric, index) => (
-              <div key={index} className="bg-white border border-slate-200 rounded-xl p-4 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="text-sm font-medium text-slate-700">{metric.label}</div>
-                  <div className={`text-xs px-2 py-1 rounded-full ${
-                    metric.trend === 'up' ? 'bg-green-100 text-green-800' :
-                    metric.trend === 'down' ? 'bg-red-100 text-red-800' :
-                    'bg-blue-100 text-blue-800'
-                  }`}>
-                    {metric.trend === 'up' ? '↑ Improving' : metric.trend === 'down' ? '↓ Declining' : '→ Stable'}
+        {/* Performance Tab */}
+        {activeTab === 'performance' && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {Object.entries(modelInfo.performance_metrics).map(([key, metric]) => (
+                <div key={key} className="bg-white border border-slate-200 rounded-xl p-6">
+                  <div className="text-sm font-medium text-slate-600 mb-2">
+                    {key.toUpperCase().replace('_', ' ')}
                   </div>
+                  <div className="text-3xl font-bold text-slate-900 mb-3">
+                    {typeof metric.value === 'number' && metric.value < 1
+                      ? (metric.value * 100).toFixed(1) + '%'
+                      : metric.value.toLocaleString()}
+                  </div>
+                  <p className="text-sm text-slate-700 mb-2">{metric.description}</p>
+                  <p className="text-xs text-blue-600 font-medium">{metric.interpretation}</p>
                 </div>
-                <div className="text-2xl font-bold text-slate-900">{metric.value}%</div>
-                <div className="w-full bg-slate-100 rounded-full h-2 mt-3">
-                  <div 
-                    className="bg-gradient-to-r from-blue-500 to-purple-500 rounded-full h-2"
-                    style={{ width: `${metric.value}%` }}
-                  ></div>
+              ))}
+            </div>
+
+            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
+              <h3 className="text-lg font-bold text-slate-900 mb-4">Training Details</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <p className="text-sm font-semibold text-slate-700 mb-2">Dataset</p>
+                  <ul className="space-y-2 text-sm text-slate-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500">•</span>
+                      <span>{modelInfo.training_details.dataset_size.toLocaleString()} videos</span>
+                    </li>
+                    {modelInfo.training_details.data_sources.map((source, idx) => (
+                      <li key={idx} className="flex items-start gap-2">
+                        <span className="text-blue-500">•</span>
+                        <span>{source}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-700 mb-2">Training Info</p>
+                  <ul className="space-y-2 text-sm text-slate-600">
+                    <li className="flex justify-between">
+                      <span>Validation Split:</span>
+                      <span className="font-medium">{modelInfo.training_details.validation_split}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span>Training Time:</span>
+                      <span className="font-medium">{modelInfo.training_details.training_time}</span>
+                    </li>
+                    <li className="flex justify-between">
+                      <span>Last Retrained:</span>
+                      <span className="font-medium">{modelInfo.training_details.last_retrained}</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
 
-        {/* Model Comparison */}
-        <div>
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Model Version Comparison</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-slate-200">
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">Version</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">Accuracy</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">Release Date</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">Status</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-slate-600">Change</th>
-                </tr>
-              </thead>
-              <tbody>
-                {accuracyData.modelComparison.map((model, index) => (
-                  <tr key={index} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                    <td className="py-3 px-4">
-                      <div className="font-medium text-slate-900">{model.version}</div>
-                      {index === 0 && <div className="text-xs text-blue-600 font-medium">Current</div>}
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className="font-bold text-slate-900">{model.accuracy}%</div>
-                    </td>
-                    <td className="py-3 px-4 text-slate-600">{model.date}</td>
-                    <td className="py-3 px-4">
-                      <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                        index === 0 ? 'bg-green-100 text-green-800' :
-                        'bg-slate-100 text-slate-800'
-                      }`}>
-                        {index === 0 ? 'Active' : 'Archived'}
-                      </div>
-                    </td>
-                    <td className="py-3 px-4">
-                      <div className={`inline-flex items-center text-sm font-medium ${
-                        index > 0 && model.accuracy > accuracyData.modelComparison[index - 1]?.accuracy
-                          ? 'text-green-600'
-                          : index > 0 ? 'text-red-600' : 'text-slate-600'
-                      }`}>
-                        {index > 0 ? (
-                          <>
-                            {model.accuracy > accuracyData.modelComparison[index - 1]?.accuracy ? '↑' : '↓'}
-                            {Math.abs(model.accuracy - accuracyData.modelComparison[index - 1]?.accuracy).toFixed(1)}%
-                          </>
-                        ) : '—'}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-green-900 mb-3">What This Means</h3>
+              <p className="text-sm text-green-800 mb-3">
+                An R² score of {(modelInfo.overview.accuracy_r2 * 100).toFixed(1)}% means the model is highly accurate at predicting video performance. 
+                For context:
+              </p>
+              <ul className="space-y-2 text-sm text-green-800">
+                <li className="flex items-start gap-2">
+                  <span className="text-green-600">•</span>
+                  <span>90-100%: Excellent prediction accuracy</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-600">•</span>
+                  <span>70-90%: Good prediction accuracy</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-green-600">•</span>
+                  <span>Below 70%: Limited prediction accuracy</span>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Limitations Tab */}
+        {activeTab === 'limitations' && (
+          <div className="space-y-6">
+            <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-orange-900 mb-2">Important Disclaimer</h3>
+              <p className="text-sm text-orange-800">
+                While the model is highly accurate, it's important to understand its limitations. 
+                Predictions are estimates based on historical data and cannot account for all variables.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              {modelInfo.limitations.map((limitation, idx) => (
+                <div key={idx} className="bg-white border border-slate-200 rounded-xl p-5">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-bold">
+                      !
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-slate-900 mb-2">{limitation.title}</h4>
+                      <p className="text-sm text-slate-700">{limitation.description}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-blue-900 mb-3">Ethical Considerations</h3>
+              <ul className="space-y-2 text-sm text-blue-800">
+                {modelInfo.ethical_considerations.map((consideration, idx) => (
+                  <li key={idx} className="flex items-start gap-2">
+                    <span className="text-blue-600 mt-0.5">✓</span>
+                    <span>{consideration}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-6">
+              <h3 className="text-lg font-bold text-purple-900 mb-3">Best Practices</h3>
+              <ul className="space-y-2 text-sm text-purple-800">
+                <li className="flex items-start gap-2">
+                  <span className="text-purple-600">•</span>
+                  <span>Use predictions as guidance, not absolute truth</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-purple-600">•</span>
+                  <span>Combine AI insights with your creative judgment</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-purple-600">•</span>
+                  <span>Test different approaches and learn from results</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-purple-600">•</span>
+                  <span>Focus on creating quality content first</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-purple-600">•</span>
+                  <span>Use personalized models for more accurate predictions</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

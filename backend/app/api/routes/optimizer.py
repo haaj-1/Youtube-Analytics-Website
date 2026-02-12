@@ -68,24 +68,9 @@ def generate_title_variations(base_title: str, category_id: int) -> List[str]:
     
     return list(dict.fromkeys(variations))[:10]
 
-def analyze_title_features(title: str) -> List[str]:
-    """Analyze title effectiveness"""
-    insights = []
-    
-    if re.search(r'\d+', title):
-        insights.append("✅ Contains numbers (+30% CTR)")
-    if len(title) >= 50 and len(title) <= 70:
-        insights.append("✅ Optimal length (50-70 chars)")
-    if any(word in title.lower() for word in ['beginner', 'easy', 'simple', 'quick']):
-        insights.append("✅ Beginner-friendly keywords (+20% views)")
-    if '2024' in title or '2025' in title:
-        insights.append("✅ Current year (signals freshness)")
-    
-    return insights
-
 @router.post("/optimize-title", response_model=TitleOptimizeResponse)
 async def optimize_title(request: TitleOptimizeRequest):
-    """Optimize video title by testing variations"""
+    """Optimize video title by testing variations with actual ML predictions"""
     try:
         from app.services.prediction_service import PredictionService
         predictor = PredictionService()
@@ -110,12 +95,13 @@ async def optimize_title(request: TitleOptimizeRequest):
             
             improvement = ((prediction['predicted_views'] - original_views) / original_views * 100) if original_views else 0
             
+            # No fake insights - let the predictions speak for themselves
             results.append(TitleVariation(
                 title=title,
                 predicted_views=prediction['predicted_views'],
                 improvement_percent=round(improvement, 1),
                 confidence=prediction['confidence_score'],
-                insights=analyze_title_features(title)
+                insights=[]  # Remove hardcoded assumptions
             ))
         
         results.sort(key=lambda x: x.predicted_views, reverse=True)
@@ -182,10 +168,22 @@ async def get_best_publish_time(category_id: int, subscriber_range: Optional[str
     """Find optimal publish time"""
     try:
         import pyodbc
+        import os
+        
+        database_url = os.getenv('DATABASE_URL')
+        if not database_url:
+            raise HTTPException(status_code=500, detail="Database configuration not found")
+        
+        # Parse the DATABASE_URL to extract server and database name
+        parts = database_url.split('/')
+        server = parts[2]
+        db_parts = parts[3].split('?')
+        database = db_parts[0]
+        
         conn_str = (
             "DRIVER={ODBC Driver 17 for SQL Server};"
-            "SERVER=LAPTOP-58649FBF;"
-            "DATABASE=prepost_analytics;"
+            f"SERVER={server};"
+            f"DATABASE={database};"
             "Trusted_Connection=yes;"
         )
         conn = pyodbc.connect(conn_str)
@@ -278,11 +276,22 @@ async def get_trending_keywords(category_id: int, limit: int = 20):
         import pyodbc
         from collections import Counter
         import re
+        import os
+        
+        database_url = os.getenv('DATABASE_URL')
+        if not database_url:
+            raise HTTPException(status_code=500, detail="Database configuration not found")
+        
+        # Parse the DATABASE_URL to extract server and database name
+        parts = database_url.split('/')
+        server = parts[2]
+        db_parts = parts[3].split('?')
+        database = db_parts[0]
         
         conn_str = (
             "DRIVER={ODBC Driver 17 for SQL Server};"
-            "SERVER=LAPTOP-58649FBF;"
-            "DATABASE=prepost_analytics;"
+            f"SERVER={server};"
+            f"DATABASE={database};"
             "Trusted_Connection=yes;"
         )
         conn = pyodbc.connect(conn_str)

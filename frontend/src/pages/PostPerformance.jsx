@@ -1,6 +1,6 @@
 // src/pages/PostPerformance.jsx
 import React from 'react';
-import PostPredictor from '../components/tools/PostPredictor/PostPredictor';
+import PostPredictorV2 from '../components/tools/PostPredictor/PostPredictorV2';
 
 const PostPerformancePage = () => {
   return (
@@ -16,9 +16,7 @@ const PostPerformancePage = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-10 py-8">
-        <div className="w-full flex flex-col lg:flex-row gap-8">
-          <PostPredictor />
-        </div>
+        <PostPredictorV2 />
       </div>
     </div>
   );

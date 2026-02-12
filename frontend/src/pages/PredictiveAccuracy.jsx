@@ -6,11 +6,11 @@ const PredictiveAccuracyPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Header - same style */}
-      <header className="bg-gradient-to-r from-red-50 to-red-100 border-b border-red-200 py-12 px-10">
+      <header className="bg-gradient-to-r from-blue-50 to-purple-100 border-b border-blue-200 py-12 px-10">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-red-900 mb-2">Predictive Accuracy</h1>
-          <p className="text-red-700">
-            Track and analyze the accuracy of our prediction models. See how well our algorithms perform over time.
+          <h1 className="text-3xl font-bold text-blue-900 mb-2">Model Transparency</h1>
+          <p className="text-blue-700">
+            Understanding how our AI works - model architecture, performance metrics, and limitations
           </p>
         </div>
       </header>

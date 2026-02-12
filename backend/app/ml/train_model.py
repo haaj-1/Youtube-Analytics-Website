@@ -16,13 +16,26 @@ from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
 import joblib
 import pyodbc
 from datetime import datetime
+import os
 
 # Database connection
 def get_db_connection():
+    """Get database connection from environment variable"""
+    database_url = os.getenv('DATABASE_URL')
+    if not database_url:
+        raise Exception("DATABASE_URL environment variable not found")
+    
+    # Parse the DATABASE_URL to extract server and database name
+    # Format: mssql+pyodbc://SERVER/DATABASE?driver=...
+    parts = database_url.split('/')
+    server = parts[2]
+    db_parts = parts[3].split('?')
+    database = db_parts[0]
+    
     conn_str = (
         "DRIVER={ODBC Driver 17 for SQL Server};"
-        "SERVER=LAPTOP-58649FBF;"
-        "DATABASE=prepost_analytics;"
+        f"SERVER={server};"
+        f"DATABASE={database};"
         "Trusted_Connection=yes;"
     )
     return pyodbc.connect(conn_str)

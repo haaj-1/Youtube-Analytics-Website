@@ -13,18 +13,14 @@ export default function PrivacyPolicy() {
           Privacy Policy
         </h1>
         <p className="text-gray-600 mb-10 text-lg">
-          PrePost Analytics is built for professional creators who value their
-          data integrity. This policy outlines how we maintain technical
-          precision while protecting your digital footprint.
+          PrePost Analytics helps YouTube creators predict video performance using machine learning. This policy explains how we handle your data with transparency and respect for your privacy.
         </p>
 
         <div className="h-px bg-gray-200 mb-10"></div>
 
         {/* Quote */}
         <blockquote className="border-l-4 border-green-200 pl-6 italic text-gray-700 mb-10 text-lg">
-          "Trust is the currency of the digital age. We don't just store data;
-          we safeguard your professional insights using enterprise-grade
-          security protocols."
+          "Your data stays yours. We don't store your videos or personal content - we only analyze public YouTube data through their official API to provide predictions."
         </blockquote>
 
         {/* Main Content */}
@@ -36,32 +32,31 @@ export default function PrivacyPolicy() {
               Data Collection
             </h2>
             <p className="text-gray-600 mb-6">
-              To provide advanced predictive analytics, we collect specific
-              technical metadata from your professional YouTube presence:
+              To provide video performance predictions and channel analytics, we access the following data through YouTube's official API:
             </p>
             <ul className="space-y-2 text-gray-600">
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">•</span>
-                Account profile metrics (Follower growth, category, bio text).
+                Channel information (name, subscriber count, video count)
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">•</span>
-                Historical post performance data (Likes, shares, saves, impressions).
+                Video metadata (title, description, thumbnail, category, duration)
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">•</span>
-                Temporal engagement patterns (Time of posting vs. audience activity).
+                Public performance metrics (views, likes, comments, publish date)
               </li>
               <li className="flex items-start">
                 <span className="text-green-600 mr-2">•</span>
-                Media type distribution (Reels vs. Carousel vs. Static Images).
+                Account email and profile information (for authentication only)
               </li>
             </ul>
 
             <div className="mt-8 p-6 bg-green-50 border-l-4 border-green-400 rounded-r-lg">
-              <h3 className="font-semibold text-green-800 mb-2">Technical Note</h3>
+              <h3 className="font-semibold text-green-800 mb-2">Important: No Data Storage</h3>
               <p className="text-green-700">
-                All collected data is anonymized and aggregated before being processed by our Machine Learning models to ensure individual post privacy during global trend training.
+                We do NOT store your videos, thumbnails, or channel data. All predictions are made in real-time using YouTube's public API. Only your account credentials (email, name) are stored for login purposes.
               </p>
             </div>
           </div>
@@ -149,8 +144,8 @@ export default function PrivacyPolicy() {
                   </div>
                 </div>
                 
-              {/* Email Request Form */}
-              <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                {/* Email Request Form */}
+                <div className="mt-6 p-4 bg-gray-50 rounded-lg border border-gray-200">
                 <h4 className="font-medium text-gray-900 mb-3">Request Data Deletion</h4>
                 
                 <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -267,59 +262,10 @@ export default function PrivacyPolicy() {
                   </div>
                 </div>
               </div>
-              </div>
-            
-              
-              {/* Data Portability Card */}
-              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg text-gray-900 mb-1">Data Portability</h3>
-                    <p className="text-gray-600 mb-3">
-                      Export your historical performance analysis in CSV or JSON format directly from your dashboard.
-                    </p>
-                    <button className="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-medium">
-                      <span>Export My Data</span>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Revoke Access Card */}
-              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-lg text-gray-900 mb-1">Revoke Access</h3>
-                    <p className="text-gray-600 mb-3">
-                      Disconnect your YouTube account instantly, which will trigger a secure wipe of all associated tokens.
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                      <button className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-lg font-medium transition-colors">
-                        Revoke YouTube Access
-                      </button>
-                      <button className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 rounded-lg font-medium transition-colors">
-                        Manage Connected Accounts
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
+      </div>
       </section>
     </div>
   );

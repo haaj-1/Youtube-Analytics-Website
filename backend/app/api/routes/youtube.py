@@ -36,3 +36,23 @@ async def get_trending_videos(request: Request, category_id: str = "0", max_resu
         return videos
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/search/channel")
+@limiter.limit("20/minute")
+async def search_channel(request: Request, q: str):
+    """Search for a YouTube channel by name"""
+    try:
+        results = await youtube_service.search_channel_by_name(q)
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/channel/{channel_id}/videos")
+@limiter.limit("20/minute")
+async def get_channel_videos(request: Request, channel_id: str, max_results: int = 5, page_token: str = None):
+    """Get recent videos from a channel with pagination support"""
+    try:
+        videos = await youtube_service.get_channel_videos(channel_id, max_results, page_token)
+        return videos
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

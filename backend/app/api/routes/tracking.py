@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 import pyodbc
+import os
 
 router = APIRouter()
 
@@ -16,13 +17,28 @@ class VideoTrackRequest(BaseModel):
     published_at: datetime
 
 def get_db_connection():
-    conn_str = (
-        "DRIVER={ODBC Driver 17 for SQL Server};"
-        "SERVER=LAPTOP-58649FBF;"
-        "DATABASE=prepost_analytics;"
-        "Trusted_Connection=yes;"
-    )
-    return pyodbc.connect(conn_str)
+    """Get database connection from environment variable"""
+    database_url = os.getenv('DATABASE_URL')
+    if not database_url:
+        raise HTTPException(status_code=500, detail="Database configuration not found")
+    
+    # Parse the DATABASE_URL to extract server and database name
+    # Format: mssql+pyodbc://SERVER/DATABASE?driver=...
+    try:
+        parts = database_url.split('/')
+        server = parts[2]
+        db_parts = parts[3].split('?')
+        database = db_parts[0]
+        
+        conn_str = (
+            "DRIVER={ODBC Driver 17 for SQL Server};"
+            f"SERVER={server};"
+            f"DATABASE={database};"
+            "Trusted_Connection=yes;"
+        )
+        return pyodbc.connect(conn_str)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Database connection error: {str(e)}")
 
 @router.post("/track-video")
 async def track_video_performance(request: VideoTrackRequest):
