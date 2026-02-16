@@ -4,7 +4,7 @@ export default function PrivacyPolicy() {
   return (
     <div className="max-w-7xl mx-auto px-6 mt-12 grid grid-cols-[260px_1fr] gap-10">
       <Sidebar
-        items={["Data Collection", "YouTube API", "Encryption", "User Rights"]}
+        items={["Data Collection", "YouTube API", "Encryption", "Deletion & Contact"]}
       />
 
       <section>
@@ -117,15 +117,11 @@ export default function PrivacyPolicy() {
             </div>
           </div>
 
-          {/* User Rights */}
-          <div id="user-rights" className="scroll-mt-24">
+          {/* Deletion & Contact */}
+          <div id="deletion-&-contact" className="scroll-mt-24">
             <h2 className="font-bold text-2xl mb-6 text-gray-900">
-              User Rights
+              Deletion & Contact
             </h2>
-            <p className="text-gray-600 mb-6">
-              You maintain full control over your data. Under GDPR and CCPA
-              guidelines, you have the following rights:
-            </p>
             
             <div className="space-y-8">
               {/* Right to Deletion Card */}
@@ -139,7 +135,7 @@ export default function PrivacyPolicy() {
                   <div>
                     <h3 className="font-semibold text-lg text-gray-900 mb-1">Right to Deletion</h3>
                     <p className="text-gray-600">
-                      You can request immediate and permanent deletion of all account data at any time.
+                      Contact us or request immediate and permanent deletion of all account data at any time.
                     </p>
                   </div>
                 </div>

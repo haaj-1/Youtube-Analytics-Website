@@ -6,6 +6,7 @@ from app.models.schemas import UserCreate, UserResponse
 from app.models.database_models import User
 from app.db.database import get_db
 from app.core.security import get_password_hash, verify_password, create_access_token
+from app.core.audit_logger import log_audit_event
 from google.oauth2 import id_token
 from google.auth.transport import requests
 from app.core.config import settings
@@ -58,6 +59,12 @@ async def register(user: UserCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(db_user)
         
+        # Log registration
+        log_audit_event(db_user.user_id, "register", {
+            "email": db_user.email,
+            "auth_provider": "local"
+        })
+        
         return {
             "id": db_user.user_id,
             "email": db_user.email,
@@ -82,6 +89,12 @@ async def login(credentials: LoginRequest, db: Session = Depends(get_db)):
         # Update last login
         user.last_login_at = datetime.utcnow()
         db.commit()
+        
+        # Log login event
+        log_audit_event(user.user_id, "login", {
+            "email": user.email,
+            "auth_provider": "local"
+        })
         
         # Create access token
         access_token = create_access_token(data={"sub": str(user.user_id), "email": user.email})
@@ -138,12 +151,24 @@ async def google_auth(auth_request: GoogleAuthRequest, db: Session = Depends(get
             db.commit()
             db.refresh(user)
             print(f"New user created: {email}")
+            
+            # Log registration
+            log_audit_event(user.user_id, "register", {
+                "email": email,
+                "auth_provider": "google"
+            })
         else:
             print(f"Existing user found: {email}")
         
         # Update last login
         user.last_login_at = datetime.utcnow()
         db.commit()
+        
+        # Log login event
+        log_audit_event(user.user_id, "login", {
+            "email": email,
+            "auth_provider": "google"
+        })
         
         # Create access token
         access_token = create_access_token(data={"sub": str(user.user_id), "email": user.email})

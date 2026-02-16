@@ -496,7 +496,7 @@ export default function AboutPage() {
               to="/signup"
               className="group h-14 px-8 bg-gradient-to-r from-red-500 to-blue-500 rounded font-bold hover:shadow-lg hover:shadow-red-500/50 transition-all flex items-center justify-center gap-2 text-white"
             >
-              <span>GET STARTED</span>
+              <span>Sign Up</span>
               <FiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link

@@ -1,4 +1,16 @@
-// src/components/GreenSidebar.jsx
+/**
+ * GreenSidebar Component
+ * 
+ * Main navigation sidebar for the application with red/burgundy theme.
+ * Features:
+ * - Collapsible sidebar with toggle button
+ * - Navigation links with icons and descriptions
+ * - Quick stats display (model accuracy, videos analyzed)
+ * - Responsive design with Chrome-specific compact mode
+ * 
+ * @param {boolean} isChrome - Enable compact mode for Chrome extension
+ */
+
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -6,7 +18,6 @@ import {
   FiTrendingUp, 
   FiMessageSquare, 
   FiClock,
-  FiHome,
   FiInfo,
   FiLogIn,
   FiUserPlus
@@ -15,9 +26,6 @@ import {
 export default function GreenSidebar({ isChrome = false }) {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
-
-  // Items that should use compact styling so the sidebar doesn't need to scroll
-  const compactItems = ['About', 'Login', 'Sign Up'];
 
   const navItems = [
     {
@@ -149,11 +157,11 @@ export default function GreenSidebar({ isChrome = false }) {
             <div className={isChrome ? 'space-y-1' : 'space-y-2'}>
               <div className={`flex justify-between ${isChrome ? 'text-xs' : 'text-sm'}`}>
                 <span className="text-red-200">Accuracy</span>
-                <span className="font-bold text-red-300">86.4%</span>
+                <span className="font-bold text-red-300">95.6%</span>
               </div>
               <div className={`flex justify-between ${isChrome ? 'text-xs' : 'text-sm'}`}>
-                <span className="text-red-200">Posts Analyzed</span>
-                <span className="font-bold text-red-300">2.4M</span>
+                <span className="text-red-200">Videos Analyzed</span>
+                <span className="font-bold text-red-300">52K</span>
               </div>
             </div>
           </div>

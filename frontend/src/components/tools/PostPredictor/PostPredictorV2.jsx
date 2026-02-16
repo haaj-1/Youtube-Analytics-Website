@@ -1,4 +1,24 @@
-// src/components/tools/PostPredictor/PostPredictorV2.jsx
+/**
+ * Post Predictor V2 Component
+ * 
+ * Main video performance prediction tool with comprehensive ML analysis.
+ * 
+ * Features:
+ * - 3-step wizard: Video Details → Advanced Options → Results
+ * - Global ML model (51,888 videos) or personalized channel model
+ * - Thumbnail comparison (A/B testing)
+ * - Confidence intervals with statistical ranges
+ * - Feature importance explanations (why predictions were made)
+ * - Similar video benchmarks from dataset
+ * - Seasonal trend adjustments
+ * - Live YouTube preview
+ * - Pro tips sidebar
+ * 
+ * Prediction Limits:
+ * - Non-logged-in users: 5 predictions per day
+ * - Logged-in users: Unlimited
+ */
+
 import React, { useState } from 'react';
 import './PostPredictor.css';
 
@@ -353,8 +373,10 @@ const PostPredictorV2 = () => {
             </button>
             
             <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🔒</span>
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+                </svg>
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Daily Limit Reached</h3>
               <p className="text-gray-600">
@@ -364,11 +386,15 @@ const PostPredictorV2 = () => {
             
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-3 text-sm text-gray-700">
-                <span className="text-green-500 text-xl">✓</span>
+                <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                </svg>
                 <span>Unlimited predictions</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-700">
-                <span className="text-green-500 text-xl">✓</span>
+                <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                </svg>
                 <span>Always free, no credit card required</span>
               </div>
             </div>
@@ -376,7 +402,7 @@ const PostPredictorV2 = () => {
             <div className="space-y-3">
               <a
                 href="/signup"
-                className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-center transition-colors"
+                className="block w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg text-center transition-colors"
               >
                 Create Account
               </a>
@@ -396,15 +422,17 @@ const PostPredictorV2 = () => {
       <div className="flex-1 lg:w-3/5">
         {/* Prediction Counter */}
         {predictionsRemaining < 999 && (
-          <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 rounded-xl flex items-center justify-between">
+          <div className="mb-4 p-4 bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">⚡</span>
+              <svg className="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd"/>
+              </svg>
               <div>
                 <p className="font-bold text-gray-900">
                   {predictionsRemaining} prediction{predictionsRemaining !== 1 ? 's' : ''} remaining today
                 </p>
                 <p className="text-sm text-gray-600">
-                  <a href="/signup" className="text-blue-600 hover:text-blue-700 font-semibold underline">
+                  <a href="/signup" className="text-red-600 hover:text-red-700 font-semibold underline">
                     Sign up
                   </a> for unlimited predictions
                 </p>
@@ -416,35 +444,35 @@ const PostPredictorV2 = () => {
         {/* Step Wizard */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
           {/* Step Indicator */}
-          <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-6">
+          <div className="bg-white p-6 border-b border-gray-200">
             <div className="flex items-center justify-between mb-4">
               {[1, 2, 3].map((step) => (
-                <div key={step} className="flex items-center flex-1">
+                <React.Fragment key={step}>
                   <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold transition-all ${
                     currentStep >= step 
-                      ? 'bg-white text-blue-600' 
-                      : 'bg-blue-400 text-white'
+                      ? 'bg-red-600 text-white' 
+                      : 'bg-gray-200 text-gray-500'
                   }`}>
                     {currentStep > step ? '✓' : step}
                   </div>
                   {step < 3 && (
                     <div className={`flex-1 h-1 mx-2 transition-all ${
-                      currentStep > step ? 'bg-white' : 'bg-blue-400'
+                      currentStep > step ? 'bg-red-600' : 'bg-gray-200'
                     }`} />
                   )}
-                </div>
+                </React.Fragment>
               ))}
             </div>
-            <div className="flex justify-between text-white text-sm font-medium">
-              <span className={currentStep === 1 ? 'font-bold' : 'opacity-75'}>Video Details</span>
-              <span className={currentStep === 2 ? 'font-bold' : 'opacity-75'}>Advanced Options</span>
-              <span className={currentStep === 3 ? 'font-bold' : 'opacity-75'}>Results</span>
+            <div className="flex justify-between text-gray-700 text-sm font-medium">
+              <span className={currentStep === 1 ? 'font-bold text-red-600' : ''}>Video Details</span>
+              <span className={currentStep === 2 ? 'font-bold text-red-600' : ''}>Advanced Options</span>
+              <span className={currentStep === 3 ? 'font-bold text-red-600' : ''}>Results</span>
             </div>
           </div>
 
           
           {/* Step Content */}
-          <div className="p-8">
+          <div className="p-8 bg-white">
             {/* Step 1: Video Details (Combined Basic Info + Content) */}
             {currentStep === 1 && (
               <div className="space-y-6">
@@ -456,7 +484,7 @@ const PostPredictorV2 = () => {
                 <div className="flex flex-col gap-2">
                   <label className="text-gray-900 text-base font-semibold">Video Title *</label>
                   <input 
-                    className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400" 
+                    className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all placeholder:text-gray-400" 
                     placeholder="e.g. 10 Python Tips for Beginners" 
                     type="text"
                     value={formData.title}
@@ -468,7 +496,7 @@ const PostPredictorV2 = () => {
                 <div className="flex flex-col gap-2">
                   <label className="text-gray-900 text-base font-semibold">Description *</label>
                   <textarea 
-                    className="w-full rounded-lg border border-gray-300 bg-white h-32 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400 resize-none" 
+                    className="w-full rounded-lg border border-gray-300 bg-white h-32 px-4 py-3 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all placeholder:text-gray-400 resize-none" 
                     placeholder="Describe your video content in detail..."
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
@@ -480,7 +508,7 @@ const PostPredictorV2 = () => {
                   <div className="flex flex-col gap-2">
                     <label className="text-gray-900 text-base font-semibold">Category</label>
                     <select 
-                      className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                      className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all"
                       value={formData.category_id}
                       onChange={(e) => handleInputChange('category_id', parseInt(e.target.value))}
                     >
@@ -493,7 +521,7 @@ const PostPredictorV2 = () => {
                   <div className="flex flex-col gap-2">
                     <label className="text-gray-900 text-base font-semibold">Subscriber Range</label>
                     <select 
-                      className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                      className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all"
                       value={SUBSCRIBER_RANGES.find(r => formData.subscriber_count >= r.min && formData.subscriber_count <= r.max)?.value || 10000}
                       onChange={(e) => handleInputChange('subscriber_count', parseInt(e.target.value))}
                     >
@@ -506,7 +534,7 @@ const PostPredictorV2 = () => {
                   <div className="flex flex-col gap-2">
                     <label className="text-gray-900 text-base font-semibold">Video Duration</label>
                     <input 
-                      className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
+                      className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all" 
                       type="number"
                       min="1"
                       value={formData.duration_seconds}
@@ -519,7 +547,7 @@ const PostPredictorV2 = () => {
                     <label className="text-gray-900 text-base font-semibold">Thumbnail</label>
                     <div className="flex gap-2">
                       <input 
-                        className="flex-1 rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400" 
+                        className="flex-1 rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all placeholder:text-gray-400" 
                         placeholder="URL or upload"
                         type="url"
                         value={formData.thumbnail_url}
@@ -563,22 +591,25 @@ const PostPredictorV2 = () => {
                 </div>
                 
                 {/* Personalized Model */}
-                <div className="p-6 bg-purple-50 border-2 border-purple-200 rounded-xl">
+                <div className="p-6 bg-red-50 border-2 border-red-200 rounded-xl">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-2xl">🎯</span>
-                    <h3 className="text-lg font-bold text-purple-900">Use My Channel Data</h3>
+                    <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                    </svg>
+                    <h3 className="text-lg font-bold text-red-900">Use My Channel Data</h3>
                   </div>
                   
                   {personalizedModel ? (
-                    <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xl">✓</span>
-                        <p className="font-bold text-green-900">Personalized Model Active</p>
+                        <svg className="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                        </svg>
+                        <p className="font-bold text-orange-900">Personalized Model Active</p>
                       </div>
-                      <div className="text-sm text-green-800 space-y-1">
+                      <div className="text-sm text-orange-800 space-y-1">
                         <p>Channel: {personalizedModel.stats.channel_name}</p>
                         <p>Trained on: {personalizedModel.stats.videos_analyzed} videos</p>
-                        <p>Model Accuracy: {personalizedModel.model_accuracy}</p>
                         <p>Your Avg Views: {formatNumber(personalizedModel.stats.avg_views)}</p>
                       </div>
                       <button
@@ -595,7 +626,7 @@ const PostPredictorV2 = () => {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      <p className="text-sm text-purple-700">
+                      <p className="text-sm text-red-700">
                         Train a personalized model using your channel's 40 most recent videos
                       </p>
                       
@@ -606,25 +637,25 @@ const PostPredictorV2 = () => {
                           value={channelName}
                           onChange={(e) => setChannelName(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && handleChannelSearch()}
-                          className="flex-1 rounded-lg border border-purple-300 bg-white h-12 px-4 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder:text-gray-400"
+                          className="flex-1 rounded-lg border border-red-300 bg-white h-12 px-4 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all placeholder:text-gray-400"
                         />
                         <button
                           type="button"
                           onClick={handleChannelSearch}
                           disabled={isSearchingChannel || isTrainingModel}
-                          className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                          className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                         >
                           {isSearchingChannel ? 'Searching...' : 'Search'}
                         </button>
                       </div>
                       
                       {isTrainingModel && (
-                        <div className="p-4 bg-white rounded-lg border border-purple-200">
+                        <div className="p-4 bg-white rounded-lg border border-red-200">
                           <div className="flex items-center gap-3">
-                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
                             <div>
-                              <p className="font-semibold text-purple-900">Training Your Personalized Model...</p>
-                              <p className="text-sm text-purple-700">Analyzing your 40 most recent videos</p>
+                              <p className="font-semibold text-red-900">Training Your Personalized Model...</p>
+                              <p className="text-sm text-red-700">Analyzing your 40 most recent videos</p>
                             </div>
                           </div>
                         </div>
@@ -632,12 +663,12 @@ const PostPredictorV2 = () => {
                       
                       {channelResults.length > 0 && (
                         <div className="space-y-2">
-                          <p className="text-sm font-semibold text-purple-900">Select your channel:</p>
+                          <p className="text-sm font-semibold text-red-900">Select your channel:</p>
                           {channelResults.map((channel, idx) => (
                             <div
                               key={idx}
                               onClick={() => handleChannelSelect(channel)}
-                              className="flex items-center gap-3 p-3 bg-white rounded-lg border border-purple-200 hover:border-purple-400 cursor-pointer transition-all"
+                              className="flex items-center gap-3 p-3 bg-white rounded-lg border border-red-200 hover:border-red-400 cursor-pointer transition-all"
                             >
                               <img
                                 src={channel.snippet.thumbnails.default.url}
@@ -658,16 +689,21 @@ const PostPredictorV2 = () => {
 
                 
                 {/* Thumbnail Comparison */}
-                <div className="p-6 bg-blue-50 border-2 border-blue-200 rounded-xl">
+                <div className="p-6 bg-coral-50 border-2 border-orange-200 rounded-xl">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-2xl">🎨</span>
-                    <h3 className="text-lg font-bold text-blue-900">Thumbnail Comparison</h3>
+                    <svg className="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
+                    </svg>
+                    <h3 className="text-lg font-bold text-orange-900">Thumbnail Comparison</h3>
                   </div>
-                  <p className="text-sm text-blue-700 mb-4">Upload 2-5 thumbnails to see which performs best</p>
+                  <p className="text-sm text-orange-700 mb-4">Upload 2-5 thumbnails to see which performs best</p>
                   
                   <div className="flex gap-3 mb-4">
-                    <label className="flex-1 px-4 py-3 bg-white hover:bg-blue-50 rounded-lg border-2 border-dashed border-blue-300 flex items-center justify-center cursor-pointer transition-colors font-medium text-blue-700">
-                      📁 Upload 2-5 Thumbnails
+                    <label className="flex-1 px-4 py-3 bg-white hover:bg-orange-50 rounded-lg border-2 border-dashed border-orange-300 flex items-center justify-center cursor-pointer transition-colors font-medium text-orange-700">
+                      <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z"/>
+                      </svg>
+                      Upload 2-5 Thumbnails
                       <input 
                         type="file" 
                         accept="image/*" 
@@ -682,7 +718,7 @@ const PostPredictorV2 = () => {
                         type="button"
                         onClick={handleCompareThumbnails}
                         disabled={isComparingThumbnails}
-                        className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                        className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                       >
                         {isComparingThumbnails ? 'Analyzing...' : 'Compare'}
                       </button>
@@ -690,16 +726,16 @@ const PostPredictorV2 = () => {
                   </div>
                   
                   {thumbnailFiles.length > 0 && (
-                    <p className="text-sm text-blue-700 mb-3">
+                    <p className="text-sm text-orange-700 mb-3">
                       {thumbnailFiles.length} thumbnail(s) selected
                     </p>
                   )}
                   
                   {thumbnailComparison && (
                     <div className="space-y-3">
-                      <div className="p-4 bg-white rounded-lg border border-blue-200">
-                        <h4 className="font-bold text-blue-900 mb-2">Best Thumbnail: #{thumbnailComparison.best_thumbnail}</h4>
-                        <p className="text-sm text-gray-700">Predicted Views: <span className="font-bold text-green-600">{formatNumber(thumbnailComparison.analysis.best_predicted_views)}</span></p>
+                      <div className="p-4 bg-white rounded-lg border border-orange-200">
+                        <h4 className="font-bold text-orange-900 mb-2">Best Thumbnail: #{thumbnailComparison.best_thumbnail}</h4>
+                        <p className="text-sm text-gray-700">Predicted Views: <span className="font-bold text-orange-600">{formatNumber(thumbnailComparison.analysis.best_predicted_views)}</span></p>
                       </div>
                       
                       {thumbnailComparison.thumbnails.slice(0, 3).map((thumb) => (
@@ -707,7 +743,7 @@ const PostPredictorV2 = () => {
                           key={thumb.thumbnail_id}
                           onClick={() => selectThumbnail(thumb)}
                           className={`flex gap-3 p-3 bg-white rounded-lg border-2 cursor-pointer transition-all hover:shadow-md ${
-                            thumb.rank === 1 ? 'border-green-500' : 'border-gray-300'
+                            thumb.rank === 1 ? 'border-orange-500' : 'border-gray-300'
                           }`}
                         >
                           <img 
@@ -719,7 +755,7 @@ const PostPredictorV2 = () => {
                             <p className="text-sm font-semibold">#{thumb.rank} - {formatNumber(thumb.predicted_views)} views</p>
                             <p className="text-xs text-gray-600">{(thumb.confidence_score * 100).toFixed(0)}% confidence</p>
                           </div>
-                          <button className="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium">
+                          <button className="px-3 py-1 bg-orange-600 hover:bg-orange-700 text-white rounded text-sm font-medium">
                             Select
                           </button>
                         </div>
@@ -744,7 +780,7 @@ const PostPredictorV2 = () => {
                   <button
                     onClick={handlePredict}
                     disabled={isLoading || !canProceedToStep(3)}
-                    className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-4 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {isLoading ? (
                       <>
@@ -753,7 +789,10 @@ const PostPredictorV2 = () => {
                       </>
                     ) : (
                       <>
-                        Generate Prediction ⚡
+                        Generate Prediction
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd"/>
+                        </svg>
                       </>
                     )}
                   </button>
@@ -766,65 +805,147 @@ const PostPredictorV2 = () => {
             {currentStep === 3 && predictions && (
               <div className="space-y-6">
                 <div className="text-center">
-                  <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-10 h-10 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
                   <h2 className="text-3xl font-bold text-gray-900 mb-2">Prediction Complete!</h2>
-                  <p className="text-gray-600">Here's what our AI predicts for your video</p>
+                  <p className="text-gray-600">Here's what the models predict for your video</p>
                 </div>
                 
-                {/* Main Metrics */}
+                {/* Main Metrics with Confidence Interval */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-xl border-2 border-blue-200">
-                    <p className="text-sm font-medium text-blue-700 mb-2">Predicted Views</p>
-                    <h3 className="text-4xl font-bold text-blue-900 mb-3">{formatNumber(predictions.predicted_views)}</h3>
-                    <div className="flex items-center gap-2 text-blue-600">
-                      <span className="text-sm font-bold">{(predictions.confidence_score * 100).toFixed(0)}% Confidence</span>
-                    </div>
+                  <div className="bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl border-2 border-red-200">
+                    <p className="text-sm font-medium text-red-700 mb-2">Predicted Views</p>
+                    <h3 className="text-4xl font-bold text-red-900 mb-3">{formatNumber(predictions.predicted_views)}</h3>
+                    {predictions.confidence_interval && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2 text-red-600">
+                          <span className="text-sm font-bold">{(predictions.confidence_score * 100).toFixed(0)}% Model Accuracy</span>
+                        </div>
+                        <div className="text-xs text-red-700 bg-red-50 p-2 rounded">
+                          <p className="font-semibold mb-1">{predictions.confidence_interval.confidence_level} Confidence Range:</p>
+                          <p>{predictions.confidence_interval.range_description}</p>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border-2 border-purple-200">
-                    <p className="text-sm font-medium text-purple-700 mb-2">
+                  <div className="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl border-2 border-orange-200">
+                    <p className="text-sm font-medium text-orange-700 mb-2">
                       {predictions.model_type === 'personalized' ? 'Your Channel' : 'Subscriber Range'}
                     </p>
-                    <h3 className="text-2xl font-bold text-purple-900 mb-3">
+                    <h3 className="text-2xl font-bold text-orange-900 mb-3">
                       {predictions.model_type === 'personalized' 
                         ? predictions.channel_stats.channel_name 
                         : predictions.subscriber_range}
                     </h3>
-                    <div className="flex items-center gap-2 text-purple-600">
+                    <div className="flex items-center gap-2 text-orange-600">
                       <span className="text-sm font-bold">
                         {predictions.model_type === 'personalized' ? 'Personalized Model' : 'Global Model'}
                       </span>
                     </div>
+                    {predictions.seasonal_factor && predictions.seasonal_factor !== 1.0 && (
+                      <div className="mt-2 text-xs text-orange-700">
+                        <span className="font-semibold">Seasonal Boost:</span> {((predictions.seasonal_factor - 1) * 100).toFixed(0)}%
+                      </div>
+                    )}
                   </div>
                 </div>
                 
+                {/* Feature Importance - NEW */}
+                {predictions.feature_importance && predictions.feature_importance.length > 0 && (
+                  <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 rounded-xl border-2 border-blue-200">
+                    <h4 className="font-bold text-blue-900 mb-4 flex items-center gap-2">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                      </svg>
+                      Why This Prediction?
+                    </h4>
+                    <div className="space-y-3">
+                      {predictions.feature_importance.map((feature, idx) => (
+                        <div key={idx} className="flex items-start gap-3 bg-white p-3 rounded-lg">
+                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                            feature.impact === 'high' ? 'bg-green-100 text-green-700' :
+                            feature.impact === 'medium' ? 'bg-blue-100 text-blue-700' :
+                            feature.impact === 'negative' ? 'bg-red-100 text-red-700' :
+                            'bg-gray-100 text-gray-700'
+                          }`}>
+                            {feature.impact === 'high' ? '↑' : feature.impact === 'negative' ? '↓' : '•'}
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="font-semibold text-gray-900">{feature.factor}</p>
+                              <span className={`text-sm font-bold ${
+                                feature.impact === 'high' ? 'text-green-600' :
+                                feature.impact === 'medium' ? 'text-blue-600' :
+                                feature.impact === 'negative' ? 'text-red-600' :
+                                'text-gray-600'
+                              }`}>
+                                {feature.impact_percent}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-600">{feature.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Similar Videos - NEW */}
+                {predictions.similar_videos && predictions.similar_videos.count > 0 && (
+                  <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-6 rounded-xl border-2 border-purple-200">
+                    <h4 className="font-bold text-purple-900 mb-4 flex items-center gap-2">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+                      </svg>
+                      Similar Videos in Dataset
+                    </h4>
+                    <p className="text-sm text-purple-700 mb-3">
+                      Based on {predictions.similar_videos.count} videos with "{predictions.similar_videos.keyword}" in our training data
+                    </p>
+                    <div className="space-y-2 mb-4">
+                      {predictions.similar_videos.videos.slice(0, 3).map((video, idx) => (
+                        <div key={idx} className="flex items-center justify-between bg-white p-3 rounded-lg text-sm">
+                          <p className="text-gray-700 flex-1 mr-3">{video.title}</p>
+                          <span className="font-bold text-purple-900">{video.views_formatted}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="bg-purple-100 p-3 rounded-lg">
+                      <p className="text-sm text-purple-900">
+                        <span className="font-bold">Average for similar videos:</span> {predictions.similar_videos.average_views_formatted} views
+                      </p>
+                    </div>
+                  </div>
+                )}
+                
                 {/* Engagement Estimates */}
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-6 rounded-xl border-2 border-green-200">
-                  <h4 className="font-bold text-green-900 mb-4">
+                <div className="bg-gradient-to-br from-orange-50 to-coral-50 p-6 rounded-xl border-2 border-orange-200">
+                  <h4 className="font-bold text-orange-900 mb-4">
                     Estimated Engagement
                   </h4>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center">
                       <p className="text-sm text-gray-600 mb-1">Likes</p>
-                      <p className="text-2xl font-bold text-green-900">
+                      <p className="text-2xl font-bold text-orange-900">
                         {formatNumber(Math.round(predictions.predicted_views * 0.04))}
                       </p>
                       <p className="text-xs text-gray-500">~4% of views</p>
                     </div>
                     <div className="text-center">
                       <p className="text-sm text-gray-600 mb-1">Comments</p>
-                      <p className="text-2xl font-bold text-green-900">
+                      <p className="text-2xl font-bold text-orange-900">
                         {formatNumber(Math.round(predictions.predicted_views * 0.005))}
                       </p>
                       <p className="text-xs text-gray-500">~0.5% of views</p>
                     </div>
                     <div className="text-center">
                       <p className="text-sm text-gray-600 mb-1">Engagement Rate</p>
-                      <p className="text-2xl font-bold text-green-900">4.5%</p>
+                      <p className="text-2xl font-bold text-orange-900">4.5%</p>
                       <p className="text-xs text-gray-500">Industry avg</p>
                     </div>
                   </div>
@@ -884,16 +1005,16 @@ const PostPredictorV2 = () => {
                 </div>
                 
                 {predictions.model_type === 'personalized' && (
-                  <div className="p-6 bg-green-50 border-2 border-green-200 rounded-xl">
-                    <h4 className="font-bold text-green-900 mb-3">vs Your Channel Performance</h4>
+                  <div className="p-6 bg-orange-50 border-2 border-orange-200 rounded-xl">
+                    <h4 className="font-bold text-orange-900 mb-3">vs Your Channel Performance</h4>
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <p className="text-gray-600">vs Average:</p>
-                        <p className="text-lg font-bold text-green-900">{predictions.comparison.vs_channel_avg}</p>
+                        <p className="text-lg font-bold text-orange-900">{predictions.comparison.vs_channel_avg}</p>
                       </div>
                       <div>
                         <p className="text-gray-600">vs Median:</p>
-                        <p className="text-lg font-bold text-green-900">{predictions.comparison.vs_channel_median}</p>
+                        <p className="text-lg font-bold text-orange-900">{predictions.comparison.vs_channel_median}</p>
                       </div>
                     </div>
                   </div>
@@ -920,7 +1041,7 @@ const PostPredictorV2 = () => {
                   </button>
                   <button
                     onClick={() => setCurrentStep(2)}
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-lg transition-all"
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-lg transition-all"
                   >
                     Adjust & Rerun
                   </button>
@@ -939,7 +1060,9 @@ const PostPredictorV2 = () => {
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden sticky top-6">
             <div className="bg-gradient-to-r from-red-500 to-red-600 p-4">
               <h3 className="text-white font-bold flex items-center gap-2">
-                <span className="text-xl">▶️</span>
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"/>
+                </svg>
                 Live Preview
               </h3>
             </div>
@@ -1015,10 +1138,10 @@ const PostPredictorV2 = () => {
 
         
         {/* Pro Tips */}
-        <div className="bg-green-50 border border-green-200 rounded-xl overflow-hidden">
-          <div className="bg-green-100 p-4 border-b border-green-200">
-            <h3 className="font-bold text-green-900 flex items-center gap-2">
-              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-beige-50 border border-orange-200 rounded-xl overflow-hidden">
+          <div className="bg-orange-100 p-4 border-b border-orange-200">
+            <h3 className="font-bold text-orange-900 flex items-center gap-2">
+              <svg className="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
               </svg>
               Pro Tips: CTR Optimization
@@ -1028,18 +1151,18 @@ const PostPredictorV2 = () => {
           <div className="p-6 space-y-4 text-sm text-gray-700 max-h-96 overflow-y-auto">
             <div>
               <p className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
                 </svg>
                 Thumbnail Design
               </p>
               <ul className="space-y-2 ml-4">
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
+                  <span className="text-orange-500 mt-0.5">•</span>
                   <span>High contrast thumbnails grab attention — orange, red, and green beat muted blues and grays</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
+                  <span className="text-orange-500 mt-0.5">•</span>
                   <span>Video thumbnails with clear imagery can increase CTR by 200-300% vs text-only</span>
                 </li>
               </ul>
@@ -1047,18 +1170,18 @@ const PostPredictorV2 = () => {
             
             <div>
               <p className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
                 </svg>
                 Titles & Headlines
               </p>
               <ul className="space-y-2 ml-4">
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
+                  <span className="text-orange-500 mt-0.5">•</span>
                   <span>Titles with numbers perform 36% better — try "7 Proven Ways" instead of "Tips for Better Results"</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
+                  <span className="text-orange-500 mt-0.5">•</span>
                   <span>Words like "unlock," "boost," "transform" trigger curiosity and action</span>
                 </li>
               </ul>
@@ -1066,14 +1189,14 @@ const PostPredictorV2 = () => {
             
             <div>
               <p className="font-semibold text-gray-900 mb-2 flex items-center gap-2">
-                <svg className="w-4 h-4 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-coral-600" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd"/>
                 </svg>
                 Urgency & Mobile
               </p>
               <ul className="space-y-2 ml-4">
                 <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
+                  <span className="text-orange-500 mt-0.5">•</span>
                   <span>60%+ of views are mobile — ensure thumbnail text is readable on phone screens</span>
                 </li>
               </ul>
@@ -1098,7 +1221,7 @@ const PostPredictorV2 = () => {
               </ul>
             </div>
             
-            <div className="pt-3 border-t border-green-200">
+            <div className="pt-3 border-t border-orange-200">
               <p className="text-xs text-gray-600 italic">
                 Source: Vashkevich, K. (2025, October 1). Proven Tactics to Improve CTR. RedTrack.
               </p>

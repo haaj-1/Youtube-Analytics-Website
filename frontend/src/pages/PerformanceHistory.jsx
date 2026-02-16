@@ -4,7 +4,7 @@ import PerformanceHistory from '../components/tools/PerformanceHistory/Performan
 
 const PerformanceHistoryPage = () => {
   return (
-    <div className="min-h-screen bg-slate-bg antialiased">
+    <div className="min-h-screen bg-white antialiased">
       {/* Header - same style but with different background */}
       <header className="bg-gradient-to-r from-red-50 to-red-100 border-b border-red-200 py-12 px-10">
         <div className="max-w-7xl mx-auto">

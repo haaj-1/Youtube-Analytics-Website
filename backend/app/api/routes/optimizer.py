@@ -19,6 +19,10 @@ class TitleVariation(BaseModel):
     improvement_percent: float
     confidence: float
     insights: List[str]
+    confidence_interval: Optional[dict] = None
+    feature_importance: Optional[List[dict]] = None
+    similar_videos: Optional[dict] = None
+    seasonal_factor: Optional[float] = None
 
 class TitleOptimizeResponse(BaseModel):
     original_views: int
@@ -90,18 +94,29 @@ async def optimize_title(request: TitleOptimizeRequest):
                 duration_seconds=request.duration_seconds
             )
             
+            # Filter out thumbnail-related factors for NLP Caption Optimizer
+            if prediction.get('feature_importance'):
+                prediction['feature_importance'] = [
+                    f for f in prediction['feature_importance'] 
+                    if f.get('type') != 'thumbnail'
+                ]
+            
             if idx == 0:
                 original_views = prediction['predicted_views']
             
             improvement = ((prediction['predicted_views'] - original_views) / original_views * 100) if original_views else 0
             
-            # No fake insights - let the predictions speak for themselves
+            # Pass through all new prediction fields
             results.append(TitleVariation(
                 title=title,
                 predicted_views=prediction['predicted_views'],
                 improvement_percent=round(improvement, 1),
                 confidence=prediction['confidence_score'],
-                insights=[]  # Remove hardcoded assumptions
+                insights=[],  # Remove hardcoded assumptions
+                confidence_interval=prediction.get('confidence_interval'),
+                feature_importance=prediction.get('feature_importance'),
+                similar_videos=prediction.get('similar_videos'),
+                seasonal_factor=prediction.get('seasonal_factor')
             ))
         
         results.sort(key=lambda x: x.predicted_views, reverse=True)

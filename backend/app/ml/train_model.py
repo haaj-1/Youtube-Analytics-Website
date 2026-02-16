@@ -6,6 +6,7 @@ import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from transformers import BertTokenizer, BertModel
 from torchvision import models, transforms
+from torchvision.models import ResNet18_Weights
 from PIL import Image
 import requests
 from io import BytesIO
@@ -17,6 +18,11 @@ import joblib
 import pyodbc
 from datetime import datetime
 import os
+import warnings
+
+# Suppress specific warnings
+warnings.filterwarnings('ignore', category=FutureWarning, module='huggingface_hub')
+warnings.filterwarnings('ignore', category=UserWarning, module='transformers')
 
 # Database connection
 def get_db_connection():
@@ -63,8 +69,8 @@ def load_data():
 class ThumbnailCNN(nn.Module):
     def __init__(self, embedding_dim=512):
         super(ThumbnailCNN, self).__init__()
-        # Use pre-trained ResNet18
-        resnet = models.resnet18(pretrained=True)
+        # Use pre-trained ResNet18 with new weights syntax
+        resnet = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
         # Remove final classification layer
         self.features = nn.Sequential(*list(resnet.children())[:-1])
         # Add custom embedding layer

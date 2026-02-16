@@ -1,11 +1,12 @@
 // src/components/Sidebar.jsx
-import { FaDatabase, FaYoutube, FaLock, FaUser } from "react-icons/fa";
+import { FaDatabase, FaYoutube, FaLock, FaEnvelope } from "react-icons/fa";
 
 const iconMap = {
   "Data Collection": <FaDatabase className="w-5 h-5" />,
   "YouTube API": <FaYoutube className="w-5 h-5" />,
   "Encryption": <FaLock className="w-5 h-5" />,
-  "User Rights": <FaUser className="w-5 h-5" />,
+  "User Rights": <FaEnvelope className="w-5 h-5" />,
+  "Deletion & Contact": <FaEnvelope className="w-5 h-5" />,
 };
 
 export default function Sidebar({ items }) {
