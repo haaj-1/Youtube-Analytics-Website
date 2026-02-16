@@ -33,8 +33,6 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from app.api.routes import auth, youtube
-from app.core.config import settings
-from app.services.prediction_service import PredictionService
 import traceback
 
 print("\n" + "="*60)
@@ -58,29 +56,11 @@ print("="*50 + "\n")
 
 @app.on_event("startup")
 async def startup_event():
-    """
-    Load ML models when server starts (Performance Optimization)
-    
-    This loads models once at startup instead of on every request:
-    - XGBoost model (51,888 videos)
-    - BERT model (text embeddings)
-    - CNN model (thumbnail features)
-    - Encoders and scalers
-    
-    Performance: 5-10x faster predictions (0.5-1s vs 5-8s)
-    Trade-off: 15-20 second startup, ~2GB RAM usage
-    """
+    """Server startup - ML models disabled for minimal deployment"""
     print("\n" + "="*60)
-    print("SERVER STARTUP - LOADING ML MODELS")
+    print("SERVER STARTUP - MINIMAL MODE (NO ML)")
     print("="*60)
-    try:
-        prediction_service = PredictionService()
-        prediction_service.load_models()
-        print("✓ Server ready to accept prediction requests")
-    except Exception as e:
-        print(f"✗ ERROR loading models: {e}")
-        print("Server will start but predictions will fail")
-        traceback.print_exc()
+    print("✓ Server ready (auth + YouTube API only)")
     print("="*60 + "\n")
 
 @app.exception_handler(Exception)
