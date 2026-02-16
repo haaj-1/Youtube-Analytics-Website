@@ -1,230 +1,286 @@
 # PrePost Analytics
 
-YouTube video performance prediction platform using AI/ML.
+A full-stack YouTube analytics platform that predicts video performance before you hit publish. Built with machine learning to help content creators make data-driven decisions about their content strategy.
 
-## 🚀 Quick Start with Docker (Recommended)
+## What Does It Do?
+
+Ever wondered how your video will do before uploading it? PrePost Analytics uses AI to predict how your YouTube videos will perform based on your title, thumbnail, category, and channel size. It's like having a crystal ball for your content strategy.
+
+The platform analyzes patterns from thousands of successful videos and your own channel's performance to give you:
+- Predicted view counts
+- Expected engagement rates
+- Click-through rate estimates
+- Actionable recommendations to improve performance
+
+## Why I Built This
+
+As someone interested in both content creation and machine learning, I wanted to solve a problem: the uncertainty creators face when publishing content. This project combines my passion for AI with practical application. It shows how machine learning can help creators predict what would attract views and aid them with decision making. 
+
+## Key Features
+
+AI-Powered Predictions
+- Ensemble model combining XGBoost, BERT, and CNN
+- Trained on 51,888 YouTube videos
+- 95.6% R² accuracy on test data
+- Predictions in under 10 second
+
+Performance Analytics
+- Analyze channel's most recent videos
+- Identify what generated the most views
+- Track trends over time
+- Compare against similar channels
+
+Smart Recommendations
+- Title optimization suggestions
+- Thumbnail best practices
+- Category recommendations
+- Posting time insights
+
+Privacy-Focused
+- No permanent data storage
+- Real-time predictions only
+- Secure authentication with JWT
+- Google OAuth integration
+
+## Tech Stack
+
+The technology was deliberately chosen to balance performance and scalability,:
+
+Backend (Python)
+- **FastAPI**: Fast API framework with automatic documentation
+- **SQLAlchemy**: Database ORM for flexible data management
+- **PostgreSQL/SQL Server**: Relational database
+- **PyTorch & Transformers**: Deep learning for text analysis
+- **XGBoost**: Gradient boosting for numerical predictions
+- **Pillow**: Image processing for thumbnail analysis
+
+**Frontend (JavaScript)**
+- **React**: Component-based UI for maintainability
+- **Vite**: Lightning-fast build tool and dev server
+- **TailwindCSS**: Utility-first styling for development
+- **React Router**: Client-side routing
+
+**ML Pipeline**
+- **BERT**: Pre-trained language model for title embeddings
+- **CNN**: Convolutional neural network for thumbnail features
+- **XGBoost**: Ensemble model combining all features
+- **scikit-learn**: Data preprocessing and encoding
+
+**DevOps**
+- **Docker**: Containerization for consistent environments
+- **Render**: Backend hosting
+- **Vercel**: Frontend hosting
+- **Neon**: Serverless PostgreSQL
+
+## How It Works
+
+1. **Data Collection**: The model was trained on a dataset of 51,888 YouTube videos with their performance metrics
+2. **Feature Engineering**: Extracts features from title (BERT embeddings), thumbnail (CNN features), category, and subscriber count
+3. **Ensemble Prediction**: Combines three models for the final predictions
+4. **Real-time Analysis**: Processes the input and returns predictions in under a couple of seconds
+
+## Project Structure
+
+```
+prepost-analytics/
+├── backend/                 # FastAPI backend server
+│   ├── app/
+│   │   ├── api/            # API endpoints
+│   │   │   └── routes/     # Auth, predictions, analytics
+│   │   ├── core/           # Configuration and security
+│   │   ├── db/             # Database connection
+│   │   ├── ml/             # Machine learning models
+│   │   │   └── models/     # Trained model files
+│   │   ├── models/         # Pydantic schemas
+│   │   └── services/       # Business logic
+│   ├── requirements.txt    # Python dependencies
+│   └── run.py             # Server entry point
+│
+├── frontend/               # React frontend
+│   ├── src/
+│   │   ├── components/    # Reusable UI components
+│   │   ├── pages/         # Page components
+│   │   └── services/      # API integration
+│   ├── package.json       # Node dependencies
+│   └── vite.config.js     # Build configuration
+│
+├── sql/                   # Database schemas
+│   └── postgresql_schema.sql
+│
+└── DEPLOYMENT.md          # Deployment guide
+```
+
+## Getting Started
 
 ### Prerequisites
-- Docker Desktop installed
-- SQL Server running (local or remote)
 
-### Setup
+- Python 3.12 or higher
+- Node.js 18 or higher
+- PostgreSQL or SQL Server
+- YouTube Data API key
+- Google OAuth credentials (optional)
 
-1. **Clone the repository**
+### Local Development Setup
+
+**1. Clone the repository**
 ```bash
-git clone <your-repo-url>
-cd prepost-analytics
+git clone https://github.com/haaj-1/PrePostTube-Analytics.git
+cd PrePostTube-Analytics
 ```
 
-2. **Configure environment variables**
-```bash
-# Copy example file
-cp .env.example .env
-
-# Edit .env and add your keys:
-# - SECRET_KEY (generate with: python -c "import secrets; print(secrets.token_urlsafe(32))")
-# - YOUTUBE_API_KEY
-# - GOOGLE_CLIENT_ID
-# - GOOGLE_CLIENT_SECRET
-```
-
-3. **Start with Docker**
-```bash
-# Windows PowerShell
-.\start-docker.ps1
-
-# Or manually
-docker-compose up --build
-```
-
-4. **Access the application**
-- Frontend: http://localhost
-- Backend API: http://localhost:5000
-- API Docs: http://localhost:5000/docs
-
-### Stop the application
-```bash
-docker-compose down
-```
-
-## 📖 Documentation
-
-- [Docker Deployment Guide](README-DOCKER.md) - Complete Docker setup and troubleshooting
-- [Backend README](backend/README.md) - Backend API documentation
-
-## 🛠️ Manual Setup (Without Docker)
-
-### Backend Setup
-
+**2. Backend Setup**
 ```bash
 cd backend
 
-# Create virtual environment with Python 3.12
-py -3.12 -m venv venv
-.\venv\Scripts\activate
+# Create virtual environment
+python -m venv venv
+.\venv\Scripts\activate  # Windows
+source venv/bin/activate  # Mac/Linux
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Configure .env file
+# Configure environment
 cp .env.example .env
-# Edit .env with your keys
+# Edit .env with your API keys and database URL
 
-# Run server
+# Run the server
 python run.py
 ```
 
-### Frontend Setup
+The backend will start at `http://localhost:5000`
 
+**3. Frontend Setup**
 ```bash
 cd frontend
 
 # Install dependencies
 npm install
 
-# Configure .env file
+# Configure environment
 cp .env.example .env
-# Edit .env with your keys
+# Edit .env with your API keys
 
 # Run development server
 npm run dev
 ```
 
-## 🏗️ Project Structure
+The frontend will start at `http://localhost:5173`
 
-```
-prepost-analytics/
-├── backend/              # FastAPI backend
-│   ├── app/
-│   │   ├── api/         # API routes
-│   │   ├── core/        # Configuration
-│   │   ├── db/          # Database
-│   │   ├── ml/          # ML models
-│   │   ├── models/      # Data models
-│   │   └── services/    # Business logic
-│   ├── Dockerfile
-│   └── requirements.txt
-├── frontend/            # React frontend
-│   ├── src/
-│   │   ├── components/  # React components
-│   │   ├── pages/       # Page components
-│   │   └── services/    # API services
-│   ├── Dockerfile
-│   └── package.json
-├── sql/                 # Database schemas
-├── docker-compose.yml   # Docker orchestration
-└── README-DOCKER.md     # Docker guide
-```
+### Environment Variables
 
-## 🎯 Features
-
-- **AI-Powered Predictions**: XGBoost + BERT + CNN ensemble model (95.6% R² accuracy)
-- **Performance Analytics**: Analyze 100 most recent videos
-- **Personalized Models**: Train on your channel's 40 recent videos
-- **CTR Optimization**: Pro tips and recommendations
-- **Privacy First**: No data storage, real-time predictions
-
-## 📊 Tech Stack
-
-**Backend:**
-- FastAPI (Python 3.12)
-- XGBoost, BERT, CNN
-- SQL Server
-- PyTorch, Transformers
-
-**Frontend:**
-- React + Vite
-- TailwindCSS
-- React Router
-
-**DevOps:**
-- Docker & Docker Compose
-- Nginx
-- Multi-stage builds
-
-## 🔧 Development
-
-### Run in development mode with hot reload
-
-```bash
-docker-compose -f docker-compose.dev.yml up
-```
-
-### Run tests
-
-```bash
-# Backend tests
-cd backend
-pytest
-
-# Frontend tests
-cd frontend
-npm test
-```
-
-## 📝 Environment Variables
-
-### Backend (.env)
+**Backend (.env)**
 ```env
-DATABASE_URL=mssql+pyodbc://localhost/prepost_analytics?driver=ODBC+Driver+18+for+SQL+Server
-SECRET_KEY=your-secret-key
+DATABASE_URL=postgresql://user:password@localhost/prepost_analytics
+SECRET_KEY=your-secret-key-here
 YOUTUBE_API_KEY=your-youtube-api-key
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
+MODEL_PATH=./app/ml/models
 ```
 
-### Frontend (.env)
+**Frontend (.env)**
 ```env
 VITE_YOUTUBE_API_KEY=your-youtube-api-key
 VITE_GOOGLE_CLIENT_ID=your-google-client-id
 VITE_ML_API_URL=http://localhost:5000
 ```
 
-## 🐛 Troubleshooting
+## Deployment
 
-### Docker Issues
+The app is currently deployed with a free-tier stack:
 
-**Backend won't start:**
-```bash
-# Check logs
-docker-compose logs backend
+- **Frontend**: Vercel (free forever)
+- **Backend**: Render (free tier, ML features disabled)
+- **Database**: Neon PostgreSQL (free tier)
 
-# Common fix: Database connection
-# Use host.docker.internal instead of localhost in DATABASE_URL
-```
+**Note**: The free deployment runs without ML prediction features due to memory constraints. For the future to access full ML functionality, I'll have to upgrade to Render's Starter plan ($7/month) or run locally.
 
-**Frontend build fails:**
-```bash
-# Rebuild without cache
-docker-compose build --no-cache frontend
-```
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
-**Port conflicts:**
-```bash
-# Check what's using the port
-netstat -ano | findstr :5000
-netstat -ano | findstr :80
-```
+## ML Model Details
 
-### Manual Setup Issues
+The prediction system uses an ensemble approach:
 
-**Python package errors:**
-- Ensure you're using Python 3.12
-- Try: `pip install --upgrade pip`
-- Use virtual environment
+**1. Text Analysis (BERT)**
+- Processes video titles to understand semantic meaning
+- Generates 768-dimensional embeddings
+- Captures context and sentiment
 
-**Node module errors:**
-- Delete `node_modules` and `package-lock.json`
-- Run `npm install` again
+**2. Image Analysis (CNN)**
+- Analyzes thumbnail visual features
+- Extracts color patterns, composition, and text presence
+- Generates feature vectors for prediction
 
-## 📄 License
+**3. Ensemble Model (XGBoost)**
+- Combines BERT embeddings, CNN features, category, and subscriber count
+- Gradient boosting for robust predictions
+- Handles non-linear relationships
 
-MIT License
+**Performance Metrics:**
+- R² Score: 95.6%
+- Mean Absolute Error: ~12% of actual views
+- Prediction Time: 0.5-1 second
 
-## 🤝 Contributing
+## Challenges & Solutions
 
-Contributions welcome! Please read the contributing guidelines first.
+**Challenge 1: Model Size**
+- Problem: ML models (2GB+) too large for free hosting
+- Solution: Created minimal deployment without ML, full version for local/paid hosting
 
-## 📧 Support
+**Challenge 2: Cold Starts**
+- Problem: Loading models on each request took 5-8 seconds
+- Solution: Load models once at startup, reducing prediction time to <1 second
 
-For issues or questions, please open a GitHub issue.
+**Challenge 3: Database Compatibility**
+- Problem: SQL Server (local) vs PostgreSQL (production)
+- Solution: SQLAlchemy ORM for database-agnostic code
+
+**Challenge 4: Python 3.14 Compatibility**
+- Problem: Render used Python 3.14, incompatible with some libraries
+- Solution: Upgraded SQLAlchemy and switched to psycopg3
+
+## What I Learned
+
+- Building production-ready ML applications requires different considerations than research projects
+- Free tier hosting has real constraints that affect architecture decisions
+- Database migrations and compatibility matter more than I initially thought
+- User authentication and security are complex but essential
+
+## Future Improvements
+
+- [ ] Historical A/B test tracking and analytics
+- [ ] Implement video scheduling recommendations
+- [ ] Add competitor analysis features
+- [ ] Create mobile app version
+- [ ] Expand to other platforms (TikTok, Instagram)
+- [ ] Add real-time trend analysis
+
+## Contributing
+
+Contributions are welcome! Whether it's bug fixes, feature additions, or documentation improvements, I appreciate any help.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Dataset sourced from Kaggle's YouTube trending videos
+- BERT model from Hugging Face Transformers
+
+## Contact
+
+Have questions or want to collaborate? Feel free to reach out!
+
+- GitHub: [@haaj-1](https://github.com/haaj-1)
+- Project Link: [https://github.com/haaj-1/PrePostTube-Analytics](https://github.com/haaj-1/PrePostTube-Analytics)
+- Live Demo: [https://prepost-analytics.vercel.app](https://prepost-analytics.vercel.app)
+
+---
