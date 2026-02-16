@@ -3,15 +3,13 @@ services:
   - type: web
     name: prepost-backend
     env: python
-    region: oregon
+    region: frankfurt
     plan: free
-    buildCommand: "cd backend && pip install -r requirements.txt"
+    buildCommand: "cd backend && pip install -r requirements-minimal.txt"
     startCommand: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: prepost-db
-          property: connectionString
+        sync: false
       - key: SECRET_KEY
         generateValue: true
       - key: ALGORITHM
@@ -26,9 +24,3 @@ services:
         sync: false
       - key: MODEL_PATH
         value: ./app/ml/models
-
-databases:
-  - name: prepost-db
-    databaseName: prepost_analytics
-    plan: free
-    postgresMajorVersion: 15

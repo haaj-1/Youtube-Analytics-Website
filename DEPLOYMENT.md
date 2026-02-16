@@ -1,34 +1,34 @@
-# Deployment Guide - Free Hosting
+# Deployment Guide - 100% Free Hosting
 
 ## Stack
-- **Frontend**: Vercel (Free)
-- **Backend**: Render (Free tier - 512MB RAM)
-- **Database**: Render PostgreSQL (Free 90 days, then $7/month)
+- **Frontend**: Vercel (Free forever)
+- **Backend**: Render (Free forever - 512MB RAM, sleeps after 15min)
+- **Database**: Neon PostgreSQL (Free forever - 0.5GB)
 
 ## Prerequisites
 1. GitHub account
 2. Vercel account (sign up at vercel.com)
 3. Render account (sign up at render.com)
+4. Neon account (sign up at neon.tech)
 
 ---
 
-## Step 1: Deploy Database (Render)
+## Step 1: Deploy Database (Neon)
 
-1. Go to [Render Dashboard](https://dashboard.render.com/)
-2. Click **New +** → **PostgreSQL**
+1. Go to [Neon Console](https://console.neon.tech/)
+2. Click **Create a project**
 3. Configure:
-   - **Name**: `prepost-db`
-   - **Database**: `prepost_analytics`
-   - **User**: (auto-generated)
-   - **Region**: Oregon (US West)
-   - **Plan**: Free
-4. Click **Create Database**
-5. Wait for database to provision (~2 minutes)
-6. Copy the **Internal Database URL** (starts with `postgresql://`)
-7. Connect to database using the provided connection string and run:
-   ```bash
-   psql <your-connection-string> < sql/postgresql_schema.sql
-   ```
+   - **Project name**: `prepost-analytics`
+   - **Database name**: `prepost_analytics`
+   - **Region**: **Frankfurt (EU Central)** - Closest to Qatar
+   - **PostgreSQL version**: 16 or 17
+4. Click **Create project**
+5. Copy the **Connection string** (starts with `postgresql://`)
+6. In the Neon dashboard, click **SQL Editor**
+7. Copy and paste the contents of `sql/postgresql_schema.sql` and run it
+   - This creates all tables and schemas
+
+**Note**: Save your connection string - you'll need it for the backend!
 
 ---
 
@@ -54,7 +54,7 @@
 3. Connect your GitHub repository
 4. Configure:
    - **Name**: `prepost-backend`
-   - **Region**: Oregon
+   - **Region**: Frankfurt (EU Central) - Same region as database
    - **Branch**: main
    - **Root Directory**: `backend`
    - **Runtime**: Python 3
@@ -62,13 +62,13 @@
    - **Start Command**: `uvicorn main:app --host 0.0.0.0 --port $PORT`
    - **Plan**: Free
 5. Add Environment Variables:
-   - `DATABASE_URL`: (Link to your PostgreSQL database)
-   - `SECRET_KEY`: (Generate with: `python -c "import secrets; print(secrets.token_urlsafe(32))"`)
+   - `DATABASE_URL`: Paste your Neon connection string
+   - `SECRET_KEY`: Generate with: `python -c "import secrets; print(secrets.token_urlsafe(32))"`
    - `ALGORITHM`: `HS256`
    - `ACCESS_TOKEN_EXPIRE_MINUTES`: `30`
-   - `YOUTUBE_API_KEY`: Your key
-   - `GOOGLE_CLIENT_ID`: Your client ID
-   - `GOOGLE_CLIENT_SECRET`: Your secret
+   - `YOUTUBE_API_KEY`: Your YouTube API key
+   - `GOOGLE_CLIENT_ID`: Your Google OAuth client ID
+   - `GOOGLE_CLIENT_SECRET`: Your Google OAuth secret
    - `MODEL_PATH`: `./app/ml/models`
 6. Click **Create Web Service**
 
@@ -128,11 +128,11 @@ After backend is deployed, update frontend environment variable:
 - First request after sleep takes ~30 seconds (cold start)
 - 750 hours/month (enough for one service)
 
-**PostgreSQL Free Tier:**
-- Free for 90 days
-- Then $7/month
-- 1GB storage
-- Automatic backups
+**Neon Free Tier:**
+- 0.5GB storage (enough for ~50,000-100,000 predictions)
+- Free forever
+- Autoscaling (scales to zero when not in use)
+- 1 project, unlimited databases
 
 **Vercel Free Tier:**
 - 100GB bandwidth/month
@@ -201,14 +201,13 @@ Railway offers $5 free credit/month:
 
 ## Cost Comparison
 
-| Platform | Free Tier | Paid (if needed) |
-|----------|-----------|------------------|
-| Vercel (Frontend) | Free forever | $20/month Pro |
-| Render (Backend) | Free forever* | $7/month Starter |
-| Render (PostgreSQL) | 90 days free | $7/month |
-| Railway (All) | $5 credit/month | $5-20/month usage |
+| Platform | Free Tier | Notes |
+|----------|-----------|-------|
+| Vercel (Frontend) | Free forever | 100GB bandwidth/month |
+| Render (Backend) | Free forever* | *Sleeps after 15min inactivity |
+| Neon (PostgreSQL) | Free forever | 0.5GB storage, autoscaling |
 
-*Free tier sleeps after 15min inactivity
+**Total Cost: $0/month forever!**
 
 ---
 
