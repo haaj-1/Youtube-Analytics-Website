@@ -32,7 +32,7 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from app.api.routes import auth, youtube, analytics
+from app.api.routes import auth, youtube
 from app.core.config import settings
 from app.services.prediction_service import PredictionService
 import traceback
@@ -126,7 +126,6 @@ app.add_middleware(
 # Register API routes
 app.include_router(auth.router, prefix="/auth", tags=["authentication"])
 app.include_router(youtube.router, prefix="/youtube", tags=["youtube"])
-app.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 
 @app.get("/")
 @limiter.limit("100/minute")
