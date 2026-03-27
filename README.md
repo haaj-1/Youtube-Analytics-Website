@@ -6,6 +6,8 @@ Built using machine learning models to help content creators make data-driven de
 
 Live Demo: prepost-analytics.vercel.app
 
+Note: The free deployment runs without ML prediction features due to memory constraints. To access full ML functionality, I would need to upgrade to Render's Starter plan, as right now, the ML prediction features only run locally.
+
 ---
 
 ## What Does It Do?
