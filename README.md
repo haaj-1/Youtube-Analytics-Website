@@ -4,9 +4,9 @@ A full-stack YouTube analytics platform that predicts video performance before y
 
 Built using machine learning models to help content creators make data-driven decisions about their content strategy.
 
-Live Demo: prepost-analytics.vercel.app
+- Live Demo: [prepost-analytics.vercel.app](https://prepost-analytics.vercel.app)
 
-Note: The free deployment runs without ML prediction features due to memory constraints. To access full ML functionality, I would need to upgrade to Render's Starter plan, as right now, the ML prediction features only run locally.
+> **Note:** The free deployment runs without ML prediction features due to memory constraints. To access full ML functionality, I would need to upgrade to Render's Starter plan, as right now the ML prediction features only run locally.
 
 ---
 
