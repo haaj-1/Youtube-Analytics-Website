@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Spline+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    -webkit-text-size-adjust: none;
+    -moz-text-size-adjust: none;
+    -ms-text-size-adjust: none;
+    text-size-adjust: none;
+    box-sizing: border-box;
+  }
+  html { font-family: 'Inter', system-ui, sans-serif; font-size: 16px; }
+  body {
+    @apply bg-white text-slate-900 antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    margin: 0; padding: 0;
+  }
+  h1,h2,h3,h4,h5,h6 { @apply font-semibold tracking-tight; }
+  .font-display { font-family: 'Spline Sans', sans-serif; }
+}
+
+@layer components {
+  .card { @apply bg-white rounded-2xl border border-slate-100 shadow-soft hover:shadow-md transition-shadow duration-200; }
+  .btn-primary { @apply bg-gradient-to-r from-red-600 to-red-500 text-white font-medium px-6 py-3 rounded-lg hover:shadow-lg transition-all duration-200; }
+  .btn-secondary { @apply bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium px-6 py-3 rounded-lg transition-colors duration-200; }
+  .shadow-soft { box-shadow: 0 10px 30px -10px rgba(0,0,0,0.04), 0 4px 10px -5px rgba(0,0,0,0.02); }
+  .bg-background-light { background-color: rgb(253 251 252); }
+}
+
+@keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+.animate-scroll { animation: scroll 20s linear infinite; }
+
+@keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.results-content { animation: fadeIn 0.4s ease-out; }

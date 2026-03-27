@@ -1,0 +1,447 @@
+/* src/components/tools/NLPCaptionLab/NLPCaptionLab.css */
+
+/* Base styles from your inspect */
+.bg-background-light {
+  background-color: rgb(253 251 252);
+}
+
+.font-display {
+  font-family: 'Spline Sans', sans-serif;
+}
+
+.text-slate-800 {
+  color: rgb(30 41 59);
+}
+
+/* Container styles */
+.nlp-container {
+  font-family: 'Inter', sans-serif;
+  background-color: white;
+  border-radius: 1rem;
+  border: 1px solid rgb(241 245 249);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.04), 
+              0 4px 10px -5px rgba(0, 0, 0, 0.02);
+}
+
+/* Header styles */
+.nlp-header {
+  border-bottom: 1px solid rgb(248 250 252);
+  padding: 1.5rem;
+}
+
+/* Textarea styles */
+.caption-textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 1rem;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.75rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  resize: vertical;
+  transition: all 0.2s ease;
+}
+
+.caption-textarea:focus {
+  outline: none;
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+.caption-textarea::placeholder {
+  color: rgb(148 163 184);
+}
+
+/* Character count */
+.char-count {
+  font-size: 0.75rem;
+  color: rgb(100 116 139);
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+/* Tab navigation */
+.nlp-tabs {
+  display: flex;
+  border-bottom: 1px solid rgb(226 232 240);
+}
+
+.nlp-tab {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(100 116 139);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.nlp-tab:hover {
+  color: rgb(30 41 59);
+}
+
+.nlp-tab.active {
+  color: #dc2626;
+  border-bottom-color: #dc2626;
+}
+
+/* Analysis cards */
+.analysis-card {
+  background-color: white;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: all 0.2s ease;
+}
+
+.analysis-card:hover {
+  border-color: rgb(203 213 225);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Sentiment meter */
+.sentiment-meter {
+  height: 0.5rem;
+  background-color: rgb(226 232 240);
+  border-radius: 9999px;
+  overflow: hidden;
+  display: flex;
+}
+
+.sentiment-segment {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.sentiment-positive {
+  background-color: rgb(34 197 94);
+}
+
+.sentiment-neutral {
+  background-color: rgb(59 130 246);
+}
+
+.sentiment-negative {
+  background-color: rgb(239 68 68);
+}
+
+/* Keyword chips */
+.keyword-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.375rem 0.75rem;
+  background-color: rgb(254 242 242);
+  color: rgb(153 27 27);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin: 0.125rem;
+  transition: all 0.2s ease;
+}
+
+.keyword-chip:hover {
+  background-color: rgb(252 226 226);
+  transform: translateY(-1px);
+}
+
+/* Hashtag suggestions */
+.hashtag-suggestion {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: rgb(241 245 249);
+  color: rgb(71 85 105);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0.25rem;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.hashtag-suggestion:hover {
+  background-color: rgb(254 242 242);
+  color: rgb(153 27 27);
+  border-color: rgb(252 165 165);
+}
+
+.hashtag-suggestion.selected {
+  background-color: rgb(220 38 38);
+  color: white;
+}
+
+/* Impact indicators */
+.impact-indicator {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem;
+  background-color: rgb(248 250 252);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.impact-indicator:hover {
+  background-color: rgb(241 245 249);
+  transform: translateX(4px);
+}
+
+.impact-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-right: 0.75rem;
+  min-width: 3rem;
+  text-align: center;
+}
+
+.impact-positive {
+  color: rgb(22 163 74);
+}
+
+.impact-negative {
+  color: rgb(239 68 68);
+}
+
+.impact-neutral {
+  color: rgb(100 116 139);
+}
+
+/* Alternative captions */
+.alternative-caption {
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.alternative-caption:hover {
+  border-color: #dc2626;
+  background-color: rgb(254 242 242);
+}
+
+.alternative-caption.selected {
+  border-color: #dc2626;
+  background-color: rgb(254 242 242);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+}
+
+/* Loading animation */
+.nlp-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.nlp-spinner {
+  width: 3rem;
+  height: 3rem;
+  border: 3px solid rgb(226 232 240);
+  border-top-color: #dc2626;
+  border-radius: 50%;
+  animation: nlp-spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes nlp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Empty state */
+.nlp-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: rgb(148 163 184);
+}
+
+.nlp-empty-icon {
+  width: 4rem;
+  height: 4rem;
+  margin-bottom: 1rem;
+  color: rgb(203 213 225);
+}
+
+/* Tone selector */
+.tone-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+}
+
+.tone-option {
+  padding: 0.5rem;
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.5rem;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tone-option:hover {
+  border-color: rgb(148 163 184);
+}
+
+.tone-option.selected {
+  border-color: #dc2626;
+  background-color: rgb(254 242 242);
+  color: #dc2626;
+}
+
+/* Score indicators */
+.score-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.score-bar {
+  flex: 1;
+  height: 0.5rem;
+  background-color: rgb(226 232 240);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin: 0 0.75rem;
+}
+
+.score-fill {
+  height: 100%;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+  transition: width 0.5s ease;
+}
+
+.score-value {
+  font-weight: 600;
+  min-width: 3rem;
+  text-align: right;
+}
+
+/* Category badges */
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  background-color: rgb(254 242 242);
+  color: rgb(153 27 27);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Copy button */
+.copy-button {
+  padding: 0.5rem 1rem;
+  background-color: rgb(241 245 249);
+  color: rgb(71 85 105);
+  border: 1px solid rgb(226 232 240);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copy-button:hover {
+  background-color: rgb(226 232 240);
+}
+
+.copy-button:active {
+  transform: scale(0.98);
+}
+
+/* Gradient backgrounds */
+.gradient-bg {
+  background: linear-gradient(135deg, 
+    rgba(220, 38, 38, 0.1), 
+    rgba(185, 28, 28, 0.1));
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .nlp-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .tone-selector {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .nlp-tabs {
+    flex-wrap: wrap;
+  }
+  
+  .nlp-tab {
+    flex: 1;
+    min-width: calc(50% - 0.5rem);
+    text-align: center;
+  }
+  
+  .tone-selector {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Tooltip for explanations */
+.explanation-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: help;
+  color: rgb(100 116 139);
+}
+
+.explanation-tooltip:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgb(15 23 42);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  z-index: 10;
+  max-width: 200px;
+  text-align: center;
+}
+
+/* Highlight for keywords in caption */
+.keyword-highlight {
+  background-color: rgba(255, 255, 0, 0.2);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+}
+
+/* Progress indicator for analysis */
+.analysis-progress {
+  width: 100%;
+  height: 0.25rem;
+  background-color: rgb(226 232 240);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.analysis-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #dc2626, #b91c1c);
+  border-radius: 9999px;
+  transition: width 0.3s ease;
+}

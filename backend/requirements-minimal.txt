@@ -1,0 +1,16 @@
+# Minimal requirements for deployment (without heavy ML libraries)
+# Use this if you want faster deploys and smaller container size
+
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlalchemy==2.0.36
+psycopg[binary]==3.3.2
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
+pydantic-settings==2.1.0
+slowapi==0.1.9
+google-auth==2.25.2
+google-auth-oauthlib==1.2.0
+google-auth-httplib2==0.2.0
+httpx==0.25.2

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PrePostTube Analytics</title>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <style>
+      * {
+        -webkit-text-size-adjust: 100%;
+        text-size-adjust: 100%;
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+    </style>
+    <script>
+      // Detect Chrome and apply zoom
+      if (window.chrome && !window.navigator.userAgent.includes('Edg')) {
+        document.documentElement.style.zoom = '0.8';
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
