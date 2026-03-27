@@ -120,8 +120,7 @@ prepost-analytics/
 │
 ├── sql/                   # Database schemas
 │   └── postgresql_schema.sql
-│
-└── DEPLOYMENT.md          # Deployment guide
+
 ```
 
 ---
@@ -215,8 +214,6 @@ The app is currently deployed with a free-tier stack:
 | Database | Neon PostgreSQL | Free tier |
 
 > **Note:** The free deployment runs without ML prediction features due to memory constraints. To access full ML functionality, I would need to upgrade to Render's Starter plan, as right now the ML prediction features only run locally.
-
-For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 
