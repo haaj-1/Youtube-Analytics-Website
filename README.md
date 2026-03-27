@@ -214,7 +214,7 @@ The app is currently deployed with a free-tier stack:
 | Backend | Render | Free tier, ML features disabled |
 | Database | Neon PostgreSQL | Free tier |
 
-> **Note:** The free deployment runs without ML prediction features due to memory constraints. To access full ML functionality, upgrade to Render's Starter plan ($7/month) or run locally.
+> **Note:** The free deployment runs without ML prediction features due to memory constraints. To access full ML functionality, I would need to upgrade to Render's Starter plan, as right now the ML prediction features only run locally.
 
 For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
@@ -264,15 +264,6 @@ For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md).
 **Python 3.14 Compatibility**
 - Problem: Render used Python 3.14, incompatible with some libraries
 - Solution: Upgraded SQLAlchemy and switched to psycopg3
-
----
-
-## What I Learned
-
-- Building production-ready ML applications requires different considerations than research projects
-- Free tier hosting has real constraints that affect architecture decisions
-- Database migrations and compatibility matter more than I initially thought
-- User authentication and security are complex but essential
 
 ---
 
