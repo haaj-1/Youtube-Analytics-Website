@@ -309,14 +309,5 @@ Contributions are welcome — bug fixes, feature additions, or documentation imp
 ## Contact
 
 - GitHub: [@haaj-1](https://github.com/haaj-1)
-<<<<<<< HEAD
 - Project: [PrePostTube-Analytics](https://github.com/haaj-1/PrePostTube-Analytics)
 - Live Demo: [prepost-analytics.vercel.app](https://prepost-analytics.vercel.app)
-=======
-- Project Link: [https://github.com/haaj-1/PrePostTube-Analytics](https://github.com/haaj-1/PrePostTube-Analytics)
-- Live Demo: [https://prepost-analytics.vercel.app](https://prepost-analytics.vercel.app)
-
----
-#
- 
->>>>>>> 24a7810542bc41dfaa2ae8c54c1655632427b1f1
