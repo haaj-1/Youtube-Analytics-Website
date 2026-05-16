@@ -106,9 +106,14 @@ def calculate_channel_analytics(videos, channel_info):
     total_views = sum(v['views'] for v in video_stats)
     total_likes = sum(v['likes'] for v in video_stats)
     total_comments = sum(v['comments'] for v in video_stats)
-    avg_views = np.mean([v['views'] for v in video_stats])
-    median_views = np.median([v['views'] for v in video_stats])
-    avg_engagement = np.mean([v['engagement_rate'] for v in video_stats])
+    views_list = [v['views'] for v in video_stats]
+    engagement_list = [v['engagement_rate'] for v in video_stats]
+    avg_views = sum(views_list) / len(views_list)
+    sorted_views = sorted(views_list)
+    n = len(sorted_views)
+    median_views = (sorted_views[n // 2] if n % 2 == 1
+                    else (sorted_views[n // 2 - 1] + sorted_views[n // 2]) / 2)
+    avg_engagement = sum(engagement_list) / len(engagement_list)
     
     # Find best performing videos
     top_videos = sorted(video_stats, key=lambda x: x['views'], reverse=True)[:5]
@@ -126,8 +131,8 @@ def calculate_channel_analytics(videos, channel_info):
     day_averages = {}
     for day, data in day_performance.items():
         day_averages[day] = {
-            'avg_views': np.mean(data['views']),
-            'avg_engagement': np.mean(data['engagement']),
+            'avg_views': sum(data['views']) / len(data['views']),
+            'avg_engagement': sum(data['engagement']) / len(data['engagement']),
             'video_count': len(data['views'])
         }
     
@@ -146,8 +151,8 @@ def calculate_channel_analytics(videos, channel_info):
     # Find best time range
     hour_averages = {
         hour: {
-            'avg_views': np.mean(data['views']),
-            'avg_engagement': np.mean(data['engagement']),
+            'avg_views': sum(data['views']) / len(data['views']),
+            'avg_engagement': sum(data['engagement']) / len(data['engagement']),
             'video_count': len(data['views'])
         }
         for hour, data in hour_performance.items()
@@ -173,7 +178,7 @@ def calculate_channel_analytics(videos, channel_info):
     
     duration_analysis = {
         key: {
-            'avg_views': np.mean(views) if views else 0,
+            'avg_views': sum(views) / len(views) if views else 0,
             'video_count': len(views)
         }
         for key, views in duration_ranges.items()
