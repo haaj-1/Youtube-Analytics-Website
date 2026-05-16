@@ -32,10 +32,19 @@ from fastapi.responses import JSONResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from app.api.routes import auth, predictions, optimizer, dashboard, thumbnail, youtube, analytics, model_info
+from app.api.routes import auth, dashboard, youtube, analytics, model_info
 from app.core.config import settings
-from app.services.prediction_service import PredictionService
 import traceback
+import os
+
+# Only import ML routes if ML libraries are available
+ML_AVAILABLE = False
+try:
+    from app.api.routes import predictions, optimizer, thumbnail
+    from app.services.prediction_service import PredictionService
+    ML_AVAILABLE = True
+except ImportError:
+    print("ML libraries not available - running in minimal mode")
 
 print("\n" + "="*60)
 print("LOADING CONFIGURATION")
@@ -58,18 +67,9 @@ print("="*50 + "\n")
 
 @app.on_event("startup")
 async def startup_event():
-    """
-    Load ML models when server starts (Performance Optimization)
-    
-    This loads models once at startup instead of on every request:
-    - XGBoost model (51,888 videos)
-    - BERT model (text embeddings)
-    - CNN model (thumbnail features)
-    - Encoders and scalers
-    
-    Performance: 5-10x faster predictions (0.5-1s vs 5-8s)
-    Trade-off: 15-20 second startup, ~2GB RAM usage
-    """
+    if not ML_AVAILABLE:
+        print("Skipping ML model loading - minimal mode")
+        return
     print("\n" + "="*60)
     print("SERVER STARTUP - LOADING ML MODELS")
     print("="*60)
@@ -79,7 +79,6 @@ async def startup_event():
         print("✓ Server ready to accept prediction requests")
     except Exception as e:
         print(f"✗ ERROR loading models: {e}")
-        print("Server will start but predictions will fail")
         traceback.print_exc()
     print("="*60 + "\n")
 
@@ -125,13 +124,16 @@ app.add_middleware(
 
 # Register API routes
 app.include_router(auth.router, prefix="/auth", tags=["authentication"])
-app.include_router(predictions.router, prefix="/predict", tags=["predictions"])
-app.include_router(optimizer.router, prefix="/optimizer", tags=["optimizer"])
 app.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
-app.include_router(thumbnail.router, prefix="/thumbnail", tags=["thumbnail"])
 app.include_router(youtube.router, prefix="/youtube", tags=["youtube"])
 app.include_router(analytics.router, prefix="/analytics", tags=["analytics"])
 app.include_router(model_info.router, prefix="/model", tags=["model"])
+
+# ML routes only available when ML libraries are installed
+if ML_AVAILABLE:
+    app.include_router(predictions.router, prefix="/predict", tags=["predictions"])
+    app.include_router(optimizer.router, prefix="/optimizer", tags=["optimizer"])
+    app.include_router(thumbnail.router, prefix="/thumbnail", tags=["thumbnail"])
 
 @app.get("/")
 @limiter.limit("100/minute")
