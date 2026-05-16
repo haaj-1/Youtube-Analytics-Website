@@ -1,25 +1,27 @@
 from fastapi import APIRouter, HTTPException
 from typing import List, Dict, Any
-import pyodbc
 from datetime import datetime, timedelta
 import os
+
+try:
+    import pyodbc
+    PYODBC_AVAILABLE = True
+except ImportError:
+    PYODBC_AVAILABLE = False
 
 router = APIRouter()
 
 def get_db_connection():
-    """Get database connection from environment variable"""
+    if not PYODBC_AVAILABLE:
+        raise HTTPException(status_code=503, detail="Dashboard requires SQL Server - not available in this deployment")
     database_url = os.getenv('DATABASE_URL')
     if not database_url:
         raise HTTPException(status_code=500, detail="Database configuration not found")
-    
-    # Parse the DATABASE_URL to extract server and database name
-    # Format: mssql+pyodbc://SERVER/DATABASE?driver=...
     try:
         parts = database_url.split('/')
         server = parts[2]
         db_parts = parts[3].split('?')
         database = db_parts[0]
-        
         conn_str = (
             "DRIVER={ODBC Driver 17 for SQL Server};"
             f"SERVER={server};"
