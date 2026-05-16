@@ -9,7 +9,11 @@ from torchvision import transforms
 from PIL import Image
 import requests
 from io import BytesIO
-import pyodbc
+try:
+    import pyodbc
+    PYODBC_AVAILABLE = True
+except ImportError:
+    PYODBC_AVAILABLE = False
 from datetime import datetime
 from collections import Counter
 
@@ -630,113 +634,257 @@ class PredictionService:
         return str(int(num))
 
     def train_personalized_model(self, videos, channel_info):
-        """Train a personalized model based on user's channel history - OPTIMIZED"""
+        """Train a personalized model - optimized for speed"""
         if not self.models_loaded:
             raise RuntimeError("Models not loaded. Server may still be starting up.")
-        
+
         if len(videos) < 5:
             raise ValueError("Need at least 5 videos to train personalized model")
-        
+
         print(f"Training personalized model on {len(videos)} videos...")
-        
-        # Extract features from all videos
-        X_list = []
-        y_list = []
-        
-        # Batch process text features for speed
+
         all_texts = []
         video_data = []
-        
-        # First pass: collect all data
+
         for video in videos:
             try:
                 title = video['snippet']['title']
                 description = video['snippet']['description']
-                thumbnail_url = video['snippet']['thumbnails'].get('high', {}).get('url', 
-                               video['snippet']['thumbnails']['default']['url'])
-                category_id = int(video['snippet']['categoryId'])
+                # Prefer medium thumbnail — smaller download, still enough for CNN
+                thumbs = video['snippet']['thumbnails']
+                thumbnail_url = (thumbs.get('medium') or thumbs.get('default', {})).get('url', '')
+                category_id = int(video['snippet'].get('categoryId', 24))
                 view_count = int(video['statistics']['viewCount'])
-                
-                # Parse duration
+
                 duration = video['contentDetails']['duration']
                 match = re.match(r'PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?', duration)
-                hours = int(match.group(1) or 0)
-                minutes = int(match.group(2) or 0)
-                seconds = int(match.group(3) or 0)
-                duration_seconds = hours * 3600 + minutes * 60 + seconds
-                
-                combined_text = f"{title} {description}"
-                all_texts.append(combined_text)
+                duration_seconds = (
+                    int(match.group(1) or 0) * 3600 +
+                    int(match.group(2) or 0) * 60 +
+                    int(match.group(3) or 0)
+                ) if match else 600
+
+                all_texts.append(f"{title} {description[:200]}")  # cap description length
                 video_data.append({
                     'thumbnail_url': thumbnail_url,
                     'category_id': category_id,
                     'view_count': view_count,
-                    'duration_seconds': duration_seconds
+                    'duration_seconds': duration_seconds,
                 })
-                
             except Exception as e:
-                print(f"Error parsing video: {e}")
+                print(f"Skipping video: {e}")
                 continue
-        
+
         if len(video_data) < 5:
             raise ValueError("Not enough valid videos to train model")
-        
-        print(f"Processing {len(video_data)} videos...")
-        
-        # Batch process BERT features (much faster)
-        print("Extracting text features (BERT)...")
-        text_features_batch = self._extract_text_features_batch(all_texts)
-        
-        # Process each video with pre-computed text features
-        print("Extracting thumbnail and metadata features...")
-        for idx, (text_features, data) in enumerate(zip(text_features_batch, video_data)):
+
+        # ── 1. Batch BERT (largest bottleneck) ────────────────────────────
+        print("Extracting text features (BERT batch)...")
+        text_features_batch = self._extract_text_features_batch(all_texts, batch_size=16)
+
+        # ── 2. Parallel thumbnail downloads ───────────────────────────────
+        print("Downloading thumbnails in parallel...")
+        thumbnail_urls = [d['thumbnail_url'] for d in video_data]
+        thumbnail_features_batch = self._extract_thumbnails_parallel(thumbnail_urls)
+
+        # ── 3. Build feature matrix ────────────────────────────────────────
+        X_list, y_list = [], []
+        subscriber_count = channel_info['subscriber_count']
+        subscriber_range = self.get_subscriber_range(subscriber_count)
+        log_subscribers = np.log1p(subscriber_count)
+
+        for text_features, thumb_features, data in zip(
+            text_features_batch, thumbnail_features_batch, video_data
+        ):
             try:
-                # Extract thumbnail features
-                thumbnail_features = self.extract_thumbnail_features(data['thumbnail_url'])
-                
-                subscriber_count = channel_info['subscriber_count']
-                subscriber_range = self.get_subscriber_range(subscriber_count)
                 category_encoded = self.category_encoder.transform([data['category_id']])[0]
                 subscriber_range_encoded = self.subscriber_encoder.transform([subscriber_range])[0]
-                
-                log_subscribers = np.log1p(subscriber_count)
                 log_duration = np.log1p(data['duration_seconds'])
-                
-                # Use average temporal features
+
                 numerical_features = np.array([
                     log_subscribers, log_duration, 0.02, 0.03, 0.005, 0.1,
                     category_encoded, subscriber_range_encoded,
-                    0, 0, 0, 0, 6, 0  # Average temporal features
+                    0, 0, 0, 0, 6, 0
                 ])
-                
                 numerical_features = self.scaler.transform(numerical_features.reshape(1, -1))[0]
-                X = np.concatenate([text_features, thumbnail_features, numerical_features])
-                
+                X = np.concatenate([text_features, thumb_features, numerical_features])
                 X_list.append(X)
                 y_list.append(np.log1p(data['view_count']))
-                
-                if (idx + 1) % 10 == 0:
-                    print(f"Processed {idx + 1}/{len(video_data)} videos...")
-                
             except Exception as e:
-                print(f"Error processing video {idx}: {e}")
+                print(f"Error building features: {e}")
                 continue
-        
+
         if len(X_list) < 5:
             raise ValueError("Not enough valid videos to train model")
-        
+
+        # ── 4. Train lightweight XGBoost ───────────────────────────────────
+        print(f"Training XGBoost on {len(X_list)} videos...")
+        import xgboost as xgb
+        X_train = np.array(X_list)
+        y_train = np.array(y_list)
+
+        self.personalized_model = xgb.XGBRegressor(
+            n_estimators=30,       # fast enough, still accurate
+            max_depth=3,
+            learning_rate=0.2,
+            subsample=0.8,
+            colsample_bytree=0.8,
+            random_state=42,
+            n_jobs=-1,
+            tree_method='hist',    # fastest CPU method
+        )
+        self.personalized_model.fit(X_train, y_train)
+
+        predictions_log = self.personalized_model.predict(X_train)
+        actual_views = [int(np.expm1(y)) for y in y_train]
+        predicted_views_list = [int(np.expm1(p)) for p in predictions_log]
+
+        from sklearn.metrics import r2_score, mean_absolute_percentage_error
+        r2 = r2_score(y_train, predictions_log)
+        mape = mean_absolute_percentage_error(actual_views, predicted_views_list)
+
+        self.personalized_stats = {
+            'videos_analyzed': len(X_list),
+            'r2_score': float(r2),
+            'mape': float(mape),
+            'avg_views': int(np.mean(actual_views)),
+            'median_views': int(np.median(actual_views)),
+            'channel_name': channel_info['title'],
+            'subscriber_count': subscriber_count,
+        }
+
+        print(f"✓ Personalized model trained on {len(X_list)} videos (R²={r2:.3f})")
+        return {
+            'success': True,
+            'message': f'Personalized model trained on {len(X_list)} videos',
+            'stats': self.personalized_stats,
+        }
+
+    def _extract_thumbnails_parallel(self, urls, max_workers=8):
+        """Download and extract CNN features for multiple thumbnails in parallel"""
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+
+        results = [None] * len(urls)
+
+        def process(idx_url):
+            idx, url = idx_url
+            return idx, self.extract_thumbnail_features(url)
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            futures = {executor.submit(process, (i, u)): i for i, u in enumerate(urls)}
+            for future in as_completed(futures):
+                try:
+                    idx, feat = future.result()
+                    results[idx] = feat
+                except Exception:
+                    results[futures[future]] = np.zeros(512)
+
+        # Fill any None slots
+        return [r if r is not None else np.zeros(512) for r in results]
+
+    def _DEAD_train_personalized_model_old(self, videos, channel_info):
+        """(kept for reference — replaced by optimized version above)"""
+        pass
+
+    def _extract_text_features_batch_ORIG(self, texts, batch_size=8):
+        # original kept below as _extract_text_features_batch
+        pass
+
+    def _noop(self):
+        # placeholder so the next real method parses correctly
+        pass
+
+    # ── real batch BERT (unchanged logic, just renamed back) ──────────────
+    def _extract_text_features_batch(self, texts, batch_size=16):
+        """Extract BERT features for multiple texts at once"""
+        all_embeddings = []
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i:i + batch_size]
+            inputs = self.tokenizer(
+                batch, return_tensors='pt', max_length=128,
+                truncation=True, padding='max_length'
+            )
+            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            with torch.no_grad():
+                outputs = self.bert_model(**inputs)
+                embeddings = outputs.last_hidden_state[:, 0, :].cpu().numpy()
+            all_embeddings.extend(embeddings)
+        return all_embeddings
+
+    def _PLACEHOLDER_train_end(self):
+        """marks end of replaced block"""
+        pass
+
+    def _train_personalized_model_feature_loop_REPLACED(self):
+        """
+        The old per-video loop that called extract_thumbnail_features one at a time
+        has been replaced by _extract_thumbnails_parallel above.
+        This stub prevents the old code from being parsed.
+        """
+        X_list = []
+        y_list = []
+        # old code removed — see train_personalized_model above
+        X_list.append(None)
+        y_list.append(None)
+        X_train = np.array(X_list)
+        y_train = np.array(y_list)
+        import xgboost as xgb
+        self.personalized_model = xgb.XGBRegressor(
+            n_estimators=50,
+            max_depth=4,
+            learning_rate=0.15,
+            random_state=42,
+            n_jobs=-1
+        )
+        self.personalized_model.fit(X_train, y_train)
+        predictions = self.personalized_model.predict(X_train)
+        actual_views = [int(np.expm1(y)) for y in y_train]
+        predicted_views = [int(np.expm1(p)) for p in predictions]
+        from sklearn.metrics import r2_score, mean_absolute_percentage_error
+        r2 = r2_score(y_train, predictions)
+        mape = mean_absolute_percentage_error(actual_views, predicted_views)
+        avg_views = np.mean(actual_views)
+        median_views = np.median(actual_views)
+        self.personalized_stats = {
+            'videos_analyzed': 0,
+            'r2_score': float(r2),
+            'mape': float(mape),
+            'avg_views': int(avg_views),
+            'median_views': int(median_views),
+            'channel_name': '',
+            'subscriber_count': 0
+        }
+        return {'success': True, 'message': '', 'stats': self.personalized_stats}
+
+    def _extract_text_features_batch_OLD(self, texts, batch_size=8):
+        """old version — replaced by _extract_text_features_batch above"""
+        all_embeddings = []
+        for i in range(0, len(texts), batch_size):
+            batch_texts = texts[i:i + batch_size]
+            inputs = self.tokenizer(
+                batch_texts, return_tensors='pt', max_length=128,
+                truncation=True, padding='max_length'
+            )
+            inputs = {k: v.to(self.device) for k, v in inputs.items()}
+            with torch.no_grad():
+                outputs = self.bert_model(**inputs)
+                embeddings = outputs.last_hidden_state[:, 0, :].cpu().numpy()
+            all_embeddings.extend(embeddings)
+        return all_embeddings
+
+    def _train_personalized_xgboost(self, X_list, y_list):
+        """Train a smaller XGBoost model on personalized channel data"""
         print(f"Training XGBoost model on {len(X_list)} videos...")
         X_train = np.array(X_list)
         y_train = np.array(y_list)
-        
-        # Train a smaller, faster XGBoost model
+
         import xgboost as xgb
         self.personalized_model = xgb.XGBRegressor(
-            n_estimators=50,  # Reduced from 100 for speed
-            max_depth=4,      # Reduced from 6 for speed
-            learning_rate=0.15,  # Increased for faster convergence
+            n_estimators=50,
+            max_depth=4,
+            learning_rate=0.15,
             random_state=42,
-            n_jobs=-1  # Use all CPU cores
+            n_jobs=-1
         )
         self.personalized_model.fit(X_train, y_train)
         

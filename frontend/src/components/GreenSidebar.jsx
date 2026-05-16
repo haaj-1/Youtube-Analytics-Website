@@ -1,167 +1,112 @@
-/**
- * GreenSidebar Component
- * 
- * Main navigation sidebar for the application with red/burgundy theme.
- * Features:
- * - Collapsible sidebar with toggle button
- * - Navigation links with icons and descriptions
- * - Quick stats display (model accuracy, videos analyzed)
- * - Responsive design with Chrome-specific compact mode
- * 
- * @param {boolean} isChrome - Enable compact mode for Chrome extension
- */
-
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { 
-  FiBarChart2, 
-  FiTrendingUp, 
-  FiMessageSquare, 
-  FiClock,
-  FiInfo,
-  FiLogIn,
-  FiUserPlus
+import {
+  FiBarChart2, FiTrendingUp, FiClock,
+  FiInfo, FiLogIn, FiUserPlus,
+  FiChevronLeft, FiChevronRight
 } from 'react-icons/fi';
 
-export default function GreenSidebar({ isChrome = false }) {
+const navItems = [
+  { title: 'Tools', type: 'heading' },
+  { title: 'Video Predictor', path: '/post-performance', icon: <FiBarChart2 className="w-4 h-4" />, description: 'Predict engagement' },
+  { title: 'Model Accuracy', path: '/predictive-accuracy', icon: <FiTrendingUp className="w-4 h-4" />, description: 'Track performance' },
+  { title: 'History', path: '/performance-history', icon: <FiClock className="w-4 h-4" />, description: 'Historical analytics' },
+  { title: 'Other', type: 'heading' },
+  { title: 'About', path: '/about', icon: <FiInfo className="w-4 h-4" /> },
+  { title: 'Login', path: '/login', icon: <FiLogIn className="w-4 h-4" /> },
+  { title: 'Sign Up', path: '/signup', icon: <FiUserPlus className="w-4 h-4" /> },
+];
+
+export default function GreenSidebar() {
   const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  const navItems = [
-    {
-      title: "Tools",
-      type: "heading"
-    },
-    {
-      title: "Video Performance Predictor",
-      path: "/post-performance",
-      icon: <FiBarChart2 className="w-5 h-5" />,
-      description: "Predict YouTube engagement"
-    },
-    {
-      title: "Predictive Accuracy",
-      path: "/predictive-accuracy",
-      icon: <FiTrendingUp className="w-5 h-5" />,
-      description: "Track model performance"
-    },
-    {
-      title: "NLP Caption Optimizer",
-      path: "/nlp-caption",
-      icon: <FiMessageSquare className="w-5 h-5" />,
-      description: "Optimize captions with AI"
-    },
-    {
-      title: "Performance History",
-      path: "/performance-history",
-      icon: <FiClock className="w-5 h-5" />,
-      description: "View historical analytics"
-    },
-    {
-      title: "Other",
-      type: "heading"
-    },
-    {
-      title: "About",
-      path: "/about",
-      icon: <FiInfo className="w-5 h-5" />
-    },
-    {
-      title: "Login",
-      path: "/login",
-      icon: <FiLogIn className="w-5 h-5" />
-    },
-    {
-      title: "Sign Up",
-      path: "/signup",
-      icon: <FiUserPlus className="w-5 h-5" />
-    }
-  ];
-
   return (
-    <aside 
-      className={`fixed top-0 bottom-0 left-0 bg-gradient-to-b from-red-900 to-red-800 text-white min-h-screen h-full transition-all duration-300 ${isCollapsed ? 'w-16' : isChrome ? 'w-56' : 'w-64'} z-[9999]`}
+    <aside
+      className={`fixed top-0 bottom-0 left-0 min-h-screen h-full transition-all duration-300 z-[9999] ${isCollapsed ? 'w-16' : 'w-64'}`}
+      style={{ background: 'linear-gradient(180deg, #131b2e 0%, #0f1828 100%)', borderRight: '1px solid rgba(255,255,255,0.08)' }}
     >
-      <div className={`${isChrome ? 'p-4' : 'p-6'} h-full flex flex-col overflow-y-auto`}>
+      {/* Top glow */}
+      <div className="absolute top-0 left-0 right-0 h-32 pointer-events-none" style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(239,68,68,0.08) 0%, transparent 70%)' }} />
+
+      <div className="p-5 h-full flex flex-col relative">
         {/* Logo */}
-        <div className={`flex items-center gap-3 ${isChrome ? 'mb-4' : 'mb-8'} flex-shrink-0`}>
-          <div className={`${isChrome ? 'w-9 h-9 rounded-lg' : 'w-10 h-10 rounded-xl'} bg-gradient-to-br from-red-400 to-red-600 flex items-center justify-center flex-shrink-0`}>
-            <span className={`text-white font-bold ${isChrome ? 'text-base' : 'text-lg'}`}>P</span>
+        <div className="flex items-center gap-3 mb-7 flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center flex-shrink-0 shadow-lg shadow-red-500/30">
+            <span className="text-white font-bold text-base">P</span>
           </div>
           {!isCollapsed && (
             <div className="flex flex-col">
-              <span className={`font-bold ${isChrome ? 'text-lg' : 'text-xl'}`}>PrePost</span>
-              <span className={`text-xs text-red-300 ${isChrome ? '-mt-0.5' : '-mt-1'}`}>Analytics</span>
+              <span className="font-bold text-white text-lg leading-tight">PrePost</span>
+              <span className="text-[10px] text-red-400 font-mono tracking-wider">ANALYTICS</span>
             </div>
           )}
         </div>
 
-        {/* Toggle Button */}
+        {/* Collapse toggle */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className={`absolute -right-3 ${isChrome ? 'top-4' : 'top-6'} w-6 h-6 bg-red-700 rounded-full flex items-center justify-center text-white hover:bg-red-600 transition-colors z-10`}
+          className="absolute -right-3 top-6 w-6 h-6 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+          style={{ background: '#1a2035', border: '1px solid rgba(255,255,255,0.1)' }}
         >
-          {isCollapsed ? '→' : '←'}
+          {isCollapsed ? <FiChevronRight className="w-3 h-3" /> : <FiChevronLeft className="w-3 h-3" />}
         </button>
 
-        {/* Navigation */}
+        {/* Nav */}
         <div className="flex-1 min-h-0 mb-3">
-          <nav className={isChrome ? 'space-y-1' : 'space-y-2'}>
+          <nav className="space-y-0.5">
             {navItems.map((item, index) => {
               if (item.type === 'heading') {
                 return !isCollapsed && (
-                  <div key={index} className={isChrome ? 'pt-2.5 pb-1' : 'pt-4'}>
-                    <h3 className={`text-xs font-semibold text-red-300 uppercase tracking-wider ${isChrome ? 'px-2' : 'px-3'}`}>
-                      {item.title}
-                    </h3>
+                  <div key={index} className="pt-4 pb-1">
+                    <h3 className="text-[10px] font-semibold text-slate-600 uppercase tracking-widest px-3">{item.title}</h3>
                   </div>
                 );
               }
 
-              const isActive = location.pathname === item.path || 
-                              (item.path === '/' && location.pathname === '/');
+              const isActive = location.pathname === item.path;
 
               return (
                 <Link
                   key={index}
                   to={item.path}
-                  className={`flex items-center ${isChrome ? 'gap-2.5 p-2.5 rounded-lg' : 'gap-3 p-3 rounded-xl'} transition-all ${
-                    isActive 
-                      ? 'bg-red-700 text-white' 
-                      : 'hover:bg-red-700/50 text-red-100'
-                  }`}
                   title={isCollapsed ? item.title : ''}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group border ${
+                    isActive
+                      ? 'bg-red-500/10 border-red-500/20 text-white'
+                      : 'text-slate-500 hover:text-slate-200 hover:bg-white/5 border-transparent'
+                  }`}
                 >
-                  <span className={`${isActive ? 'text-red-300' : 'text-red-400'}`}>
+                  <span className={`flex-shrink-0 transition-colors ${isActive ? 'text-red-400' : 'text-slate-600 group-hover:text-slate-400'}`}>
                     {item.icon}
                   </span>
                   {!isCollapsed && (
                     <div className="flex-1 min-w-0">
-                      <div className={`font-medium ${isChrome ? 'text-sm leading-snug' : 'text-base leading-tight'}`}>{item.title}</div>
+                      <div className="text-sm font-medium leading-tight">{item.title}</div>
                       {item.description && (
-                        <div className={`${isChrome ? 'text-xs mt-1 leading-snug' : 'text-sm mt-0.5 leading-tight'} text-red-300`}>
-                          {item.description}
-                        </div>
+                        <div className="text-xs mt-0.5 text-slate-600 leading-tight">{item.description}</div>
                       )}
                     </div>
                   )}
+                  {isActive && !isCollapsed && <div className="w-1 h-1 rounded-full bg-red-400 flex-shrink-0" />}
                 </Link>
               );
             })}
           </nav>
         </div>
 
-        {/* Stats (Only when expanded) */}
+        {/* Stats */}
         {!isCollapsed && (
-          <div className={`${isChrome ? 'p-3 rounded-lg' : 'p-4 rounded-xl'} bg-red-800/50 flex-shrink-0`}>
-            <div className="text-xs text-red-300 mb-2">Quick Stats</div>
-            <div className={isChrome ? 'space-y-1' : 'space-y-2'}>
-              <div className={`flex justify-between ${isChrome ? 'text-xs' : 'text-sm'}`}>
-                <span className="text-red-200">Accuracy</span>
-                <span className="font-bold text-red-300">95.6%</span>
+          <div className="p-4 rounded-xl flex-shrink-0" style={{ background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.1)' }}>
+            <div className="text-[10px] text-slate-600 uppercase tracking-widest mb-2 font-mono">Quick Stats</div>
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Accuracy</span>
+                <span className="font-bold text-red-400 font-mono">95.6%</span>
               </div>
-              <div className={`flex justify-between ${isChrome ? 'text-xs' : 'text-sm'}`}>
-                <span className="text-red-200">Videos Analyzed</span>
-                <span className="font-bold text-red-300">52K</span>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">Videos</span>
+                <span className="font-bold text-red-400 font-mono">52K</span>
               </div>
             </div>
           </div>

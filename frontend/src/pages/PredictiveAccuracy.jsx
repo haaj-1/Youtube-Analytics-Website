@@ -1,16 +1,17 @@
-// src/pages/PredictiveAccuracy.jsx
 import React from 'react';
 import AccuracyDashboard from '../components/tools/AccuracyDashboard/AccuracyDashboard';
 
 const PredictiveAccuracyPage = () => {
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header - same style */}
-      <header className="bg-gradient-to-r from-red-50 to-orange-100 border-b border-red-200 py-12 px-10">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-red-900 mb-2">Model Transparency</h1>
-          <p className="text-red-700">
-            Understanding how our AI works - model architecture, performance metrics, and limitations
+    <div className="min-h-screen" style={{ background: '#0d1220', color: '#e2e8f0' }}>
+      <header className="px-10 py-10 relative overflow-hidden" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at 0% 50%, rgba(239,68,68,0.07) 0%, transparent 60%)'
+        }} />
+        <div className="max-w-7xl mx-auto relative">
+          <h1 className="text-2xl font-bold text-white mb-1">Predictive Accuracy</h1>
+          <p className="text-slate-500 text-sm">
+            Model architecture, performance metrics, and limitations — fully transparent.
           </p>
         </div>
       </header>

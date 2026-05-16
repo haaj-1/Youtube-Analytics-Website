@@ -1,5 +1,5 @@
 services:
-  # Backend API
+  # Main API (auth, YouTube, analytics) - lightweight, no ML
   - type: web
     name: prepost-backend
     env: python
@@ -24,3 +24,6 @@ services:
         sync: false
       - key: MODEL_PATH
         value: ./app/ml/models
+      # URL of the HF Spaces ML service
+      - key: ML_SERVICE_URL
+        sync: false

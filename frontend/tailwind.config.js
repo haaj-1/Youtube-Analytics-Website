@@ -64,9 +64,10 @@ export default {
         '88': '22rem',
       },
       boxShadow: {
-        // Add soft shadow
-        'soft': '0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 4px 10px -5px rgba(0, 0, 0, 0.02)',
-        'medium': '0 20px 40px -15px rgba(0, 0, 0, 0.1)',
+        'soft': '0 10px 30px -10px rgba(0, 0, 0, 0.4), 0 4px 10px -5px rgba(0, 0, 0, 0.2)',
+        'medium': '0 20px 40px -15px rgba(0, 0, 0, 0.4)',
+        'glow-red': '0 0 30px rgba(220, 38, 38, 0.3)',
+        'glow-red-sm': '0 0 15px rgba(220, 38, 38, 0.2)',
       },
       backgroundImage: {
         // Add gradients
@@ -75,9 +76,11 @@ export default {
         'gradient-light': 'linear-gradient(135deg, rgba(64, 93, 230, 0.1), rgba(131, 58, 180, 0.1))',
       },
       backgroundColor: {
-        'off-white': 'rgb(253 253 253)',
-        'slate-bg': 'rgb(241 245 249)',
-        'background-light': 'rgb(253 251 252)', // For NLP page
+        'off-white': '#0f1623',
+        'slate-bg': '#080b12',
+        'background-light': '#080b12',
+        'dark-card': '#0f1623',
+        'dark-surface': '#131c2e',
       },
       padding: {
         '10': '2.5rem',
