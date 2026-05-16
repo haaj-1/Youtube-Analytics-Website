@@ -41,7 +41,7 @@ function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="min-h-screen flex" style={{ background: '#0d1220' }}>
+      <div className="min-h-screen flex" style={{ background: '#f8fafc' }}>
         <Routes>
           {/* Tool pages with sidebar */}
           <Route element={<ToolLayout />}>
