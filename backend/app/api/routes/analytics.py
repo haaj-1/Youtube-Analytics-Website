@@ -1,17 +1,23 @@
 from fastapi import APIRouter, HTTPException, Request
 from app.services.youtube_service import youtube_service
-from app.services.prediction_service import PredictionService
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 from pydantic import BaseModel
 from typing import Optional
-import numpy as np
 from datetime import datetime
 import re
 
+try:
+    from app.services.prediction_service import PredictionService
+    import numpy as np
+    prediction_service = PredictionService()
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
+    prediction_service = None
+
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
-prediction_service = PredictionService()
 
 class ChannelAnalyticsRequest(BaseModel):
     channel_id: str

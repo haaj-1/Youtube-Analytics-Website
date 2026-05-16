@@ -1,10 +1,16 @@
 from fastapi import APIRouter, HTTPException
-from app.services.prediction_service import PredictionService
 import json
 import os
 
+try:
+    from app.services.prediction_service import PredictionService
+    prediction_service = PredictionService()
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
+    prediction_service = None
+
 router = APIRouter()
-prediction_service = PredictionService()
 
 @router.get("/transparency")
 async def get_model_transparency():
