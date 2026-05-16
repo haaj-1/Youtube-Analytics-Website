@@ -20,5 +20,3 @@ const PostPerformancePage = () => {
 };
 
 export default PostPerformancePage;
-
-export default PostPerformancePage;
