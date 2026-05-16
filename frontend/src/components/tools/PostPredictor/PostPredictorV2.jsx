@@ -47,26 +47,26 @@ const THEMES = {
     dimCls:        'text-slate-600',
   },
   light: {
-    page:          { background: '#f8fafc', color: '#111827' },
-    panel:         { background: '#ffffff', border: '1px solid #e5e7eb', boxShadow: '0 1px 4px rgba(0,0,0,0.06)' },
-    card:          { background: '#f9fafb', border: '1px solid #e5e7eb' },
-    input:         { background: '#ffffff', border: '1px solid #d1d5db', color: '#111827' },
-    cta:           { background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 4px 24px rgba(37,99,235,0.25)' },
-    heroGrad:      { background: 'linear-gradient(135deg,rgba(37,99,235,0.07),rgba(29,78,216,0.03))', border: '1px solid rgba(37,99,235,0.2)' },
-    emptyBg:       { background: '#f9fafb', border: '1px dashed #d1d5db' },
-    toggleBg:      { background: '#f3f4f6', border: '1px solid #e5e7eb' },
-    tabActive:     { background: 'linear-gradient(135deg,#2563eb,#1d4ed8)', boxShadow: '0 4px 24px rgba(37,99,235,0.25)', color: '#fff' },
-    tabInactive:   { color: '#6b7280' },
-    sectionBorder: { borderBottom: '1px solid #e5e7eb' },
-    previewBorder: { borderTop: '1px solid #e5e7eb' },
-    thumbBg:       { background: '#f3f4f6' },
-    counterBg:     { background: 'rgba(37,99,235,0.05)', border: '1px solid rgba(37,99,235,0.15)' },
-    inputCls:      'w-full rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition-all',
-    labelCls:      'block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2',
+    page:          { background: '#ffffff', color: '#111111' },
+    panel:         { background: '#ffffff', border: '1px solid #fecaca', boxShadow: '0 1px 6px rgba(220,38,38,0.06)' },
+    card:          { background: '#fff5f5', border: '1px solid #fecaca' },
+    input:         { background: '#ffffff', border: '1px solid #fca5a5', color: '#111111' },
+    cta:           { background: 'linear-gradient(135deg,#dc2626,#b91c1c)', boxShadow: '0 4px 24px rgba(220,38,38,0.25)' },
+    heroGrad:      { background: 'linear-gradient(135deg,rgba(220,38,38,0.07),rgba(185,28,28,0.03))', border: '1px solid rgba(220,38,38,0.2)' },
+    emptyBg:       { background: '#fff5f5', border: '1px dashed #fca5a5' },
+    toggleBg:      { background: '#fff5f5', border: '1px solid #fecaca' },
+    tabActive:     { background: 'linear-gradient(135deg,#dc2626,#b91c1c)', boxShadow: '0 4px 24px rgba(220,38,38,0.25)', color: '#fff' },
+    tabInactive:   { color: '#dc2626' },
+    sectionBorder: { borderBottom: '1px solid #fecaca' },
+    previewBorder: { borderTop: '1px solid #fecaca' },
+    thumbBg:       { background: '#fff5f5' },
+    counterBg:     { background: 'rgba(220,38,38,0.05)', border: '1px solid rgba(220,38,38,0.2)' },
+    inputCls:      'w-full rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-red-300 outline-none transition-all',
+    labelCls:      'block text-xs font-semibold text-red-400 uppercase tracking-wider mb-2',
     titleCls:      'text-gray-900',
     subCls:        'text-gray-600',
-    mutedCls:      'text-gray-500',
-    dimCls:        'text-gray-400',
+    mutedCls:      'text-red-400',
+    dimCls:        'text-red-300',
   },
 };
 
@@ -74,7 +74,7 @@ const fmt = (n) => { if (n >= 1e6) return `${(n/1e6).toFixed(1)}M`; if (n >= 1e3
 const fmtTime = (s) => `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 
 const PostPredictorV2 = () => {
-  const [themeKey, setThemeKey] = useState(() => localStorage.getItem('pp_theme') || 'light');
+  const [themeKey, setThemeKey] = useState(() => localStorage.getItem('pp_theme') || 'dark');
   const T = THEMES[themeKey];
   const isDark = themeKey === 'dark';
   const toggleTheme = () => {
