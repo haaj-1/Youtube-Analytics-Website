@@ -16,7 +16,7 @@ function ToolLayout() {
   return (
     <>
       <GreenSidebar />
-      <div className="ml-64 flex-1 flex flex-col min-w-0">
+      <div className="ml-72 flex-1 flex flex-col min-w-0">
         <Navbar />
         <main className="flex-1">
           <Outlet />

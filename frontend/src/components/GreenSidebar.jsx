@@ -23,19 +23,19 @@ export default function GreenSidebar() {
 
   return (
     <aside
-      className={`fixed top-0 bottom-0 left-0 min-h-screen h-full transition-all duration-300 z-[9999] ${isCollapsed ? 'w-16' : 'w-64'}`}
+      className={`fixed top-0 bottom-0 left-0 min-h-screen h-full transition-all duration-300 z-[9999] ${isCollapsed ? 'w-20' : 'w-72'}`}
       style={{ background: 'linear-gradient(180deg, #b91c1c 0%, #991b1b 100%)', borderRight: '1px solid rgba(0,0,0,0.15)' }}
     >
       <div className="p-5 h-full flex flex-col relative">
         {/* Logo */}
         <div className="flex items-center gap-3 mb-7 flex-shrink-0">
-          <div className="w-9 h-9 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center flex-shrink-0">
-            <span className="text-white font-bold text-base">P</span>
+          <div className="w-11 h-11 rounded-xl bg-white/20 border border-white/30 flex items-center justify-center flex-shrink-0">
+            <span className="text-white font-bold text-lg">P</span>
           </div>
           {!isCollapsed && (
             <div className="flex flex-col">
-              <span className="font-bold text-white text-lg leading-tight">PrePost</span>
-              <span className="text-[10px] text-red-200 font-mono tracking-wider">Analytics</span>
+              <span className="font-bold text-white text-xl leading-tight">PrePost</span>
+              <span className="text-xs text-red-200 font-mono tracking-wider">Analytics</span>
             </div>
           )}
         </div>
@@ -55,7 +55,7 @@ export default function GreenSidebar() {
               if (item.type === 'heading') {
                 return !isCollapsed && (
                   <div key={index} className="pt-4 pb-1">
-                    <h3 className="text-[10px] font-semibold text-red-200/70 uppercase tracking-widest px-3">{item.title}</h3>
+                    <h3 className="text-xs font-semibold text-red-200/70 uppercase tracking-widest px-3">{item.title}</h3>
                   </div>
                 );
               }
@@ -68,7 +68,7 @@ export default function GreenSidebar() {
                   key={index}
                   to={item.path}
                   title={isCollapsed ? item.title : ''}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all group ${
                     isActive
                       ? 'bg-white/20 text-white'
                       : 'text-red-100 hover:text-white hover:bg-white/10'
@@ -79,9 +79,9 @@ export default function GreenSidebar() {
                   </span>
                   {!isCollapsed && (
                     <div className="flex-1 min-w-0">
-                      <div className={`text-sm font-semibold leading-tight ${isActive ? 'text-white' : ''}`}>{item.title}</div>
+                      <div className={`text-base font-semibold leading-tight ${isActive ? 'text-white' : ''}`}>{item.title}</div>
                       {item.description && (
-                        <div className={`text-xs mt-0.5 leading-tight ${isActive ? 'text-red-100' : 'text-red-200/70'}`}>{item.description}</div>
+                        <div className={`text-sm mt-0.5 leading-tight ${isActive ? 'text-red-100' : 'text-red-200/70'}`}>{item.description}</div>
                       )}
                     </div>
                   )}
@@ -94,8 +94,8 @@ export default function GreenSidebar() {
         {/* Stats */}
         {!isCollapsed && (
           <div className="p-4 rounded-xl flex-shrink-0 bg-white/10 border border-white/20">
-            <div className="text-[10px] text-red-200/70 uppercase tracking-widest mb-2 font-mono">Quick Stats</div>
-            <div className="space-y-2">
+            <div className="text-xs text-red-200/70 uppercase tracking-widest mb-3 font-mono">Quick Stats</div>
+            <div className="space-y-2.5">
               <div className="flex justify-between text-sm">
                 <span className="text-red-100">Accuracy</span>
                 <span className="font-bold text-white font-mono">95.6%</span>
