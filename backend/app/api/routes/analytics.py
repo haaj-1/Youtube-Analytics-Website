@@ -15,6 +15,7 @@ try:
 except ImportError:
     ML_AVAILABLE = False
     prediction_service = None
+    import numpy as np
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
