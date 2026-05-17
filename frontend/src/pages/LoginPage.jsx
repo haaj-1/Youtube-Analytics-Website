@@ -25,7 +25,7 @@ export default function LoginPage() {
           });
           window.google.accounts.id.renderButton(
             document.getElementById('googleSignInButton'),
-            { theme: 'filled_black', size: 'large', width: 360, text: 'continue_with' }
+            { theme: 'outline', size: 'large', width: 360, text: 'continue_with' }
           );
         } catch (err) {
           console.error('Google init error:', err);
@@ -94,41 +94,27 @@ export default function LoginPage() {
     }
   };
 
-  const cardStyle = {
-    background: '#0f1623',
-    border: '1px solid rgba(255,255,255,0.07)',
-    boxShadow: '0 25px 60px rgba(0,0,0,0.5)',
-  };
-
-  const inputStyle = (hasError) => ({
-    background: 'rgba(255,255,255,0.04)',
-    border: hasError ? '1px solid rgba(239,68,68,0.5)' : '1px solid rgba(255,255,255,0.08)',
-  });
-
   return (
-    <main className="flex flex-1 items-center justify-center p-6 min-h-screen relative overflow-hidden" style={{ background: '#080b12' }}>
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(239,68,68,0.06) 0%, transparent 70%)', filter: 'blur(40px)' }} />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full pointer-events-none" style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 70%)', filter: 'blur(40px)' }} />
-
-      <div className="w-full max-w-md rounded-2xl p-8 flex flex-col items-center relative" style={cardStyle}>
-        <div className="mb-5 w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)' }}>
-          <FiLock className="w-5 h-5 text-red-400" />
+    <main className="flex flex-1 items-center justify-center p-6 min-h-screen bg-gray-50">
+      <div className="w-full max-w-md bg-white rounded-2xl p-8 flex flex-col items-center shadow-sm border border-gray-200">
+        <div className="mb-5 w-12 h-12 rounded-xl flex items-center justify-center bg-red-50 border border-red-100">
+          <FiLock className="w-5 h-5 text-red-500" />
         </div>
 
-        <h1 className="text-white text-2xl font-bold text-center mb-1">Sign in</h1>
-        <p className="text-slate-500 text-sm text-center mb-7">Secure access to your analytics</p>
+        <h1 className="text-gray-900 text-2xl font-bold text-center mb-1">Sign in</h1>
+        <p className="text-gray-400 text-sm text-center mb-7">Secure access to your analytics</p>
 
         <div id="googleSignInButton" className="w-full flex justify-center mb-5" />
 
         <div className="relative w-full flex items-center mb-5">
-          <div className="flex-grow" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }} />
-          <span className="mx-4 text-slate-600 text-xs font-bold uppercase tracking-widest">or</span>
-          <div className="flex-grow" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }} />
+          <div className="flex-grow border-t border-gray-100" />
+          <span className="mx-4 text-gray-400 text-xs font-bold uppercase tracking-widest">or</span>
+          <div className="flex-grow border-t border-gray-100" />
         </div>
 
         <form onSubmit={handleSubmit} className="w-full space-y-4">
           <div className="space-y-1.5">
-            <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Email</label>
+            <label className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Email</label>
             <input
               name="email"
               value={formData.email}
@@ -136,16 +122,15 @@ export default function LoginPage() {
               type="email"
               placeholder="name@company.com"
               disabled={loading}
-              className="w-full h-11 rounded-lg px-4 text-sm text-slate-200 placeholder-slate-600 outline-none transition-all"
-              style={inputStyle(errors.email)}
+              className="w-full h-11 rounded-lg px-4 text-sm text-gray-900 placeholder-gray-400 outline-none border border-gray-200 focus:border-red-400 focus:ring-1 focus:ring-red-200 transition-all bg-white"
             />
-            {errors.email && <p className="text-red-400 text-xs">{errors.email}</p>}
+            {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
           </div>
 
           <div className="space-y-1.5">
             <div className="flex justify-between items-center">
-              <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Password</label>
-              <Link to="/forgot-password" className="text-xs text-red-400 hover:text-red-300 transition-colors">Forgot?</Link>
+              <label className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Password</label>
+              <Link to="/forgot-password" className="text-xs text-red-500 hover:text-red-600 transition-colors">Forgot?</Link>
             </div>
             <div className="relative">
               <input
@@ -155,18 +140,17 @@ export default function LoginPage() {
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
                 disabled={loading}
-                className="w-full h-11 rounded-lg px-4 pr-11 text-sm text-slate-200 placeholder-slate-600 outline-none transition-all"
-                style={inputStyle(errors.password)}
+                className="w-full h-11 rounded-lg px-4 pr-11 text-sm text-gray-900 placeholder-gray-400 outline-none border border-gray-200 focus:border-red-400 focus:ring-1 focus:ring-red-200 transition-all bg-white"
               />
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400 transition-colors">
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                 {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
               </button>
             </div>
-            {errors.password && <p className="text-red-400 text-xs">{errors.password}</p>}
+            {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
           </div>
 
           {errors.general && (
-            <div className="p-3 rounded-lg text-sm text-red-400" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
+            <div className="p-3 rounded-lg text-sm text-red-600 bg-red-50 border border-red-100">
               {errors.general}
             </div>
           )}
@@ -175,7 +159,7 @@ export default function LoginPage() {
             type="submit"
             disabled={loading}
             className="w-full h-11 mt-2 rounded-lg font-bold text-sm text-white uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', boxShadow: '0 4px 20px rgba(220,38,38,0.25)' }}
+            style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', boxShadow: '0 4px 20px rgba(220,38,38,0.2)' }}
           >
             {loading ? (
               <div className="flex items-center justify-center gap-2">
@@ -186,16 +170,16 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-slate-500 text-sm text-center">
+        <p className="mt-6 text-gray-500 text-sm text-center">
           No account?{' '}
-          <Link to="/signup" className="text-red-400 hover:text-red-300 font-medium transition-colors">Sign up</Link>
+          <Link to="/signup" className="text-red-500 hover:text-red-600 font-medium transition-colors">Sign up</Link>
         </p>
 
-        <div className="mt-6 pt-5 w-full flex items-center justify-center gap-2" style={{ borderTop: '1px dashed rgba(255,255,255,0.06)' }}>
-          <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ background: 'rgba(34,197,94,0.1)' }}>
-            <span className="text-green-400 text-xs">✓</span>
+        <div className="mt-6 pt-5 w-full flex items-center justify-center gap-2 border-t border-gray-100">
+          <div className="w-4 h-4 rounded-full flex items-center justify-center bg-green-50">
+            <span className="text-green-500 text-xs">✓</span>
           </div>
-          <p className="text-xs font-mono text-slate-600 uppercase tracking-wider">JWT Encrypted</p>
+          <p className="text-xs font-mono text-gray-400 uppercase tracking-wider">JWT Encrypted</p>
         </div>
       </div>
     </main>

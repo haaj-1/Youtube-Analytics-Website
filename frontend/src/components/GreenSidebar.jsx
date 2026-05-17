@@ -70,22 +70,22 @@ export default function GreenSidebar() {
                   title={isCollapsed ? item.title : ''}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group ${
                     isActive
-                      ? 'bg-red-50 text-red-700'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'text-white'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
+                  style={isActive ? { background: 'linear-gradient(135deg, #dc2626, #b91c1c)' } : {}}
                 >
-                  <span className={`flex-shrink-0 transition-colors ${isActive ? 'text-red-600' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                  <span className={`flex-shrink-0 transition-colors ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-600'}`}>
                     {item.icon}
                   </span>
                   {!isCollapsed && (
                     <div className="flex-1 min-w-0">
-                      <div className={`text-sm font-medium leading-tight ${isActive ? 'text-red-700' : ''}`}>{item.title}</div>
+                      <div className={`text-sm font-semibold leading-tight ${isActive ? 'text-white' : ''}`}>{item.title}</div>
                       {item.description && (
-                        <div className="text-xs mt-0.5 text-gray-400 leading-tight">{item.description}</div>
+                        <div className={`text-xs mt-0.5 leading-tight ${isActive ? 'text-red-100' : 'text-gray-400'}`}>{item.description}</div>
                       )}
                     </div>
                   )}
-                  {isActive && !isCollapsed && <div className="w-1.5 h-1.5 rounded-full bg-red-500 flex-shrink-0" />}
                 </Link>
               );
             })}
