@@ -47,6 +47,7 @@ export default function PostPredictorClean() {
   const [isSearchingChannel, setIsSearchingChannel] = useState(false);
   const [isTrainingModel, setIsTrainingModel] = useState(false);
   const [showChannelPanel, setShowChannelPanel] = useState(false);
+  const [thumbnailMode, setThumbnailMode] = useState('single');
 
   React.useEffect(() => {
     const token = localStorage.getItem('token');
@@ -220,8 +221,8 @@ export default function PostPredictorClean() {
             </div>
             <div className="p-6 space-y-3">
               <div className="flex gap-3 mb-1">
-                <button className="flex-1 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-900 shadow-sm">Single</button>
-                <button className="flex-1 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm font-medium text-gray-500 hover:bg-gray-100 transition-colors">Compare 2–5</button>
+                <button onClick={() => setThumbnailMode('single')} className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-all ${thumbnailMode === 'single' ? 'bg-white border-gray-300 text-gray-900 shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'}`}>Single</button>
+                <button onClick={() => setThumbnailMode('compare')} className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-all ${thumbnailMode === 'compare' ? 'bg-white border-gray-300 text-gray-900 shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'}`}>Compare 2–5</button>
               </div>
               <div className="flex gap-2">
                 <input type="url" value={form.thumbnail_url} onChange={e => set('thumbnail_url', e.target.value)}
