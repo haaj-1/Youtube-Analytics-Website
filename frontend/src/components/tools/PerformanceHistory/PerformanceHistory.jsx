@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import './PerformanceHistory.css';
 
-const API = import.meta.env.VITE_ML_API_URL || 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const PerformanceHistory = () => {
   const [channelName, setChannelName] = useState('');

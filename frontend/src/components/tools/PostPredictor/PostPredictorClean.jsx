@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 const API = import.meta.env.VITE_ML_API_URL || 'http://localhost:5000';
+const BASE_API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const CATEGORIES = [
   { id: 1, name: 'Film & Animation' }, { id: 2, name: 'Autos & Vehicles' },
@@ -100,7 +101,7 @@ export default function PostPredictorClean() {
     if (!channelName.trim()) return;
     setIsSearchingChannel(true);
     try {
-      const res = await fetch(`${API}/youtube/search/channel?q=${encodeURIComponent(channelName)}`);
+      const res = await fetch(`${BASE_API}/youtube/search/channel?q=${encodeURIComponent(channelName)}`);
       const data = await res.json();
       setChannelResults(data.items || []);
     } catch (e) { setError(e.message); }
