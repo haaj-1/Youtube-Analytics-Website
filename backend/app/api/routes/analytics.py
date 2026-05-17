@@ -7,15 +7,6 @@ from typing import Optional
 from datetime import datetime
 from collections import Counter
 import re
-import numpy as np
-
-try:
-    from app.services.prediction_service import PredictionService
-    prediction_service = PredictionService()
-    ML_AVAILABLE = True
-except ImportError:
-    ML_AVAILABLE = False
-    prediction_service = None
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
@@ -190,8 +181,8 @@ def calculate_channel_analytics(videos, channel_info):
     recent_videos = video_stats[:mid_point]
     older_videos = video_stats[mid_point:]
     
-    recent_avg = np.mean([v['views'] for v in recent_videos]) if recent_videos else 0
-    older_avg = np.mean([v['views'] for v in older_videos]) if older_videos else 0
+    recent_avg = sum(v['views'] for v in recent_videos) / len(recent_videos) if recent_videos else 0
+    older_avg = sum(v['views'] for v in older_videos) / len(older_videos) if older_videos else 0
     growth_rate = ((recent_avg - older_avg) / older_avg * 100) if older_avg > 0 else 0
     
     # Engagement insights
@@ -280,7 +271,7 @@ def calculate_channel_analytics(videos, channel_info):
         'engagement_insights': {
             'high_performers': len(high_engagement_videos),
             'low_performers': len(low_engagement_videos),
-            'consistency_score': round((1 - np.std([v['engagement_rate'] for v in video_stats]) / avg_engagement) * 100, 1) if avg_engagement > 0 else 0
+            'consistency_score': round((1 - (sum((v['engagement_rate'] - avg_engagement)**2 for v in video_stats) / len(video_stats))**0.5 / avg_engagement) * 100, 1) if avg_engagement > 0 else 0
         },
         'content_insights': {
             'common_words_in_top_videos': [{'word': word, 'count': count} for word, count in common_words]
