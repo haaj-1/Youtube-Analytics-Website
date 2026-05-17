@@ -265,9 +265,9 @@ export default function PostPredictorClean() {
                   🌐 Global Model
                 </button>
                 <button
-                  onClick={() => setShowChannelPanel(true)}
+                  onClick={() => setShowChannelPanel(p => !p)}
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-sm font-medium transition-all ${
-                    usePersonalized ? 'bg-white border-gray-300 text-gray-900 shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
+                    usePersonalized || showChannelPanel ? 'bg-white border-gray-300 text-gray-900 shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
                   }`}>
                   🎯 My Channel
                 </button>
@@ -287,7 +287,7 @@ export default function PostPredictorClean() {
                 </div>
               )}
 
-              {showChannelPanel && !personalizedModel && (
+              {showChannelPanel && (
                 <div className="space-y-3">
                   <p className="text-xs text-gray-500">Train on your channel's 40 most recent videos for tailored predictions.</p>
                   <div className="flex gap-2">
