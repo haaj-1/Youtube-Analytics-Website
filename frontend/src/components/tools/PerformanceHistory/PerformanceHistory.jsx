@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import './PerformanceHistory.css';
 
+const API = import.meta.env.VITE_ML_API_URL || 'http://localhost:5000';
+
 const PerformanceHistory = () => {
   const [channelName, setChannelName] = useState('');
   const [channelResults, setChannelResults] = useState([]);
@@ -21,7 +23,7 @@ const PerformanceHistory = () => {
     setError(null);
     
     try {
-      const response = await fetch(`http://localhost:5000/youtube/search/channel?q=${encodeURIComponent(channelName)}`);
+      const response = await fetch(`${API}/youtube/search/channel?q=${encodeURIComponent(channelName)}`);
       
       if (!response.ok) {
         throw new Error('Failed to search channels');
@@ -48,7 +50,7 @@ const PerformanceHistory = () => {
     try {
       const channelId = channel.id.channelId;
       
-      const response = await fetch('http://localhost:5000/analytics/channel-analytics', {
+      const response = await fetch(`${API}/analytics/channel-analytics`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
