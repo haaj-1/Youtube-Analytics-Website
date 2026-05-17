@@ -110,15 +110,7 @@ app.add_middleware(LoggingMiddleware)
 # CORS middleware - Allow frontend to call API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://localhost",
-        "http://localhost:80",
-        "http://localhost:5000",
-        "https://prepost-analytics.vercel.app",
-        "https://youtube-analytics-website.vercel.app",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
