@@ -111,11 +111,13 @@ app.add_middleware(LoggingMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",  # React dev server
-        "http://localhost:5173",  # Vite dev server
-        "http://localhost",       # Frontend container (port 80)
-        "http://localhost:80",    # Frontend container explicit
-        "http://localhost:5000"   # Production
+        "http://localhost:3000",
+        "http://localhost:5173",
+        "http://localhost",
+        "http://localhost:80",
+        "http://localhost:5000",
+        "https://prepost-analytics.vercel.app",
+        "https://youtube-analytics-website.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],

@@ -42,7 +42,6 @@ export default function PostPredictorClean() {
   const [predictionsRemaining, setPredictionsRemaining] = useState(5);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [personalizedModel, setPersonalizedModel] = useState(null);
-  const [usePersonalized, setUsePersonalized] = useState(false);
   const [channelName, setChannelName] = useState('');
   const [channelResults, setChannelResults] = useState([]);
   const [isSearchingChannel, setIsSearchingChannel] = useState(false);
@@ -76,7 +75,7 @@ export default function PostPredictorClean() {
       if (form.thumbnail_file) {
         thumb = await new Promise(res => { const r = new FileReader(); r.onloadend = () => res(r.result); r.readAsDataURL(form.thumbnail_file); });
       }
-      const endpoint = usePersonalized && personalizedModel
+      const endpoint = personalizedModel
         ? `${API}/predict/personalized/predict`
         : `${API}/predict/`;
       const res = await fetch(endpoint, {
@@ -111,14 +110,13 @@ export default function PostPredictorClean() {
   const handleChannelSelect = async (ch) => {
     setIsTrainingModel(true);
     try {
-      const res = await fetch(`${API}/predict/personalized`, {
+      const res = await fetch(`${BASE_API}/predict/personalized`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ channel_id: ch.id.channelId, max_videos: 40 }),
       });
       if (!res.ok) throw new Error('Training failed');
       const data = await res.json();
       setPersonalizedModel(data);
-      setUsePersonalized(true);
       setChannelResults([]);
       setShowChannelPanel(false);
       set('subscriber_count', data.stats.subscriber_count);
@@ -257,32 +255,32 @@ export default function PostPredictorClean() {
             <div className="p-6 space-y-3">
               <div className="flex gap-3">
                 <button
-                  onClick={() => setUsePersonalized(false)}
+                  onClick={() => { setPersonalizedModel(null); setShowChannelPanel(false); }}
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-sm font-medium transition-all ${
-                    !usePersonalized ? 'bg-white border-gray-300 text-gray-900 shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
+                    !personalizedModel && !showChannelPanel ? 'bg-white border-gray-300 text-gray-900 shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
                   }`}>
                   🌐 Global Model
                 </button>
                 <button
                   onClick={() => setShowChannelPanel(p => !p)}
                   className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-sm font-medium transition-all ${
-                    usePersonalized || showChannelPanel ? 'bg-white border-gray-300 text-gray-900 shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
+                    personalizedModel || showChannelPanel ? 'bg-white border-gray-300 text-gray-900 shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
                   }`}>
                   🎯 My Channel
                 </button>
               </div>
               <p className="text-xs text-gray-400">
-                {usePersonalized && personalizedModel
+                {personalizedModel
                   ? `Personalized model active · ${personalizedModel.stats.channel_name}`
                   : 'Uses our model trained on 51,888 YouTube videos for general predictions.'}
               </p>
 
-              {personalizedModel && usePersonalized && (
+              {personalizedModel && (
                 <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm">
                   <p className="font-semibold text-green-800">✓ Personalized Model Active</p>
                   <p className="text-green-700 mt-1">Channel: {personalizedModel.stats.channel_name}</p>
                   <p className="text-green-700">Trained on {personalizedModel.stats.videos_analyzed} videos · Avg {fmt(personalizedModel.stats.avg_views)} views</p>
-                  <button onClick={() => { setPersonalizedModel(null); setUsePersonalized(false); }} className="text-xs text-red-500 hover:text-red-700 mt-1">Switch to global model</button>
+                  <button onClick={() => { setPersonalizedModel(null); setShowChannelPanel(false); }} className="text-xs text-red-500 hover:text-red-700 mt-1">Switch to global model</button>
                 </div>
               )}
 
