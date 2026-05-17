@@ -210,6 +210,8 @@ export default function PostPredictorClean() {
                 <input type="number" min="1" value={form.duration_seconds}
                   onChange={e => set('duration_seconds', parseInt(e.target.value))} className={inputCls} />
               </div>
+            </div>
+          </div>
 
           {/* Thumbnail */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -247,6 +249,8 @@ export default function PostPredictorClean() {
               ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Analyzing...</>
               : <>⚡ Generate Prediction</>}
           </button>
+
+          {/* Prediction Model */}
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100">
               <h3 className="text-base font-bold text-gray-900">Prediction Model</h3>
@@ -316,6 +320,7 @@ export default function PostPredictorClean() {
             </div>
           </div>
         </div>
+        {/* END LEFT */}
 
         {/* RIGHT: Live Preview + Results */}
         <div className="space-y-5">
