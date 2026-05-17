@@ -110,7 +110,7 @@ export default function PostPredictorClean() {
   const handleChannelSelect = async (ch) => {
     setIsTrainingModel(true);
     try {
-      const res = await fetch(`${BASE_API}/predict/personalized`, {
+      const res = await fetch(`${API}/predict/personalized`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ channel_id: ch.id.channelId, max_videos: 40 }),
       });
