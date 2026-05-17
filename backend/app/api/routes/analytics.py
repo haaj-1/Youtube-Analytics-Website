@@ -5,17 +5,17 @@ from slowapi.util import get_remote_address
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from collections import Counter
 import re
+import numpy as np
 
 try:
     from app.services.prediction_service import PredictionService
-    import numpy as np
     prediction_service = PredictionService()
     ML_AVAILABLE = True
 except ImportError:
     ML_AVAILABLE = False
     prediction_service = None
-    import numpy as np
 
 router = APIRouter()
 limiter = Limiter(key_func=get_remote_address)
@@ -199,7 +199,6 @@ def calculate_channel_analytics(videos, channel_info):
     low_engagement_videos = [v for v in video_stats if v['engagement_rate'] < avg_engagement * 0.5]
     
     # Title analysis - find common words in top performers
-    from collections import Counter
     top_video_words = []
     for video in top_videos:
         words = video['title'].lower().split()
