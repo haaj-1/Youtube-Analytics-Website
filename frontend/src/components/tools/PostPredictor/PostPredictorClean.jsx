@@ -211,52 +211,68 @@ export default function PostPredictorClean() {
                   onChange={e => set('duration_seconds', parseInt(e.target.value))} className={inputCls} />
               </div>
 
-              {/* Thumbnail */}
-              <div>
-                <label className={labelCls}>Thumbnail</label>
-                <div className="flex gap-2">
-                  <input type="url" value={form.thumbnail_url} onChange={e => set('thumbnail_url', e.target.value)}
-                    placeholder="Paste URL or upload →" disabled={!!form.thumbnail_file}
-                    className={`${inputCls} flex-1`} />
-                  <label className="flex items-center justify-center w-11 h-10 rounded-lg border border-gray-300 bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors">
-                    <span className="text-gray-500 text-sm">📁</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files[0]; if (f) set('thumbnail_file', f); }} />
-                  </label>
-                </div>
-                {form.thumbnail_file && <p className="text-xs text-green-600 mt-1">✓ {form.thumbnail_file.name}</p>}
+          {/* Thumbnail */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100">
+              <h3 className="text-base font-bold text-gray-900">Thumbnail</h3>
+            </div>
+            <div className="p-6 space-y-3">
+              <div className="flex gap-3 mb-1">
+                <button className="flex-1 py-2 rounded-lg border border-gray-300 bg-white text-sm font-medium text-gray-900 shadow-sm">Single</button>
+                <button className="flex-1 py-2 rounded-lg border border-gray-200 bg-gray-50 text-sm font-medium text-gray-500 hover:bg-gray-100 transition-colors">Compare 2–5</button>
               </div>
-
-              {/* Error */}
-              {error && (
-                <div className="px-4 py-3 rounded-lg text-sm text-red-600 bg-red-50 border border-red-200">{error}</div>
-              )}
-
-              {/* CTA */}
-              <button onClick={handlePredict} disabled={isPredicting}
-                className="w-full py-3 rounded-xl font-bold text-sm text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-colors shadow-sm">
-                {isPredicting
-                  ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Analyzing...</>
-                  : <>⚡ Generate Prediction</>}
-              </button>
+              <div className="flex gap-2">
+                <input type="url" value={form.thumbnail_url} onChange={e => set('thumbnail_url', e.target.value)}
+                  placeholder="Paste thumbnail URL..." disabled={!!form.thumbnail_file}
+                  className={`${inputCls} flex-1`} />
+                <label className="flex items-center justify-center px-4 py-2 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 cursor-pointer transition-colors text-sm font-medium text-gray-700">
+                  Upload
+                  <input type="file" accept="image/*" className="hidden" onChange={e => { const f = e.target.files[0]; if (f) set('thumbnail_file', f); }} />
+                </label>
+              </div>
+              {form.thumbnail_file && <p className="text-xs text-green-600">✓ {form.thumbnail_file.name}</p>}
             </div>
           </div>
 
-          {/* Prediction Model section */}
+          {/* Error */}
+          {error && (
+            <div className="px-4 py-3 rounded-lg text-sm text-red-600 bg-red-50 border border-red-200">{error}</div>
+          )}
+
+          {/* CTA */}
+          <button onClick={handlePredict} disabled={isPredicting}
+            className="w-full py-3.5 rounded-xl font-bold text-sm text-white flex items-center justify-center gap-2 transition-all shadow-sm disabled:cursor-not-allowed"
+            style={{ background: isPredicting ? '#f87171' : 'linear-gradient(135deg, #ef4444, #dc2626)', opacity: isPredicting ? 0.8 : 1 }}>
+            {isPredicting
+              ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />Analyzing...</>
+              : <>⚡ Generate Prediction</>}
+          </button>
           <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-100">
-              <h3 className="text-sm font-bold text-gray-900">Prediction Model</h3>
+              <h3 className="text-base font-bold text-gray-900">Prediction Model</h3>
             </div>
             <div className="p-6 space-y-3">
               <div className="flex gap-3">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" checked={!usePersonalized} onChange={() => setUsePersonalized(false)} className="accent-red-600" />
-                  <span className="text-sm text-gray-700 font-medium">🌐 Global Model</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" checked={usePersonalized} onChange={() => setShowChannelPanel(true)} className="accent-red-600" />
-                  <span className="text-sm text-gray-700 font-medium">🎯 My Channel</span>
-                </label>
+                <button
+                  onClick={() => setUsePersonalized(false)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-sm font-medium transition-all ${
+                    !usePersonalized ? 'bg-white border-gray-300 text-gray-900 shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
+                  }`}>
+                  🌐 Global Model
+                </button>
+                <button
+                  onClick={() => setShowChannelPanel(true)}
+                  className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border text-sm font-medium transition-all ${
+                    usePersonalized ? 'bg-white border-gray-300 text-gray-900 shadow-sm' : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-gray-100'
+                  }`}>
+                  🎯 My Channel
+                </button>
               </div>
+              <p className="text-xs text-gray-400">
+                {usePersonalized && personalizedModel
+                  ? `Personalized model active · ${personalizedModel.stats.channel_name}`
+                  : 'Uses our model trained on 51,888 YouTube videos for general predictions.'}
+              </p>
 
               {personalizedModel && usePersonalized && (
                 <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm">
@@ -439,6 +455,41 @@ export default function PostPredictorClean() {
               <p className="text-sm text-gray-400">Fill in your video details and hit Generate Prediction</p>
             </div>
           )}
+
+          {/* Pro Tips */}
+          <div className="bg-white rounded-xl border border-orange-200 shadow-sm overflow-hidden">
+            <div className="px-5 py-3.5 bg-orange-50 border-b border-orange-100 flex items-center gap-2">
+              <span className="text-orange-500">&#9733;</span>
+              <span className="text-sm font-bold text-orange-800">Pro Tips</span>
+            </div>
+            <div className="p-5 space-y-4">
+              {[
+                { title: 'Thumbnails', tips: [
+                  'High contrast colors (red, orange) beat muted tones.',
+                  'Clear imagery can boost CTR by 200-300%.',
+                ]},
+                { title: 'Titles', tips: [
+                  'Numbers perform 36% better — try "7 Proven Ways..."',
+                  'Words like "unlock" and "transform" drive curiosity.',
+                ]},
+                { title: 'Mobile', tips: [
+                  '60%+ of views are mobile — keep text readable on small screens.',
+                ]},
+              ].map(({ title, tips }) => (
+                <div key={title}>
+                  <p className="text-sm font-semibold text-gray-800 mb-1.5">{title}</p>
+                  <ul className="space-y-1">
+                    {tips.map((tip, i) => (
+                      <li key={i} className="flex items-start gap-2 text-xs text-gray-600">
+                        <span className="text-orange-400 mt-0.5 flex-shrink-0">•</span>
+                        {tip}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
