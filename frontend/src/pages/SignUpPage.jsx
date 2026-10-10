@@ -1,73 +1,63 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
+import AuthShell, { GoogleButton } from '../components/AuthShell';
+import { Alert, Button, Field, Input } from '../components/ui';
+import { cx } from '../lib/cx';
+import { API_URL, request } from '../lib/api';
+import { saveSession } from '../lib/auth';
+
+function strength(pw) {
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (pw.length >= 12) score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+  if (/\d/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  return Math.min(4, score);
+}
+const STRENGTH_LABELS = ['Too short', 'Weak', 'Okay', 'Good', 'Strong'];
 
 const SignUpPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', agree: false });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
-      if (window.google && document.getElementById('googleSignInButton')) {
-        try {
-          window.google.accounts.id.initialize({
-            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-            callback: handleGoogleResponse,
-            auto_select: false,
-            cancel_on_tap_outside: true
-          });
-          window.google.accounts.id.renderButton(
-            document.getElementById('googleSignInButton'),
-            { theme: 'filled_black', size: 'large', width: 360, text: 'continue_with' }
-          );
-        } catch (error) { console.error('Error initializing Google:', error); }
-      }
-    };
-    document.body.appendChild(script);
-    return () => { if (document.body.contains(script)) document.body.removeChild(script); };
-  }, []);
+  const finish = (data) => {
+    saveSession(data.access_token, data.user);
+    navigate(location.state?.from || '/', { replace: true });
+  };
 
   const handleGoogleResponse = async (response) => {
     setLoading(true);
+    setErrors({});
     try {
-      const res = await fetch(`${import.meta.env.VITE_ML_API_URL || 'http://localhost:5000'}/auth/google`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: response.credential })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'Google sign-in failed');
-      localStorage.setItem('token', data.access_token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-      navigate('/');
-    } catch (error) {
-      setErrors({ general: error.message });
-    } finally { setLoading(false); }
+      finish(await request(API_URL, '/auth/google', { method: 'POST', body: { token: response.credential } }));
+    } catch (err) {
+      setErrors({ general: err.message });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    if (errors[name] || errors.general) setErrors((prev) => ({ ...prev, [name]: '', general: '' }));
   };
 
   const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name) newErrors.name = 'Name is required';
-    if (!formData.email) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
-    if (!formData.password) newErrors.password = 'Password is required';
-    else if (formData.password.length < 8) newErrors.password = 'Password must be at least 8 characters';
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = 'Passwords do not match';
-    return newErrors;
+    const e = {};
+    if (!formData.name.trim()) e.name = 'Name is required';
+    if (!formData.email) e.email = 'Email is required';
+    else if (!/\S+@\S+\.\S+/.test(formData.email)) e.email = 'Enter a valid email address';
+    if (!formData.password) e.password = 'Password is required';
+    else if (formData.password.length < 8) e.password = 'Use at least 8 characters';
+    if (!formData.agree) e.agree = 'Please accept the terms to continue';
+    return e;
   };
 
   const handleSubmit = async (e) => {
@@ -76,157 +66,92 @@ const SignUpPage = () => {
     if (Object.keys(validationErrors).length > 0) { setErrors(validationErrors); return; }
     setLoading(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_ML_API_URL || 'http://localhost:5000'}/auth/register`, {
+      await request(API_URL, '/auth/register', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, password: formData.password, full_name: formData.name, youtube_channel_id: null }),
+        body: { email: formData.email, password: formData.password, full_name: formData.name.trim(), youtube_channel_id: null },
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || 'Registration failed');
-      localStorage.setItem('user', JSON.stringify({ id: data.id, name: formData.name, email: data.email }));
-      navigate('/login');
-    } catch (error) {
-      setErrors({ general: error.message || 'An error occurred' });
-    } finally { setLoading(false); }
+      // Sign straight in rather than making the user re-enter credentials
+      try {
+        const session = await request(API_URL, '/auth/login', {
+          method: 'POST',
+          body: { email: formData.email, password: formData.password },
+        });
+        finish({ ...session, user: { name: formData.name.trim(), ...session.user } });
+      } catch {
+        navigate('/login', { state: { email: formData.email } });
+      }
+    } catch (err) {
+      setErrors({ general: err.message || 'Something went wrong. Please try again.' });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const inputStyle = (hasError) => ({
-    background: 'rgba(255,255,255,0.04)',
-    border: hasError ? '1px solid rgba(239,68,68,0.5)' : '1px solid rgba(255,255,255,0.08)'
-  });
-
-  const inputClass = "w-full h-11 rounded-lg px-4 text-sm text-slate-200 placeholder-slate-600 outline-none transition-all";
+  const pwScore = strength(formData.password);
 
   return (
-    <main className="flex flex-1 items-center justify-center p-6 min-h-screen relative overflow-hidden" style={{ background: '#080b12' }}>
-      {/* Background orbs */}
-      <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full pointer-events-none" style={{
-        background: 'radial-gradient(circle, rgba(239,68,68,0.06) 0%, transparent 70%)', filter: 'blur(40px)'
-      }} />
-      <div className="absolute bottom-1/4 left-1/4 w-80 h-80 rounded-full pointer-events-none" style={{
-        background: 'radial-gradient(circle, rgba(99,102,241,0.05) 0%, transparent 70%)', filter: 'blur(40px)'
-      }} />
+    <AuthShell
+      title="Create your account"
+      subtitle="Free forever. Unlimited predictions."
+      footer={<>Already have an account? <Link to="/login" state={location.state} className="font-medium text-fg hover:text-brand-300">Log in</Link></>}
+    >
+      <GoogleButton onCredential={handleGoogleResponse} text="signup_with" />
 
-      <div className="w-full max-w-[420px] rounded-2xl p-8 flex flex-col items-center relative" style={{
-        background: '#0f1623',
-        border: '1px solid rgba(255,255,255,0.07)',
-        boxShadow: '0 25px 60px rgba(0,0,0,0.5)'
-      }}>
-        {/* Icon */}
-        <div className="mb-5 w-12 h-12 rounded-xl flex items-center justify-center" style={{
-          background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)'
-        }}>
-          <FiUser className="w-5 h-5 text-red-400" />
-        </div>
+      <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <Field label="Full name" error={errors.name}>
+          {(p) => <Input {...p} name="name" autoComplete="name" value={formData.name} onChange={handleChange} placeholder="Alex Rivera" disabled={loading} invalid={!!errors.name} />}
+        </Field>
 
-        <h1 className="text-white text-2xl font-bold text-center mb-1">Create Account</h1>
-        <p className="text-slate-500 text-sm text-center mb-7">Join creators using PrePost Analytics</p>
+        <Field label="Email" error={errors.email}>
+          {(p) => <Input {...p} name="email" type="email" autoComplete="email" value={formData.email} onChange={handleChange} placeholder="you@example.com" disabled={loading} invalid={!!errors.email} />}
+        </Field>
 
-        <div id="googleSignInButton" className="w-full flex justify-center mb-5" />
-
-        <div className="relative w-full flex items-center mb-5">
-          <div className="flex-grow" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }} />
-          <span className="mx-4 text-slate-600 text-[10px] font-bold uppercase tracking-[0.2em]">or</span>
-          <div className="flex-grow" style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }} />
-        </div>
-
-        <form onSubmit={handleSubmit} className="w-full space-y-4">
-          {/* Name */}
-          <div className="space-y-1.5">
-            <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Full Name</label>
-            <div className="relative">
-              <input name="name" value={formData.name} onChange={handleChange} type="text" placeholder="John Doe"
-                disabled={loading} className={`${inputClass} pl-10`} style={inputStyle(errors.name)} />
-              <FiUser className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 w-4 h-4" />
-            </div>
-            {errors.name && <p className="text-red-400 text-xs">{errors.name}</p>}
-          </div>
-
-          {/* Email */}
-          <div className="space-y-1.5">
-            <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Email</label>
-            <div className="relative">
-              <input name="email" value={formData.email} onChange={handleChange} type="email" placeholder="name@company.com"
-                disabled={loading} className={`${inputClass} pl-10`} style={inputStyle(errors.email)} />
-              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 w-4 h-4" />
-            </div>
-            {errors.email && <p className="text-red-400 text-xs">{errors.email}</p>}
-          </div>
-
-          {/* Password */}
-          <div className="space-y-1.5">
-            <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Password</label>
-            <div className="relative">
-              <input name="password" value={formData.password} onChange={handleChange}
-                type={showPassword ? 'text' : 'password'} placeholder="••••••••"
-                disabled={loading} className={`${inputClass} pl-10 pr-10`} style={inputStyle(errors.password)} />
-              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 w-4 h-4" />
-              <button type="button" onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400 transition-colors">
-                {showPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
-              </button>
-            </div>
-            {errors.password && <p className="text-red-400 text-xs">{errors.password}</p>}
-          </div>
-
-          {/* Confirm Password */}
-          <div className="space-y-1.5">
-            <label className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Confirm Password</label>
-            <div className="relative">
-              <input name="confirmPassword" value={formData.confirmPassword} onChange={handleChange}
-                type={showConfirmPassword ? 'text' : 'password'} placeholder="••••••••"
-                disabled={loading} className={`${inputClass} pl-10 pr-10`} style={inputStyle(errors.confirmPassword)} />
-              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-600 w-4 h-4" />
-              <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-600 hover:text-slate-400 transition-colors">
-                {showConfirmPassword ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
-              </button>
-            </div>
-            {errors.confirmPassword && <p className="text-red-400 text-xs">{errors.confirmPassword}</p>}
-          </div>
-
-          {errors.general && (
-            <div className="p-3 rounded-lg text-sm text-red-400" style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)' }}>
-              {errors.general}
-            </div>
-          )}
-
-          {/* Terms */}
-          <div className="flex items-start gap-2">
-            <input type="checkbox" id="terms" required
-              className="mt-0.5 w-4 h-4 rounded accent-red-500" />
-            <label htmlFor="terms" className="text-sm text-slate-500">
-              I agree to the{' '}
-              <Link to="/terms" className="text-red-400 hover:text-red-300">Terms</Link>{' '}and{' '}
-              <Link to="/privacy" className="text-red-400 hover:text-red-300">Privacy Policy</Link>
-            </label>
-          </div>
-
-          <button type="submit" disabled={loading}
-            className="w-full h-11 mt-2 rounded-lg font-bold text-sm text-white uppercase tracking-widest transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            style={{ background: 'linear-gradient(135deg, #dc2626, #b91c1c)', boxShadow: '0 4px 20px rgba(220,38,38,0.25)' }}>
-            {loading ? (
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Creating...
+        <Field label="Password" error={errors.password}>
+          {(p) => (
+            <>
+              <div className="relative">
+                <Input {...p} name="password" type={showPassword ? 'text' : 'password'} autoComplete="new-password"
+                  value={formData.password} onChange={handleChange} placeholder="At least 8 characters" disabled={loading}
+                  invalid={!!errors.password} className="pr-11" />
+                <button type="button" onClick={() => setShowPassword((s) => !s)} aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-ink-400 hover:text-fg">
+                  {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
+                </button>
               </div>
-            ) : 'Sign Up'}
-          </button>
-        </form>
+              {formData.password && !errors.password && (
+                <div className="mt-2 flex items-center gap-3" aria-live="polite">
+                  <div className="flex flex-1 gap-1">
+                    {[0, 1, 2, 3].map((i) => (
+                      <span key={i} className={cx('h-1 flex-1 rounded-full transition-colors',
+                        i < pwScore ? (pwScore >= 3 ? 'bg-success-500' : pwScore === 2 ? 'bg-warning-500' : 'bg-brand-500') : 'bg-ov/10')} />
+                    ))}
+                  </div>
+                  <span className="w-16 text-right text-xs text-ink-300">{STRENGTH_LABELS[pwScore]}</span>
+                </div>
+              )}
+            </>
+          )}
+        </Field>
 
-        <p className="mt-6 text-slate-500 text-sm text-center">
-          Already have an account?{' '}
-          <Link to="/login" className="text-red-400 hover:text-red-300 font-medium transition-colors">Sign in</Link>
-        </p>
-
-        <div className="mt-6 pt-5 w-full flex items-center justify-center gap-2" style={{ borderTop: '1px dashed rgba(255,255,255,0.06)' }}>
-          <div className="w-4 h-4 rounded-full flex items-center justify-center" style={{ background: 'rgba(34,197,94,0.1)' }}>
-            <span className="text-green-400 text-[10px]">✓</span>
-          </div>
-          <p className="text-[10px] font-mono text-slate-600 uppercase tracking-wider">JWT Encrypted</p>
+        <div>
+          <label className="flex cursor-pointer items-start gap-2.5 text-sm text-ink-300">
+            <input type="checkbox" name="agree" checked={formData.agree} onChange={handleChange}
+              className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-ov/20 bg-ink-850 accent-brand-500" />
+            <span>
+              I agree to the <Link to="/terms" className="text-fg underline-offset-2 hover:underline">Terms</Link> and{' '}
+              <Link to="/privacy" className="text-fg underline-offset-2 hover:underline">Privacy Policy</Link>
+            </span>
+          </label>
+          {errors.agree && <p className="mt-1.5 text-xs text-brand-300">{errors.agree}</p>}
         </div>
-      </div>
-    </main>
+
+        {errors.general && <Alert>{errors.general}</Alert>}
+
+        <Button type="submit" size="lg" loading={loading} className="w-full">
+          {loading ? 'Creating account…' : 'Create account'}
+        </Button>
+      </form>
+    </AuthShell>
   );
 };
 

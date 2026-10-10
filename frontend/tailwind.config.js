@@ -1,91 +1,83 @@
-﻿/** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      // Theme-aware colors: values live in CSS variables (see index.css) so the
+      // same classes render dark on the landing page and light everywhere else.
       colors: {
-        charcoal: '#2D3436',
-        red: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
+        ink: {
+          950: 'rgb(var(--ink-950) / <alpha-value>)',
+          900: 'rgb(var(--ink-900) / <alpha-value>)',
+          850: 'rgb(var(--ink-850) / <alpha-value>)',
+          800: 'rgb(var(--ink-800) / <alpha-value>)',
+          700: 'rgb(var(--ink-700) / <alpha-value>)',
+          600: 'rgb(var(--ink-600) / <alpha-value>)',
+          500: 'rgb(var(--ink-500) / <alpha-value>)',
+          400: 'rgb(var(--ink-400) / <alpha-value>)',
+          300: 'rgb(var(--ink-300) / <alpha-value>)',
+          200: 'rgb(var(--ink-200) / <alpha-value>)',
+          100: 'rgb(var(--ink-100) / <alpha-value>)',
+          50: 'rgb(var(--ink-50) / <alpha-value>)',
         },
-        youtube: {
-          red: '#FF0000',
-          'red-dark': '#CC0000',
-          'red-light': '#FF4444',
+        // Primary foreground (white on dark, near-black on light)
+        fg: 'rgb(var(--fg) / <alpha-value>)',
+        // Overlay tint for borders/hover fills (white on dark, slate on light)
+        ov: 'rgb(var(--ov) / <alpha-value>)',
+        // Signal accent (YouTube-adjacent red); text shades 200–400 darken in light mode
+        brand: {
+          50: '#fff1f1',
+          100: '#ffdfdf',
+          200: 'rgb(var(--brand-200) / <alpha-value>)',
+          300: 'rgb(var(--brand-300) / <alpha-value>)',
+          400: 'rgb(var(--brand-400) / <alpha-value>)',
+          500: '#ff3b3b',
+          600: '#ed1c1c',
+          700: '#c81414',
+          800: '#a51515',
+          900: '#881818',
         },
-        
-        slate: {
-          50: 'rgb(248 250 252)',
-          100: 'rgb(241 245 249)',
-          200: 'rgb(226 232 240)',
-          300: 'rgb(203 213 225)',
-          400: 'rgb(148 163 184)',
-          500: 'rgb(100 116 139)',
-          600: 'rgb(71 85 105)',
-          700: 'rgb(51 65 85)',
-          800: 'rgb(30 41 59)',
-          900: 'rgb(15 23 42)',
+        success: {
+          300: 'rgb(var(--success-300) / <alpha-value>)',
+          400: 'rgb(var(--success-400) / <alpha-value>)',
+          500: 'rgb(var(--success-500) / <alpha-value>)',
+          600: 'rgb(var(--success-600) / <alpha-value>)',
         },
-        blue: {
-          500: 'rgb(59 130 246)', // shows blue-500
+        warning: {
+          200: 'rgb(var(--warning-200) / <alpha-value>)',
+          300: 'rgb(var(--warning-300) / <alpha-value>)',
+          400: 'rgb(var(--warning-400) / <alpha-value>)',
+          500: 'rgb(var(--warning-500) / <alpha-value>)',
         },
-        purple: {
-          600: 'rgb(147 51 234)', // gradient uses purple
-        }
       },
       fontFamily: {
-        // Keep Inter for general use
-        'inter': ['Inter', 'system-ui', 'sans-serif'],
-        // Add Spline Sans for NLP page
-        'display': ['Spline Sans', 'Inter', 'system-ui', 'sans-serif'],
-      },
-      borderRadius: {
-        // Add rounded-32
-        '32': '32px',
-        'xl': '12px',
-        '2xl': '16px',
-        '3xl': '20px',
-      },
-      spacing: {
-        // Add specific spacing if needed
-        '18': '4.5rem',
-        '88': '22rem',
+        sans: ['Geist', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['"Geist Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       boxShadow: {
-        'soft': '0 10px 30px -10px rgba(0, 0, 0, 0.4), 0 4px 10px -5px rgba(0, 0, 0, 0.2)',
-        'medium': '0 20px 40px -15px rgba(0, 0, 0, 0.4)',
-        'glow-red': '0 0 30px rgba(220, 38, 38, 0.3)',
-        'glow-red-sm': '0 0 15px rgba(220, 38, 38, 0.2)',
+        glow: '0 0 0 1px rgba(255,59,59,0.35), 0 8px 32px -8px rgba(255,59,59,0.45)',
+        card: 'var(--shadow-card)',
       },
-      backgroundImage: {
-        // Add gradients
-        'gradient-youtube': 'linear-gradient(135deg, #FF0000, #CC0000)',
-        'gradient-blue-purple': 'linear-gradient(135deg, #405DE6, #833AB4)',
-        'gradient-light': 'linear-gradient(135deg, rgba(64, 93, 230, 0.1), rgba(131, 58, 180, 0.1))',
+      keyframes: {
+        'fade-up': {
+          from: { opacity: '0', transform: 'translateY(8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        shimmer: {
+          from: { backgroundPosition: '200% 0' },
+          to: { backgroundPosition: '-200% 0' },
+        },
+        'grow-x': {
+          from: { transform: 'scaleX(0)' },
+          to: { transform: 'scaleX(1)' },
+        },
       },
-      backgroundColor: {
-        'off-white': '#0f1623',
-        'slate-bg': '#080b12',
-        'background-light': '#080b12',
-        'dark-card': '#0f1623',
-        'dark-surface': '#131c2e',
+      animation: {
+        'fade-up': 'fade-up 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both',
+        shimmer: 'shimmer 2.4s linear infinite',
+        'grow-x': 'grow-x 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both',
       },
-      padding: {
-        '10': '2.5rem',
-      }
     },
   },
   plugins: [],
-}
+};

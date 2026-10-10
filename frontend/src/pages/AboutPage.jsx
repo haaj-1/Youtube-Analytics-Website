@@ -1,548 +1,239 @@
 // src/pages/AboutPage.jsx
 import { Link } from 'react-router-dom';
-import { FaChartLine, FaBrain, FaShieldAlt, FaRocket, FaUsers, FaLightbulb } from 'react-icons/fa';
-import { FiArrowRight, FiCheck, FiTrendingUp } from 'react-icons/fi';
+import {
+  FiActivity, FiArrowRight, FiBarChart2, FiCpu, FiEdit3, FiEye, FiGithub, FiImage, FiLock, FiTarget, FiType,
+} from 'react-icons/fi';
+import { Badge, Bar, Button } from '../components/ui';
+
+const REPO_URL = 'https://github.com/haaj-1/Youtube-Analytics-Website';
+
+const STATS = [
+  { value: '95.6%', label: 'R² on held-out test set' },
+  { value: '51,888', label: 'videos in training data' },
+  { value: '1,294', label: 'features per prediction' },
+  { value: '< 10s', label: 'typical prediction time' },
+];
+
+const FEATURES = [
+  {
+    icon: FiActivity,
+    title: 'Performance Predictor',
+    body: 'Enter a title, description, thumbnail and channel size. Get projected views with a confidence range and the factors that drove it.',
+    to: '/post-performance',
+  },
+  {
+    icon: FiEdit3,
+    title: 'Title Optimizer',
+    body: 'Generate up to ten variations of your title and score each one with the same model to find the strongest option.',
+    to: '/post-performance',
+  },
+  {
+    icon: FiTarget,
+    title: 'Personalized models',
+    body: "Fit a model to your channel's 40 most recent uploads so predictions reflect your audience, not the average one.",
+    to: '/post-performance',
+  },
+  {
+    icon: FiBarChart2,
+    title: 'Channel Analytics',
+    body: 'Best publish day and hour, the video length that performs, and recurring words in top titles — from the last 100 uploads.',
+    to: '/performance-history',
+  },
+];
+
+const STEPS = [
+  { icon: FiType, title: 'Understand the text', body: 'BERT encodes your title and description into a 768-dimension semantic embedding.' },
+  { icon: FiImage, title: 'Read the thumbnail', body: 'A ResNet-18 CNN extracts 512 visual features — colour, contrast, composition.' },
+  { icon: FiCpu, title: 'Predict', body: 'XGBoost combines both with category, length and channel size to forecast views.' },
+];
+
+function HeroMock() {
+  const factors = [
+    { label: 'Title has a number', v: '+18%', up: true },
+    { label: 'High-contrast thumbnail', v: '+11%', up: true },
+    { label: 'Length above category median', v: '−4%', up: false },
+  ];
+  return (
+    <div className="relative">
+      <div className="pointer-events-none absolute -inset-8 rounded-[2rem] bg-brand-500/10 blur-3xl" aria-hidden="true" />
+      <div className="panel relative overflow-hidden bg-ink-900/90">
+        <div className="flex items-center gap-2 border-b border-ov/[0.06] px-4 py-3">
+          <span className="flex gap-1.5">
+            <span className="h-2.5 w-2.5 rounded-full bg-ov/10" /><span className="h-2.5 w-2.5 rounded-full bg-ov/10" /><span className="h-2.5 w-2.5 rounded-full bg-ov/10" />
+          </span>
+          <span className="ml-2 font-mono text-[11px] text-ink-400">prepost / predict</span>
+          <Badge tone="brand" className="ml-auto">Global model</Badge>
+        </div>
+        <div className="space-y-5 p-5 sm:p-6">
+          <div>
+            <p className="eyebrow">Title</p>
+            <p className="mt-1.5 text-sm text-fg">7 Python Tricks That Will Change How You Code</p>
+          </div>
+          <div className="flex items-end justify-between gap-4 border-t border-ov/[0.06] pt-5">
+            <div>
+              <p className="eyebrow">Predicted views</p>
+              <p className="mt-1 font-mono text-5xl font-semibold tracking-tight text-fg">128.4K</p>
+              <p className="mt-1 font-mono text-xs text-ink-300">95% range · 92K – 171K</p>
+            </div>
+            <div className="hidden w-28 sm:block">
+              <svg viewBox="0 0 120 48" className="h-12 w-full" aria-hidden="true">
+                <defs>
+                  <linearGradient id="spark" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor="#ff3b3b" stopOpacity="0.35" /><stop offset="1" stopColor="#ff3b3b" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                <path d="M0 40 L15 36 L30 38 L45 28 L60 30 L75 20 L90 22 L105 10 L120 6 L120 48 L0 48 Z" fill="url(#spark)" />
+                <path d="M0 40 L15 36 L30 38 L45 28 L60 30 L75 20 L90 22 L105 10 L120 6" fill="none" stroke="#ff6464" strokeWidth="2" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
+          <div>
+            <div className="mb-1.5 flex justify-between text-xs"><span className="text-ink-300">Model confidence</span><span className="font-mono text-ink-100">87%</span></div>
+            <Bar value={87} />
+          </div>
+          <ul className="space-y-2 border-t border-ov/[0.06] pt-5">
+            {factors.map((f) => (
+              <li key={f.label} className="flex items-center justify-between text-sm">
+                <span className="text-ink-200">{f.label}</span>
+                <span className={`font-mono text-xs ${f.up ? 'text-success-400' : 'text-brand-400'}`}>{f.v}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <p className="mt-3 text-center text-xs text-ink-400">Illustrative example</p>
+    </div>
+  );
+}
 
 export default function AboutPage() {
-  const features = [
-    {
-      icon: <FaBrain className="w-6 h-6" />,
-      title: "AI-Powered Predictions",
-      description: "XGBoost + BERT + CNN models predict video performance with 95.6% accuracy.",
-      stat: "95.6%",
-      statLabel: "Model Accuracy (R²)"
-    },
-    {
-      icon: <FaChartLine className="w-6 h-6" />,
-      title: "Global Model",
-      description: "Trained on 51,888 real YouTube videos for accurate predictions across all channels.",
-      stat: "51.9K",
-      statLabel: "Training Videos"
-    },
-    {
-      icon: <FaShieldAlt className="w-6 h-6" />,
-      title: "Performance Analytics",
-      description: "Analyze your 100 most recent videos to discover optimal posting patterns.",
-      stat: "100",
-      statLabel: "Videos Analyzed"
-    },
-    {
-      icon: <FaRocket className="w-6 h-6" />,
-      title: "Personalized Models",
-      description: "Train custom models on your channel's 40 most recent videos for tailored predictions.",
-      stat: "40",
-      statLabel: "Videos for Training"
-    }
-  ];
-
-  const values = [
-    {
-      title: "Data-Driven Insights",
-      description: "Every prediction backed by 51,888 real YouTube videos and rigorous ML training.",
-      color: "bg-blue-500/20",
-      textColor: "text-blue-600"
-    },
-    {
-      title: "Creator Focused",
-      description: "Tools designed for YouTube creators who want to optimize before publishing.",
-      color: "bg-purple-500/20",
-      textColor: "text-purple-600"
-    },
-    {
-      title: "Always Free",
-      description: "No credit card required. Unlimited predictions for registered users.",
-      color: "bg-green-500/20",
-      textColor: "text-green-600"
-    },
-    {
-      title: "Transparent AI",
-      description: "See exactly how predictions work with model transparency dashboard.",
-      color: "bg-orange-500/20",
-      textColor: "text-orange-600"
-    }
-  ];
-
-  const team = [
-    {
-      name: "Alex Johnson",
-      role: "Founder & CEO",
-      expertise: "Ex-YouTube Growth Lead",
-      color: "from-blue-500 to-blue-600"
-    },
-    {
-      name: "Sarah Chen",
-      role: "Head of AI/ML",
-      expertise: "PhD Computer Science",
-      color: "from-purple-500 to-purple-600"
-    },
-    {
-      name: "Marcus Rodriguez",
-      role: "Product Designer",
-      expertise: "UX Research Specialist",
-      color: "from-green-500 to-green-600"
-    },
-    {
-      name: "Priya Patel",
-      role: "Data Scientist",
-      expertise: "ML Optimization Expert",
-      color: "from-orange-500 to-orange-600"
-    }
-  ];
-
   return (
-    <main className="flex-1 w-full bg-black">
-      <div className="max-w-[1400px] mx-auto px-6 py-12 md:py-20 flex flex-col gap-24">
-      
-      {/* Hero Section */}
+    <main>
+      {/* Hero */}
       <section className="relative overflow-hidden">
-        {/* Grid Background */}
-        <div className="absolute inset-0" style={{
-          backgroundImage: `linear-gradient(rgba(239, 68, 68, 0.1) 1px, transparent 1px),
-                           linear-gradient(90deg, rgba(239, 68, 68, 0.1) 1px, transparent 1px)`,
-          backgroundSize: '50px 50px'
-        }}></div>
-        
-        {/* Animated Gradient Orbs */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-20 left-10 w-96 h-96 bg-red-500/20 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute top-40 right-20 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-          <div className="absolute bottom-20 left-1/3 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto py-24">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-red-500/30 bg-red-500/10 backdrop-blur-sm mb-6 font-mono text-xs text-red-400">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                <span>v1.0.0 // PRODUCTION</span>
-              </div>
-              
-              <h1 className="text-white text-5xl md:text-7xl font-black leading-[1.05] tracking-tight mb-6">
-                <span className="block text-gray-600 text-2xl font-mono mb-2">{'<predict>'}</span>
-                YouTube Performance
-                <span className="block bg-gradient-to-r from-red-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-                  with AI
-                </span>
-                <span className="block text-gray-600 text-2xl font-mono mt-2">{'</predict>'}</span>
-              </h1>
-              
-              <div className="bg-gray-900/80 border border-gray-800 rounded-lg p-4 mb-8 font-mono text-sm backdrop-blur-sm">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-gray-600">//</span>
-                  <span className="text-gray-500">Training Dataset</span>
-                </div>
-                <div className="text-blue-400">
-                  <span className="text-red-400">const</span> videos = <span className="text-green-400">51888</span>;
-                </div>
-                <div className="text-blue-400">
-                  <span className="text-red-400">const</span> accuracy = <span className="text-green-400">0.956</span>;
-                </div>
-                <div className="text-blue-400">
-                  <span className="text-red-400">const</span> models = [<span className="text-orange-400">'BERT'</span>, <span className="text-orange-400">'CNN'</span>, <span className="text-orange-400">'XGBoost'</span>];
-                </div>
-              </div>
-              
-              <div className="flex gap-4">
-                <Link
-                  to="/post-performance"
-                  className="group h-12 px-6 bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 rounded font-bold text-sm hover:shadow-lg hover:shadow-red-500/50 transition-all flex items-center gap-2 text-white"
-                >
-                  <span>GET STARTED</span>
-                  <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  to="/signup"
-                  className="h-12 px-6 border border-gray-700 rounded font-bold text-sm hover:bg-gray-900 hover:border-red-500/50 transition-all flex items-center gap-2 text-gray-300"
-                >
-                  <span>SIGN UP</span>
-                </Link>
-              </div>
-            </div>
-            
-            {/* Right YouTube Metrics Display */}
-            <div className="relative">
-              {/* YouTube Analytics Panel */}
-              <div className="bg-gradient-to-br from-gray-900/90 to-gray-950/90 border border-red-500/20 rounded-xl overflow-hidden shadow-2xl backdrop-blur-sm">
-                {/* Panel Header with Glow */}
-                <div className="relative bg-gradient-to-r from-gray-900/90 via-red-900/20 to-gray-900/90 px-4 py-3 flex items-center justify-between border-b border-red-500/30">
-                  <div className="flex items-center gap-3">
-                    <div className="relative w-9 h-9 rounded-lg bg-gradient-to-br from-red-600 to-red-700 flex items-center justify-center shadow-lg shadow-red-500/50">
-                      <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                      </svg>
-                      <div className="absolute inset-0 rounded-lg bg-red-500/30 blur-md animate-pulse"></div>
-                    </div>
-                    <div>
-                      <span className="text-white text-sm font-bold block">Performance Analytics</span>
-                      <span className="text-gray-400 text-xs font-mono">Real-time Prediction</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/30">
-                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-lg shadow-red-500/50"></div>
-                    <span className="text-red-400 text-xs font-mono font-bold">LIVE</span>
-                  </div>
-                </div>
-                
-                {/* Metrics Content */}
-                <div className="p-6 space-y-6">
-                  {/* Animated Metrics Grid */}
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { label: 'Views', value: '12.8K', icon: '▶', color: 'from-blue-500 via-blue-600 to-cyan-500', delay: '0s', glow: 'shadow-blue-500/50' },
-                      { label: 'Likes', value: '847', icon: '▲', color: 'from-green-500 via-emerald-600 to-teal-500', delay: '0.15s', glow: 'shadow-green-500/50' },
-                      { label: 'Comments', value: '124', icon: '◆', color: 'from-purple-500 via-violet-600 to-fuchsia-500', delay: '0.3s', glow: 'shadow-purple-500/50' },
-                      { label: 'Shares', value: '89', icon: '◉', color: 'from-red-500 via-rose-600 to-pink-500', delay: '0.45s', glow: 'shadow-red-500/50' }
-                    ].map((metric, idx) => (
-                      <div 
-                        key={idx} 
-                        className="group relative bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-lg p-4 border border-gray-700/50 hover:border-red-500/50 transition-all duration-300 overflow-hidden"
-                        style={{ animation: `fadeInUp 0.6s ease-out ${metric.delay} both` }}
-                      >
-                        {/* Hover Glow Effect */}
-                        <div className={`absolute inset-0 bg-gradient-to-br ${metric.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}></div>
-                        
-                        {/* Corner Accent */}
-                        <div className={`absolute top-0 right-0 w-12 h-12 bg-gradient-to-br ${metric.color} opacity-20 blur-xl`}></div>
-                        
-                        <div className="relative">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-gray-400 text-xs font-mono uppercase tracking-wider">{metric.label}</span>
-                            <div className={`w-6 h-6 rounded bg-gradient-to-br ${metric.color} flex items-center justify-center text-white text-xs font-bold shadow-lg ${metric.glow}`}>
-                              {metric.icon}
-                            </div>
-                          </div>
-                          <div className={`text-3xl font-black bg-gradient-to-r ${metric.color} bg-clip-text text-transparent font-mono`}>
-                            {metric.value}
-                          </div>
-                          {/* Animated Bar */}
-                          <div className="mt-2 h-1 bg-gray-700/50 rounded-full overflow-hidden">
-                            <div 
-                              className={`h-full bg-gradient-to-r ${metric.color} rounded-full`}
-                              style={{ 
-                                width: `${70 + idx * 10}%`,
-                                animation: `progressBar 1.5s ease-out ${metric.delay} forwards`
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* AI Confidence Display */}
-                  <div className="relative p-4 rounded-lg bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-red-500/30 overflow-hidden">
-                    {/* Animated Background Grid */}
-                    <div className="absolute inset-0 opacity-10" style={{
-                      backgroundImage: `linear-gradient(rgba(239, 68, 68, 0.3) 1px, transparent 1px),
-                                       linear-gradient(90deg, rgba(239, 68, 68, 0.3) 1px, transparent 1px)`,
-                      backgroundSize: '20px 20px'
-                    }}></div>
-                    
-                    <div className="relative space-y-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-red-500 to-purple-600 flex items-center justify-center shadow-lg shadow-red-500/50">
-                          <span className="text-white text-xs font-bold">AI</span>
-                        </div>
-                        <span className="text-gray-300 text-sm font-mono font-bold">Prediction Confidence</span>
-                      </div>
-                      
-                      {/* Enhanced Progress Bar */}
-                      <div className="relative h-3 bg-gray-800 rounded-full overflow-hidden border border-gray-700/50">
-                        <div 
-                          className="absolute inset-0 bg-gradient-to-r from-red-500 via-purple-500 to-blue-500 rounded-full"
-                          style={{ 
-                            width: '95.6%',
-                            animation: 'progressBar 2s ease-out 0.5s forwards',
-                            boxShadow: '0 0 20px rgba(239, 68, 68, 0.5)'
-                          }}
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer"></div>
-                        </div>
-                      </div>
-                      
-                      {/* Model Info */}
-                      <div className="flex items-center justify-between text-xs font-mono">
-                        <span className="text-gray-500">XGBoost + BERT + CNN</span>
-                        <span className="text-gray-500">51,888 samples</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Enhanced Floating Stats */}
-              <div className="absolute -bottom-6 -right-6 bg-gradient-to-br from-gray-900/90 to-red-900/50 border border-red-500/50 rounded-xl p-4 shadow-2xl backdrop-blur-sm">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-12 h-12 rounded-lg bg-gradient-to-br from-red-500 via-purple-500 to-blue-500 flex items-center justify-center shadow-lg shadow-red-500/50">
-                    <span className="text-white font-black text-lg">R²</span>
-                    <div className="absolute inset-0 rounded-lg bg-red-500/30 blur-md animate-pulse"></div>
-                  </div>
-                  <div>
-                    <div className="text-3xl font-black bg-gradient-to-r from-red-400 to-purple-400 bg-clip-text text-transparent">95.6%</div>
-                    <div className="text-xs text-gray-400 font-mono uppercase tracking-wider">Accuracy</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Grid */}
-      <section className="relative py-24">
-        {/* Grid Background with Red tint */}
-        <div className="absolute inset-0" style={{
-          backgroundImage: `linear-gradient(rgba(239, 68, 68, 0.05) 1px, transparent 1px),
-                           linear-gradient(90deg, rgba(239, 68, 68, 0.05) 1px, transparent 1px)`,
-          backgroundSize: '50px 50px'
-        }}></div>
-        
-        <div className="relative max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
-              <span className="font-mono text-gray-600 text-xl block mb-2">// SYSTEM ARCHITECTURE</span>
-              Technical{" "}
-              <span className="bg-gradient-to-r from-red-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-                Stack
-              </span>
-            </h2>
-            <p className="text-gray-500 text-lg font-mono">
-              {'>'} Three-layer neural pipeline for maximum accuracy
+        <div className="pointer-events-none absolute inset-0 grid-bg" aria-hidden="true" />
+        <div className="pointer-events-none absolute left-1/2 top-0 h-[480px] w-[900px] -translate-x-1/2 rounded-full bg-brand-500/[0.07] blur-3xl" aria-hidden="true" />
+        <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:px-10 lg:pb-28 lg:pt-20">
+          <div className="animate-fade-up">
+            <a href={REPO_URL} target="_blank" rel="noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-ov/10 bg-ov/[0.03] py-1 pl-1 pr-3 text-xs text-ink-200 transition-colors hover:border-ov/20">
+              <span className="rounded-full bg-brand-500/15 px-2 py-0.5 font-medium text-brand-300">Open source</span>
+              BERT + CNN + XGBoost ensemble <FiArrowRight className="h-3 w-3" />
+            </a>
+            <h1 className="mt-6 text-4xl font-semibold leading-[1.05] sm:text-6xl">
+              Predict YouTube performance <span className="text-gradient">before you publish.</span>
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-300">
+              PrePost forecasts how many views a video will get from its title, thumbnail and context — then shows you what to change to do better.
             </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button to="/post-performance" size="lg">Try the predictor <FiArrowRight className="h-4 w-4" /></Button>
+              <Button to="/predictive-accuracy" size="lg" variant="secondary">How the model works</Button>
+            </div>
+            <p className="mt-4 text-sm text-ink-400">5 free predictions a day · unlimited with a free account</p>
           </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => (
-              <div 
-                key={index} 
-                className="group relative bg-gray-900/80 border border-gray-800 rounded-lg p-6 hover:border-red-500/50 transition-all duration-300 backdrop-blur-sm"
-              >
-                {/* Corner Accent */}
-                <div className="absolute top-0 right-0 w-16 h-16 border-t-2 border-r-2 border-red-500/30 rounded-tr-lg"></div>
-                <div className="absolute bottom-0 left-0 w-16 h-16 border-b-2 border-l-2 border-blue-500/30 rounded-bl-lg"></div>
-                
-                {/* Icon */}
-                <div className="relative mb-6">
-                  <div className="w-12 h-12 rounded bg-gradient-to-br from-red-500/20 to-blue-500/20 flex items-center justify-center border border-red-500/30 group-hover:border-red-500 transition-colors">
-                    {feature.icon}
-                  </div>
-                </div>
-                
-                <h3 className="text-lg font-bold text-white mb-2 font-mono">{feature.title}</h3>
-                <p className="text-gray-400 text-sm mb-6">{feature.description}</p>
-                
-                {/* Stats Display */}
-                <div className="pt-4 border-t border-gray-800">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-black bg-gradient-to-r from-red-400 to-blue-400 bg-clip-text text-transparent font-mono">
-                      {feature.stat}
-                    </span>
-                    <span className="text-xs text-gray-500 font-mono uppercase">{feature.statLabel}</span>
-                  </div>
-                </div>
-                
-                {/* Hover Glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 to-blue-500/0 group-hover:from-red-500/5 group-hover:to-blue-500/5 rounded-lg transition-all pointer-events-none"></div>
-              </div>
-            ))}
-          </div>
+          <HeroMock />
         </div>
       </section>
 
-      {/* Values Section */}
-      <section className="relative py-24">
-        {/* Scanline Effect with Red tint */}
-        <div className="absolute inset-0 opacity-5" style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(239, 68, 68, 0.5) 2px, rgba(239, 68, 68, 0.5) 4px)'
-        }}></div>
-        
-        <div className="relative max-w-7xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
+      {/* Stats */}
+      <section className="border-y border-ov/[0.06] bg-ink-900/40">
+        <dl className="mx-auto grid max-w-7xl grid-cols-2 divide-ov/[0.06] px-4 sm:px-6 lg:grid-cols-4 lg:divide-x lg:px-10">
+          {STATS.map((s) => (
+            <div key={s.label} className="px-2 py-8 lg:px-8">
+              <dt className="order-2 mt-1 text-sm text-ink-300">{s.label}</dt>
+              <dd className="font-mono text-3xl font-semibold tracking-tight text-fg">{s.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
+      {/* Features */}
+      <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-10">
+        <div className="max-w-2xl">
+          <p className="eyebrow">What you get</p>
+          <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">Four tools, one goal: fewer uploads that miss.</h2>
+        </div>
+        <div className="mt-12 grid gap-4 md:grid-cols-2">
+          {FEATURES.map(({ icon: Icon, title, body, to }) => (
+            <Link key={title} to={to} className="panel group relative overflow-hidden p-6 transition-colors hover:border-ov/15 sm:p-7">
+              <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-brand-500/0 blur-3xl transition-colors group-hover:bg-brand-500/15" aria-hidden="true" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-ov/10 bg-ov/[0.03] text-brand-400">
+                <Icon className="h-5 w-5" />
+              </div>
+              <h3 className="mt-5 text-lg font-semibold">{title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-300">{body}</p>
+              <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-fg">
+                Open <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="border-t border-ov/[0.06]">
+        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-10">
+          <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr]">
             <div>
-              <div className="font-mono text-red-400 text-sm mb-4">
-                <span className="text-gray-600">{'>'}</span> CORE_VALUES.init()
-              </div>
-              
-              <h2 className="text-4xl md:text-5xl font-black text-white mb-6">
-                <span className="block text-gray-600 font-mono text-lg mb-2">{'<system>'}</span>
-                What Makes PrePost{" "}
-                <span className="bg-gradient-to-r from-red-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-                  Different
-                </span>
-                <span className="block text-gray-600 font-mono text-lg mt-2">{'</system>'}</span>
-              </h2>
-              
-              {/* Values List */}
-              <div className="space-y-4">
-                {values.map((value, index) => (
-                  <div key={index} className="group flex items-start gap-4 p-4 rounded border border-gray-800 hover:border-red-500/50 bg-gray-900/50 transition-all backdrop-blur-sm">
-                    <div className="w-8 h-8 rounded bg-gradient-to-br from-red-500/20 to-blue-500/20 flex items-center justify-center flex-shrink-0 border border-red-500/30 font-mono text-red-400 text-sm">
-                      {String(index + 1).padStart(2, '0')}
-                    </div>
-                    <div>
-                      <div className="font-bold text-white mb-1 font-mono text-sm">{value.title}</div>
-                      <div className="text-gray-400 text-sm">{value.description}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <p className="eyebrow">Under the hood</p>
+              <h2 className="mt-3 text-3xl font-semibold sm:text-4xl">Three models, one forecast.</h2>
+              <p className="mt-4 text-ink-300">
+                Each part of your upload is read by a model built for it, then combined into a single prediction.
+                Every metric and limitation is documented on the model transparency page.
+              </p>
+              <Button to="/predictive-accuracy" variant="secondary" className="mt-6">Read the model card <FiArrowRight className="h-4 w-4" /></Button>
             </div>
-            
-            {/* Right Data Visualization */}
-            <div className="relative">
-              {/* Main Stats Panel */}
-              <div className="bg-gray-900/80 border border-gray-800 rounded-lg overflow-hidden backdrop-blur-sm">
-                {/* Header */}
-                <div className="bg-gray-800/80 px-4 py-3 border-b border-gray-700 flex items-center justify-between">
-                  <span className="text-gray-400 font-mono text-xs">MODEL_METRICS.json</span>
-                  <div className="flex gap-1">
-                    <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                    <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                    <div className="w-2 h-2 rounded-full bg-green-500"></div>
+            <ol className="grid gap-4 sm:grid-cols-3">
+              {STEPS.map(({ icon: Icon, title, body }, i) => (
+                <li key={title} className="panel p-5">
+                  <div className="flex items-center justify-between">
+                    <Icon className="h-5 w-5 text-brand-400" />
+                    <span className="font-mono text-xs text-ink-500">0{i + 1}</span>
                   </div>
-                </div>
-                
-                {/* Content */}
-                <div className="p-6 space-y-6">
-                  {/* Main Stat */}
-                  <div className="flex items-center gap-4 pb-6 border-b border-gray-800">
-                    <div className="w-16 h-16 rounded bg-gradient-to-br from-red-500 to-blue-500 flex items-center justify-center">
-                      <FiTrendingUp className="w-8 h-8 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-4xl font-black text-white font-mono">51,888</div>
-                      <div className="text-gray-500 text-xs font-mono">TRAINING_SAMPLES</div>
-                    </div>
-                  </div>
-                  
-                  {/* Metrics */}
-                  <div className="space-y-4">
-                    {[
-                      { label: 'R² Score', value: 95.6, max: 100, color: 'from-red-500 to-red-600' },
-                      { label: 'BERT Dims', value: 768, max: 1000, color: 'from-purple-500 to-purple-600' },
-                      { label: 'CNN Dims', value: 512, max: 1000, color: 'from-blue-500 to-blue-600' },
-                    ].map((item, idx) => (
-                      <div key={idx}>
-                        <div className="flex justify-between text-xs mb-2 font-mono">
-                          <span className="text-gray-400">{item.label}</span>
-                          <span className="text-white font-bold">{item.value}</span>
-                        </div>
-                        <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full bg-gradient-to-r ${item.color} transition-all duration-1000 ease-out`}
-                            style={{ width: `${(item.value / item.max) * 100}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Footer */}
-                  <div className="pt-4 border-t border-gray-800 flex items-center justify-between text-xs font-mono">
-                    <span className="text-gray-500">STACK: XGBoost + BERT + CNN</span>
-                    <div className="flex items-center gap-2">
-                      <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-                      <span className="text-red-400">ONLINE</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Floating Accent */}
-              <div className="absolute -top-4 -right-4 w-24 h-24 bg-red-500/20 rounded-lg border border-red-500/30 backdrop-blur-sm flex items-center justify-center">
-                <span className="text-red-400 font-mono text-xs">v1.0</span>
-              </div>
-            </div>
+                  <h3 className="mt-5 font-semibold">{title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-300">{body}</p>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>
 
-
-      {/* CTA Section */}
-      <section className="relative py-24">
-        {/* Matrix-style Background with Red */}
-        <div className="absolute inset-0 overflow-hidden opacity-10">
-          <div className="absolute inset-0 font-mono text-red-500 text-xs leading-tight">
-            {[...Array(50)].map((_, i) => (
-              <div key={i} className="whitespace-nowrap animate-scroll" style={{ animationDelay: `${i * 0.1}s` }}>
-                01001000 01100101 01101100 01101100 01101111 00100000 01010111 01101111 01110010 01101100 01100100
+      {/* Principles */}
+      <section className="border-t border-ov/[0.06]">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-20 sm:px-6 md:grid-cols-3 lg:px-10">
+          {[
+            { icon: FiEye, t: 'Transparent', d: 'Accuracy, error margins and known blind spots are published, not hidden.' },
+            { icon: FiLock, t: 'Privacy-first', d: "Predictions run on public metadata. We don't store your videos or thumbnails." },
+            { icon: FiGithub, t: 'Open source', d: 'The full stack — models, API and this interface — is on GitHub.' },
+          ].map(({ icon: Icon, t, d }) => (
+            <div key={t} className="flex gap-4">
+              <Icon className="mt-0.5 h-5 w-5 shrink-0 text-ink-300" />
+              <div>
+                <h3 className="font-semibold">{t}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-ink-300">{d}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-        
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 via-purple-500/10 to-blue-500/10"></div>
-        
-        <div className="relative max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded border border-red-500/30 bg-red-500/10 backdrop-blur-sm mb-8 font-mono text-xs text-red-400">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-            <span>READY_TO_DEPLOY</span>
-          </div>
-          
-          <h2 className="text-4xl md:text-6xl font-black text-white mb-10 leading-tight">
-            <span className="block text-gray-600 font-mono text-lg mb-2">{'<initialize>'}</span>
-            Start Predicting Your
-            <span className="block bg-gradient-to-r from-red-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-              YouTube Performance
-            </span>
-            <span className="block text-gray-600 font-mono text-lg mt-2">{'</initialize>'}</span>
-          </h2>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link
-              to="/signup"
-              className="group h-14 px-8 bg-gradient-to-r from-red-500 to-blue-500 rounded font-bold hover:shadow-lg hover:shadow-red-500/50 transition-all flex items-center justify-center gap-2 text-white"
-            >
-              <span>Sign Up</span>
-              <FiArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              to="/post-performance"
-              className="h-14 px-8 border border-gray-700 rounded font-bold hover:bg-gray-900 hover:border-red-500/50 transition-all flex items-center justify-center gap-2 text-gray-300"
-            >
-              <span>VIEW DEMO</span>
-            </Link>
-          </div>
-          
-          {/* System Status */}
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-6 text-gray-500 font-mono text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-              <span>API: ONLINE</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-              <span>MODELS: LOADED</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-              <span>LATENCY: {'<'}50ms</span>
-            </div>
-          </div>
-        </div>
-        
       </section>
 
-      {/* Footer Note */}
-      <section className="text-center">
-        <p className="text-slate-600">
-          Have questions? Check out our{" "}
-          <Link to="/privacy" className="text-blue-600 hover:underline font-medium">
-            Privacy Policy
-          </Link>{" "}
-          and{" "}
-          <Link to="/terms" className="text-blue-600 hover:underline font-medium">
-            Terms of Service
-          </Link>
-        </p>
-        <p className="text-sm text-slate-500 mt-4">
-          © {new Date().getFullYear()} PrePost Analytics. All rights reserved.
-        </p>
+      {/* CTA */}
+      <section className="px-4 pb-24 sm:px-6 lg:px-10">
+        <div className="panel relative mx-auto max-w-5xl overflow-hidden px-6 py-16 text-center sm:px-12">
+          <div className="pointer-events-none absolute inset-0 grid-bg opacity-70" aria-hidden="true" />
+          <div className="pointer-events-none absolute left-1/2 top-full h-64 w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-500/20 blur-3xl" aria-hidden="true" />
+          <div className="relative">
+            <h2 className="text-3xl font-semibold sm:text-4xl">See your next video's numbers first.</h2>
+            <p className="mx-auto mt-3 max-w-md text-ink-300">No card, no install. Paste a title and get a forecast in seconds.</p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Button to="/post-performance" size="lg">Start predicting <FiArrowRight className="h-4 w-4" /></Button>
+              <Button to="/signup" size="lg" variant="secondary">Create free account</Button>
+            </div>
+          </div>
+        </div>
       </section>
-      </div>
     </main>
   );
 }

@@ -2,9 +2,8 @@ import { existsSync } from 'fs';
 import { join } from 'path';
 
 const requiredAssets = [
-  'public/vite.svg',
+  'public/favicon.svg',
   'src/index.css',
-  'src/App.css',
   'index.html'
 ];
 

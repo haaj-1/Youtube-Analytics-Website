@@ -1,22 +1,15 @@
-import React from 'react';
-import PostPredictorClean from '../components/tools/PostPredictor/PostPredictorClean';
+import PostPredictor from '../components/tools/PostPredictor/PostPredictor';
+import { PageHeader } from '../components/ui';
 
-const PostPerformancePage = () => {
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 px-10 py-8">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-gray-900 mb-1">Video Performance Predictor</h1>
-          <p className="text-gray-500 text-sm">
-            Predict views, find your best thumbnail, and get AI-optimized title suggestions — all in one run.
-          </p>
-        </div>
-      </header>
-      <div className="max-w-7xl mx-auto px-6 lg:px-10 py-8">
-        <PostPredictorClean />
-      </div>
-    </div>
-  );
-};
+const PostPerformancePage = () => (
+  <>
+    <PageHeader
+      eyebrow="Pre-publish forecast"
+      title="Performance Predictor"
+      description="Estimate views before you upload, see which factors drive the number, and test better titles — all from one form."
+    />
+    <PostPredictor />
+  </>
+);
 
 export default PostPerformancePage;

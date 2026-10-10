@@ -1,897 +1,390 @@
-// src/components/tools/PostPredictor/PostPredictor.jsx
-import React, { useState } from 'react';
-import './PostPredictor.css';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { FiActivity, FiFileText, FiImage, FiLayers, FiRefreshCw, FiZap } from 'react-icons/fi';
+import { ML_API_URL, request, fmtDuration } from '../../../lib/api';
+import { useAuth } from '../../../lib/auth';
+import { Alert, Button, Card, CardHeader, EmptyState, Field, Input, Modal, Select } from '../../ui';
+import { cx } from '../../../lib/cx';
+import ThumbnailInput from './ThumbnailInput';
+import ChannelModelPicker from './ChannelModelPicker';
+import Results, { ResultsLoading } from './Results';
+import {
+  CATEGORIES, DURATION_PRESETS, EMPTY_FORM, GUEST_DAILY_LIMIT, SUBSCRIBER_RANGES, TITLE_MAX, rangeFor,
+} from './constants';
 
-const CATEGORIES = [
-  { id: 1, name: 'Film & Animation' },
-  { id: 2, name: 'Autos & Vehicles' },
-  { id: 10, name: 'Music' },
-  { id: 15, name: 'Pets & Animals' },
-  { id: 17, name: 'Sports' },
-  { id: 19, name: 'Travel & Events' },
-  { id: 20, name: 'Gaming' },
-  { id: 22, name: 'People & Blogs' },
-  { id: 23, name: 'Comedy' },
-  { id: 24, name: 'Entertainment' },
-  { id: 25, name: 'News & Politics' },
-  { id: 26, name: 'Howto & Style' },
-  { id: 27, name: 'Education' },
-  { id: 28, name: 'Science & Technology' }
-];
+const LIMIT_KEY = 'predictionLimit';
+const IS_MAC = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
 
-const SUBSCRIBER_RANGES = [
-  { value: 500, label: '0-1K', min: 0, max: 1000 },
-  { value: 5000, label: '1K-10K', min: 1000, max: 10000 },
-  { value: 25000, label: '10K-50K', min: 10000, max: 50000 },
-  { value: 75000, label: '50K-100K', min: 50000, max: 100000 },
-  { value: 175000, label: '100K-250K', min: 100000, max: 250000 },
-  { value: 375000, label: '250K-500K', min: 250000, max: 500000 },
-  { value: 750000, label: '500K-1M', min: 500000, max: 1000000 },
-  { value: 5000000, label: '1M-10M', min: 1000000, max: 10000000 },
-  { value: 15000000, label: '10M+', min: 10000000, max: 100000000 }
-];
+function readGuestUsage() {
+  const today = new Date().toDateString();
+  try {
+    const stored = JSON.parse(localStorage.getItem(LIMIT_KEY) || 'null');
+    return stored?.date === today ? stored.count : 0;
+  } catch {
+    return 0;
+  }
+}
 
-const PostPredictor = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    thumbnail_url: '',
-    thumbnail_file: null,
-    category_id: 24,
-    subscriber_count: 10000,
-    duration_seconds: 600
+function recordGuestUsage() {
+  const count = readGuestUsage() + 1;
+  localStorage.setItem(LIMIT_KEY, JSON.stringify({ date: new Date().toDateString(), count }));
+  return count;
+}
+
+const fileToDataUrl = (file) =>
+  new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(new Error('Could not read the thumbnail file.'));
+    r.readAsDataURL(file);
   });
+
+function LivePreview({ form, previewUrl, channelName }) {
+  const category = CATEGORIES.find((c) => c.id === form.category_id)?.name;
+  return (
+    <Card className="overflow-hidden">
+      <div className="flex items-center gap-2 border-b border-ov/[0.06] px-4 py-2.5">
+        <span className="flex gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-ov/10" />
+          <span className="h-2.5 w-2.5 rounded-full bg-ov/10" />
+          <span className="h-2.5 w-2.5 rounded-full bg-ov/10" />
+        </span>
+        <span className="mx-auto rounded-md bg-ov/[0.04] px-3 py-0.5 font-mono text-[11px] text-ink-400">youtube.com/watch</span>
+        <span className="eyebrow">Preview</span>
+      </div>
+      <div className="p-4">
+        <div className="relative aspect-video overflow-hidden rounded-xl bg-ink-850">
+          {previewUrl ? (
+            <img src={previewUrl} alt="Thumbnail preview" className="h-full w-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          ) : (
+            <div className="grid-bg absolute inset-0 flex items-center justify-center [mask-image:none]">
+              <div className="text-center">
+                <FiImage className="mx-auto h-6 w-6 text-ink-500" />
+                <p className="mt-2 text-xs text-ink-400">No thumbnail yet</p>
+              </div>
+            </div>
+          )}
+          <span className="absolute bottom-2 right-2 rounded bg-black/85 px-1.5 py-0.5 font-mono text-xs text-white">
+            {fmtDuration(form.duration_seconds)}
+          </span>
+        </div>
+        <div className="mt-3 flex gap-3">
+          <div className="h-9 w-9 shrink-0 rounded-full bg-gradient-to-br from-ink-600 to-ink-700" />
+          <div className="min-w-0">
+            <p className={cx('line-clamp-2 text-sm font-medium leading-snug', form.title ? 'text-fg' : 'text-ink-500')}>
+              {form.title || 'Your video title will appear here'}
+            </p>
+            <p className="mt-1 text-xs text-ink-400">
+              {channelName || 'Your channel'} · {rangeFor(form.subscriber_count).label} subs · {category}
+            </p>
+          </div>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+export default function PostPredictor() {
+  const location = useLocation();
+  const { isLoggedIn } = useAuth();
+  const [form, setForm] = useState(() => {
+    const prefill = location.state?.subscriber_count;
+    return prefill ? { ...EMPTY_FORM, subscriber_count: prefill } : EMPTY_FORM;
+  });
+  const [errors, setErrors] = useState({});
+  const [requestError, setRequestError] = useState(null);
   const [predictions, setPredictions] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-  
-  // Prediction limit state
-  const [predictionsRemaining, setPredictionsRemaining] = useState(5);
-  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
-  
-  // Channel import state
-  const [channelName, setChannelName] = useState('');
-  const [channelResults, setChannelResults] = useState([]);
-  const [selectedChannel, setSelectedChannel] = useState(null);
-  const [isSearchingChannel, setIsSearchingChannel] = useState(false);
-  const [showChannelImport, setShowChannelImport] = useState(false);
-  const [isTrainingModel, setIsTrainingModel] = useState(false);
-  const [personalizedModel, setPersonalizedModel] = useState(null);
-  const [usePersonalizedModel, setUsePersonalizedModel] = useState(false);
-  
-  // Check prediction limit on component mount
-  React.useEffect(() => {
-    checkPredictionLimit();
-  }, []);
-  
-  const checkPredictionLimit = () => {
-    // Check if user is logged in (you'll need to implement this based on your auth system)
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    
-    if (isLoggedIn) {
-      setPredictionsRemaining(999); // Unlimited for logged-in users
-      return;
-    }
-    
-    // For non-logged-in users, check daily limit
-    const today = new Date().toDateString();
-    const storedData = localStorage.getItem('predictionLimit');
-    
-    if (storedData) {
-      const { date, count } = JSON.parse(storedData);
-      
-      if (date === today) {
-        const remaining = Math.max(0, 5 - count);
-        setPredictionsRemaining(remaining);
-      } else {
-        // New day, reset count
-        localStorage.setItem('predictionLimit', JSON.stringify({ date: today, count: 0 }));
-        setPredictionsRemaining(5);
-      }
-    } else {
-      // First time
-      localStorage.setItem('predictionLimit', JSON.stringify({ date: today, count: 0 }));
-      setPredictionsRemaining(5);
-    }
-  };
-  
-  const incrementPredictionCount = () => {
-    const today = new Date().toDateString();
-    const storedData = localStorage.getItem('predictionLimit');
-    
-    if (storedData) {
-      const { count } = JSON.parse(storedData);
-      const newCount = count + 1;
-      localStorage.setItem('predictionLimit', JSON.stringify({ date: today, count: newCount }));
-      setPredictionsRemaining(Math.max(0, 5 - newCount));
-      
-      if (newCount >= 5) {
-        setShowLoginPrompt(true);
-      }
-    }
-  };
-  
-  // Thumbnail comparison state
-  const [thumbnailFiles, setThumbnailFiles] = useState([]);
-  const [thumbnailComparison, setThumbnailComparison] = useState(null);
-  const [isComparingThumbnails, setIsComparingThumbnails] = useState(false);
-  const [showThumbnailComparison, setShowThumbnailComparison] = useState(false);
+  const [lastPayload, setLastPayload] = useState(null);
+  const [isPredicting, setIsPredicting] = useState(false);
+  const [guestUsed, setGuestUsed] = useState(readGuestUsage);
+  const [showLimit, setShowLimit] = useState(false);
+  const [personalModel, setPersonalModel] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    setError(null);
+  const remaining = Math.max(0, GUEST_DAILY_LIMIT - guestUsed);
+  const set = (field, val) => {
+    setForm((p) => ({ ...p, [field]: val }));
+    if (errors[field]) setErrors((e) => ({ ...e, [field]: undefined }));
   };
-  
-  const handleChannelSearch = async () => {
-    if (!channelName.trim()) {
-      setError('Please enter a channel name');
-      return;
+
+  // Object URLs must be revoked or they leak for the lifetime of the page
+  useEffect(() => {
+    if (form.thumbnail_file) {
+      const url = URL.createObjectURL(form.thumbnail_file);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
     }
-    
-    setIsSearchingChannel(true);
-    setError(null);
-    
+    setPreviewUrl(form.thumbnail_url || '');
+  }, [form.thumbnail_file, form.thumbnail_url]);
+
+  const isStale = useMemo(() => {
+    if (!lastPayload) return false;
+    return ['title', 'description', 'category_id', 'subscriber_count', 'duration_seconds'].some((k) => lastPayload[k] !== form[k])
+      || lastPayload.thumbnailKey !== (form.thumbnail_file?.name || form.thumbnail_url);
+  }, [form, lastPayload]);
+
+  const validate = () => {
+    const e = {};
+    if (!form.title.trim()) e.title = 'Add a title to predict performance.';
+    else if (form.title.length > TITLE_MAX) e.title = `YouTube titles are capped at ${TITLE_MAX} characters.`;
+    if (!form.description.trim()) e.description = 'A short description helps the language model understand the topic.';
+    if (!form.duration_seconds || form.duration_seconds < 1) e.duration_seconds = 'Enter a duration.';
+    return e;
+  };
+
+  const handlePredict = useCallback(async () => {
+    const v = validate();
+    setErrors(v);
+    if (Object.keys(v).length) return;
+    if (!isLoggedIn && remaining <= 0) { setShowLimit(true); return; }
+
+    setIsPredicting(true);
+    setRequestError(null);
     try {
-      const response = await fetch(`http://localhost:5000/youtube/search/channel?q=${encodeURIComponent(channelName)}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to search channels');
-      }
-      
-      const data = await response.json();
-      setChannelResults(data.items || []);
-      
-      if (!data.items || data.items.length === 0) {
-        setError('No channels found. Try a different search term.');
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsSearchingChannel(false);
-    }
-  };
-  
-  const handleChannelSelect = async (channel) => {
-    setSelectedChannel(channel);
-    setIsTrainingModel(true);
-    setError(null);
-    
-    try {
-      const channelId = channel.id.channelId;
-      
-      // Train personalized model with 40 most recent videos
-      const response = await fetch('http://localhost:5000/predict/personalized', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          channel_id: channelId,
-          max_videos: 40
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to train personalized model');
-      }
-      
-      const data = await response.json();
-      
-      // Auto-fill subscriber count
-      setFormData(prev => ({
-        ...prev,
-        subscriber_count: data.stats.subscriber_count
-      }));
-      
-      setPersonalizedModel(data);
-      setUsePersonalizedModel(true);
-      setChannelResults([]);
-      setShowChannelImport(false);
-      
-    } catch (err) {
-      setError(err.message);
-      setUsePersonalizedModel(false);
-    } finally {
-      setIsTrainingModel(false);
-    }
-  };
-
-  const handleThumbnailUpload = (e) => {
-    const file = e.target.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setFormData(prev => ({ ...prev, thumbnail_file: file, thumbnail_url: '' }));
-      setError(null);
-    }
-  };
-  
-  const handleMultipleThumbnailUpload = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length < 2 || files.length > 5) {
-      setError('Please upload 2-5 thumbnails for comparison');
-      return;
-    }
-    setThumbnailFiles(files);
-    setThumbnailComparison(null);
-    setError(null);
-  };
-  
-  const handleCompareThumbnails = async () => {
-    if (thumbnailFiles.length < 2) {
-      setError('Please upload at least 2 thumbnails');
-      return;
-    }
-    
-    if (!formData.title || !formData.description) {
-      setError('Please fill in title and description first to compare thumbnails');
-      return;
-    }
-    
-    setIsComparingThumbnails(true);
-    setError(null);
-    
-    try {
-      const formDataToSend = new FormData();
-      thumbnailFiles.forEach((file) => {
-        formDataToSend.append('thumbnails', file);
-      });
-      
-      // Add video details for full prediction
-      formDataToSend.append('title', formData.title);
-      formDataToSend.append('description', formData.description);
-      formDataToSend.append('category_id', formData.category_id.toString());
-      formDataToSend.append('subscriber_count', formData.subscriber_count.toString());
-      formDataToSend.append('duration_seconds', formData.duration_seconds.toString());
-
-      const response = await fetch('http://localhost:5000/thumbnail/compare-with-prediction', {
-        method: 'POST',
-        body: formDataToSend,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to compare thumbnails');
-      }
-
-      const data = await response.json();
-      setThumbnailComparison(data);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsComparingThumbnails(false);
-    }
-  };
-  
-  const selectThumbnail = (thumbnail) => {
-    // Find the file that matches this thumbnail
-    const selectedFile = thumbnailFiles[thumbnail.thumbnail_id - 1];
-    setFormData(prev => ({ ...prev, thumbnail_file: selectedFile, thumbnail_url: '' }));
-    setShowThumbnailComparison(false);
-    setError(null);
-  };
-
-  const handlePredict = async () => {
-    if (!formData.title || !formData.description) {
-      setError('Please fill in title and description');
-      return;
-    }
-    
-    // Check if user has predictions remaining
-    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
-    if (!isLoggedIn && predictionsRemaining <= 0) {
-      setShowLoginPrompt(true);
-      return;
-    }
-    
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      let thumbnailData = formData.thumbnail_url;
-      
-      // Convert uploaded file to base64
-      if (formData.thumbnail_file) {
-        const reader = new FileReader();
-        thumbnailData = await new Promise((resolve) => {
-          reader.onloadend = () => resolve(reader.result);
-          reader.readAsDataURL(formData.thumbnail_file);
-        });
-      }
-      
-      // Choose endpoint based on model type
-      const endpoint = usePersonalizedModel && personalizedModel
-        ? 'http://localhost:5000/predict/personalized/predict'
-        : 'http://localhost:5000/predict/';
-      
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          thumbnail_url: thumbnailData || 'https://via.placeholder.com/1280x720'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Prediction failed');
-      }
-
-      const data = await response.json();
+      const thumb = form.thumbnail_file ? await fileToDataUrl(form.thumbnail_file) : form.thumbnail_url;
+      const body = {
+        title: form.title.trim(),
+        description: form.description.trim(),
+        thumbnail_url: thumb || '',
+        category_id: form.category_id,
+        subscriber_count: form.subscriber_count,
+        duration_seconds: form.duration_seconds,
+      };
+      const path = personalModel ? '/predict/personalized/predict' : '/predict/';
+      const data = await request(ML_API_URL, path, { method: 'POST', body, timeout: 120000 });
       setPredictions(data);
-      
-      // Increment prediction count for non-logged-in users
+      setLastPayload({
+        ...form,
+        ...body,
+        title: form.title,
+        description: form.description,
+        personalized: !!personalModel,
+        thumbnailKey: form.thumbnail_file?.name || form.thumbnail_url,
+      });
       if (!isLoggedIn) {
-        incrementPredictionCount();
+        const used = recordGuestUsage();
+        setGuestUsed(used);
+        if (used >= GUEST_DAILY_LIMIT) setShowLimit(true);
+      }
+      if (window.matchMedia('(max-width: 1023px)').matches) {
+        document.getElementById('results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     } catch (err) {
-      setError(err.message);
+      setRequestError(err.message);
     } finally {
-      setIsLoading(false);
+      setIsPredicting(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, isLoggedIn, remaining, personalModel]);
+
+  // Cmd/Ctrl + Enter runs a prediction from anywhere in the form
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && !isPredicting) handlePredict();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [handlePredict, isPredicting]);
+
+  const reset = () => {
+    setForm(EMPTY_FORM);
+    setPredictions(null);
+    setLastPayload(null);
+    setErrors({});
+    setRequestError(null);
   };
 
-  const formatNumber = (num) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
+  const applyTitle = (title) => {
+    set('title', title);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+  const minutes = Math.floor(form.duration_seconds / 60);
+  const seconds = form.duration_seconds % 60;
+  const setDuration = (m, s) => set('duration_seconds', Math.max(0, (Number(m) || 0) * 60 + (Number(s) || 0)));
 
   return (
     <>
-      {/* Login Prompt Modal */}
-      {showLoginPrompt && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative">
-            <button
-              onClick={() => setShowLoginPrompt(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl"
-            >
-              ×
-            </button>
-            
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-3xl">🔒</span>
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Daily Limit Reached</h3>
-              <p className="text-gray-600">
-                You've used all 5 predictions for today. Create an account to get unlimited predictions!
-              </p>
-            </div>
-            
-            <div className="space-y-3 mb-6">
-              <div className="flex items-center gap-3 text-sm text-gray-700">
-                <span className="text-green-500 text-xl">✓</span>
-                <span>Unlimited predictions</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-700">
-                <span className="text-green-500 text-xl">✓</span>
-                <span>Save your prediction history</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-700">
-                <span className="text-green-500 text-xl">✓</span>
-                <span>Personalized AI models</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-700">
-                <span className="text-green-500 text-xl">✓</span>
-                <span>Advanced analytics</span>
-              </div>
-              <div className="flex items-center gap-3 text-sm text-gray-700">
-                <span className="text-green-500 text-xl">✓</span>
-                <span>Always free, no credit card required</span>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <a
-                href="/signup"
-                className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-center transition-colors"
-              >
-                Create Account
-              </a>
-              <a
-                href="/login"
-                className="block w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 rounded-lg text-center transition-colors"
-              >
-                Already have an account? Log in
-              </a>
-            </div>
+      <Modal open={showLimit} onClose={() => setShowLimit(false)} labelledBy="limit-title">
+        <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl border border-brand-500/30 bg-brand-500/10 text-brand-400">
+          <FiZap className="h-5 w-5" />
+        </div>
+        <h2 id="limit-title" className="text-xl font-semibold">You've used today's free predictions</h2>
+        <p className="mt-2 text-sm text-ink-300">
+          Guests get {GUEST_DAILY_LIMIT} predictions a day. Create a free account for unlimited predictions — no card required.
+        </p>
+        <div className="mt-6 grid gap-2">
+          <Button to="/signup" size="lg">Create free account</Button>
+          <Button to="/login" size="lg" variant="secondary">I already have an account</Button>
+        </div>
+      </Modal>
+
+      {!isLoggedIn && (
+        <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-ov/[0.07] bg-ov/[0.02] px-4 py-2.5 text-sm">
+          <div className="flex gap-1" aria-hidden="true">
+            {Array.from({ length: GUEST_DAILY_LIMIT }).map((_, i) => (
+              <span key={i} className={cx('h-1.5 w-4 rounded-full', i < remaining ? 'bg-brand-500' : 'bg-ov/10')} />
+            ))}
           </div>
+          <span className="text-ink-200">
+            <span className="font-mono text-fg">{remaining}</span> of {GUEST_DAILY_LIMIT} free predictions left today
+          </span>
+          <Button to="/signup" variant="ghost" size="sm" className="ml-auto">Get unlimited →</Button>
         </div>
       )}
-      
-      <div className="flex-1 flex flex-col gap-8">
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden p-8">
-          <div className="mb-8">
-            <div className="flex items-center justify-between mb-2">
-              <h1 className="text-gray-900 text-3xl font-bold leading-tight">Create Predictions</h1>
-              {predictionsRemaining < 999 && (
-                <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
-                  <span className="text-blue-600 font-semibold">
-                    {predictionsRemaining} prediction{predictionsRemaining !== 1 ? 's' : ''} remaining today
-                  </span>
-                </div>
-              )}
-            </div>
-            <p className="text-gray-600 mt-2">Enter your video details to get AI-powered performance predictions</p>
-            {predictionsRemaining < 999 && predictionsRemaining > 0 && (
-              <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <p className="text-sm text-yellow-800">
-                  <span className="font-semibold">Guest users:</span> {predictionsRemaining} predictions left today. 
-                  <a href="/signup" className="ml-1 text-blue-600 hover:text-blue-700 font-semibold underline">
-                    Sign up
-                  </a> for unlimited predictions!
-                </p>
-              </div>
-            )}
-          </div>
-          
-          <div className="space-y-6">
-            <div className="flex flex-col gap-2">
-              <label className="text-gray-900 text-base font-semibold">Video Title *</label>
-              <input 
-                className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400" 
-                placeholder="e.g. 10 Python Tips for Beginners" 
-                type="text"
-                value={formData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
-              />
-            </div>
 
-            <div className="flex flex-col gap-2">
-              <label className="text-gray-900 text-base font-semibold">Description *</label>
-              <textarea 
-                className="w-full rounded-lg border border-gray-300 bg-white h-24 px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400 resize-none" 
-                placeholder="Describe your video content..."
-                value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
-              />
-            </div>
-            
-            <div className="p-6 bg-purple-50 border-2 border-purple-200 rounded-xl">
-              <div className="flex items-center justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">🎯</span>
-                  <h3 className="text-lg font-bold text-purple-900">Use My Channel Data</h3>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setShowChannelImport(!showChannelImport)}
-                  className="text-sm text-purple-600 hover:text-purple-700 font-medium"
-                >
-                  {showChannelImport ? '▼ Hide' : '▶ Show'}
-                </button>
-              </div>
-              
-              {personalizedModel && (
-                <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl">✓</span>
-                    <p className="font-bold text-green-900">Personalized Model Active</p>
-                  </div>
-                  <div className="text-sm text-green-800 space-y-1">
-                    <p>Channel: {personalizedModel.stats.channel_name}</p>
-                    <p>Trained on: {personalizedModel.stats.videos_analyzed} videos</p>
-                    <p>Model Accuracy: {personalizedModel.model_accuracy}</p>
-                    <p>Your Avg Views: {formatNumber(personalizedModel.stats.avg_views)}</p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setUsePersonalizedModel(false);
-                      setPersonalizedModel(null);
-                      setSelectedChannel(null);
-                    }}
-                    className="mt-2 text-xs text-red-600 hover:text-red-700 font-medium"
-                  >
-                    Switch to Global Model
-                  </button>
-                </div>
-              )}
-              
-              {showChannelImport && !personalizedModel && (
-                <div className="space-y-4">
-                  <p className="text-sm text-purple-700">
-                    Train a personalized model using your channel's 40 most recent videos for more accurate predictions based on your audience
-                  </p>
-                  
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="Enter your channel name..."
-                      value={channelName}
-                      onChange={(e) => setChannelName(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleChannelSearch()}
-                      className="flex-1 rounded-lg border border-purple-300 bg-white h-12 px-4 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all placeholder:text-gray-400"
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] xl:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
+        {/* Inputs */}
+        <form
+          className="space-y-5"
+          noValidate
+          onSubmit={(e) => { e.preventDefault(); handlePredict(); }}
+        >
+          <Card>
+            <CardHeader icon={<FiFileText className="h-4 w-4" />} title="Video details" description="What viewers see before they click." />
+            <div className="space-y-5 p-5">
+              <Field label="Title" error={errors.title}>
+                {(p) => (
+                  <div className="relative">
+                    <Input
+                      {...p}
+                      value={form.title}
+                      onChange={(e) => set('title', e.target.value)}
+                      placeholder="e.g. 10 Python tips I wish I knew sooner"
+                      invalid={!!errors.title}
+                      className="pr-16"
                     />
-                    <button
-                      type="button"
-                      onClick={handleChannelSearch}
-                      disabled={isSearchingChannel || isTrainingModel}
-                      className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-                    >
-                      {isSearchingChannel ? 'Searching...' : 'Search'}
-                    </button>
+                    <span className={cx('pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 font-mono text-[11px] tabular-nums',
+                      form.title.length > TITLE_MAX ? 'text-brand-400' : form.title.length > 70 ? 'text-warning-400' : 'text-ink-400')}>
+                      {form.title.length}/{TITLE_MAX}
+                    </span>
                   </div>
-                  
-                  {isTrainingModel && (
-                    <div className="p-4 bg-white rounded-lg border border-purple-200">
-                      <div className="flex items-center gap-3">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-purple-600"></div>
-                        <div>
-                          <p className="font-semibold text-purple-900">Training Your Personalized Model...</p>
-                          <p className="text-sm text-purple-700">Analyzing your 40 most recent videos</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  
-                  {channelResults.length > 0 && (
-                    <div className="space-y-2">
-                      <p className="text-sm font-semibold text-purple-900">Select your channel:</p>
-                      {channelResults.map((channel, idx) => (
-                        <div
-                          key={idx}
-                          onClick={() => handleChannelSelect(channel)}
-                          className="flex items-center gap-3 p-3 bg-white rounded-lg border border-purple-200 hover:border-purple-400 cursor-pointer transition-all"
-                        >
-                          <img
-                            src={channel.snippet.thumbnails.default.url}
-                            alt={channel.snippet.title}
-                            className="w-12 h-12 rounded-full"
-                          />
-                          <div className="flex-1">
-                            <p className="font-semibold text-gray-900">{channel.snippet.title}</p>
-                            <p className="text-xs text-gray-600">{channel.snippet.description.substring(0, 100)}...</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+                )}
+              </Field>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="text-gray-900 text-base font-semibold">Category</label>
-                <select 
-                  className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  value={formData.category_id}
-                  onChange={(e) => handleInputChange('category_id', parseInt(e.target.value))}
-                >
-                  {CATEGORIES.map(cat => (
-                    <option key={cat.id} value={cat.id}>{cat.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-gray-900 text-base font-semibold">Subscriber Range</label>
-                <select 
-                  className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
-                  value={SUBSCRIBER_RANGES.find(r => formData.subscriber_count >= r.min && formData.subscriber_count <= r.max)?.value || 10000}
-                  onChange={(e) => handleInputChange('subscriber_count', parseInt(e.target.value))}
-                >
-                  {SUBSCRIBER_RANGES.map(range => (
-                    <option key={range.value} value={range.value}>{range.label}</option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-gray-900 text-base font-semibold">Video Duration (seconds)</label>
-                <input 
-                  className="w-full rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all" 
-                  type="number"
-                  min="1"
-                  value={formData.duration_seconds}
-                  onChange={(e) => handleInputChange('duration_seconds', parseInt(e.target.value))}
-                />
-                <span className="text-sm text-gray-500">Duration: {formatTime(formData.duration_seconds)}</span>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="text-gray-900 text-base font-semibold">Thumbnail</label>
-                <div className="flex gap-2">
-                  <input 
-                    className="flex-1 rounded-lg border border-gray-300 bg-white h-12 px-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all placeholder:text-gray-400" 
-                    placeholder="URL or upload below"
-                    type="url"
-                    value={formData.thumbnail_url}
-                    onChange={(e) => handleInputChange('thumbnail_url', e.target.value)}
-                    disabled={!!formData.thumbnail_file}
+              <Field label="Description" error={errors.description} hint="The first two lines matter most — they show in search results.">
+                {(p) => (
+                  <textarea
+                    {...p}
+                    value={form.description}
+                    onChange={(e) => set('description', e.target.value)}
+                    placeholder="What's the video about? Who is it for?"
+                    rows={4}
+                    className={cx('input h-auto resize-y py-3 leading-relaxed', errors.description && 'border-brand-500/60')}
                   />
-                  <label className="px-4 h-12 bg-gray-100 hover:bg-gray-200 rounded-lg border border-gray-300 flex items-center justify-center cursor-pointer transition-colors font-medium">
-                    📁 Upload
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      className="hidden"
-                      onChange={handleThumbnailUpload}
-                    />
-                  </label>
-                </div>
-                {formData.thumbnail_file && (
-                  <span className="text-sm text-green-600">✓ {formData.thumbnail_file.name}</span>
                 )}
-                
-                <button
-                  type="button"
-                  onClick={() => setShowThumbnailComparison(!showThumbnailComparison)}
-                  className="mt-2 text-sm text-blue-600 hover:text-blue-700 font-medium text-left"
-                >
-                  {showThumbnailComparison ? '▼' : '▶'} Compare Multiple Thumbnails (2-5)
-                </button>
-              </div>
+              </Field>
             </div>
-            
-            {showThumbnailComparison && (
-              <div className="p-6 bg-purple-50 border-2 border-purple-200 rounded-xl">
-                <h3 className="text-lg font-bold text-purple-900 mb-3">🎨 Thumbnail Comparison Tool</h3>
-                <p className="text-sm text-purple-700 mb-4">Upload 2-5 thumbnails and our CNN model will predict which performs best</p>
-                
-                <div className="flex gap-3 mb-4">
-                  <label className="flex-1 px-4 py-3 bg-white hover:bg-purple-50 rounded-lg border-2 border-dashed border-purple-300 flex items-center justify-center cursor-pointer transition-colors font-medium text-purple-700">
-                    📁 Upload 2-5 Thumbnails
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      multiple
-                      className="hidden"
-                      onChange={handleMultipleThumbnailUpload}
-                    />
-                  </label>
-                  
-                  {thumbnailFiles.length >= 2 && (
-                    <button
-                      type="button"
-                      onClick={handleCompareThumbnails}
-                      disabled={isComparingThumbnails}
-                      className="px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-                    >
-                      {isComparingThumbnails ? 'Analyzing...' : 'Compare'}
-                    </button>
-                  )}
-                </div>
-                
-                {thumbnailFiles.length > 0 && (
-                  <p className="text-sm text-purple-700 mb-3">
-                    {thumbnailFiles.length} thumbnail(s) selected
-                  </p>
+          </Card>
+
+          <Card>
+            <CardHeader icon={<FiLayers className="h-4 w-4" />} title="Context" description="Category, audience size and length." />
+            <div className="grid gap-5 p-5 sm:grid-cols-2">
+              <Field label="Category">
+                {(p) => (
+                  <Select {...p} value={form.category_id} onChange={(e) => set('category_id', Number(e.target.value))}>
+                    {CATEGORIES.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </Select>
                 )}
-                
-                {thumbnailComparison && (
-                  <div className="space-y-4">
-                    <div className="p-4 bg-white rounded-lg border border-purple-200">
-                      <h4 className="font-bold text-purple-900 mb-2">📊 Prediction Results</h4>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-gray-600">Best Thumbnail:</span>
-                          <span className="ml-2 font-bold text-purple-900">#{thumbnailComparison.best_thumbnail}</span>
-                        </div>
-                        <div>
-                          <span className="text-gray-600">Predicted Views:</span>
-                          <span className="ml-2 font-bold text-green-600">{formatNumber(thumbnailComparison.analysis.best_predicted_views)}</span>
-                        </div>
-                        <div className="col-span-2">
-                          <span className="text-gray-600">Impact:</span>
-                          <span className="ml-2 font-bold text-purple-900">{thumbnailComparison.analysis.recommendation}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="grid grid-cols-1 gap-3">
-                      {thumbnailComparison.thumbnails.map((thumb) => (
-                        <div 
-                          key={thumb.thumbnail_id}
-                          className={`relative bg-white rounded-lg border-2 overflow-hidden cursor-pointer transition-all hover:shadow-lg ${
-                            thumb.rank === 1 ? 'border-green-500 shadow-md' : 
-                            thumb.rank === 2 ? 'border-blue-500' : 
-                            'border-gray-300'
-                          }`}
-                          onClick={() => selectThumbnail(thumb)}
-                        >
-                          <div className="flex gap-4 p-4">
-                            <div className="relative flex-shrink-0">
-                              <div className={`absolute -top-2 -left-2 px-3 py-1 rounded-full text-white text-xs font-bold shadow-lg ${
-                                thumb.rank === 1 ? 'bg-green-500' : 
-                                thumb.rank === 2 ? 'bg-blue-500' : 
-                                'bg-gray-500'
-                              }`}>
-                                {thumb.rank === 1 ? '🏆' : thumb.rank === 2 ? '🥈' : '🥉'} #{thumb.rank}
-                              </div>
-                              <img 
-                                src={thumb.image_data} 
-                                alt={`Thumbnail ${thumb.thumbnail_id}`}
-                                className="w-40 h-24 object-cover rounded"
-                              />
-                            </div>
-                            
-                            <div className="flex-1">
-                              <p className="text-sm font-semibold text-gray-900 mb-1 truncate">{thumb.filename}</p>
-                              
-                              <div className="grid grid-cols-2 gap-2 mb-2">
-                                <div>
-                                  <span className="text-xs text-gray-600">Predicted Views:</span>
-                                  <p className="text-lg font-bold text-purple-900">{formatNumber(thumb.predicted_views)}</p>
-                                </div>
-                                <div>
-                                  <span className="text-xs text-gray-600">Confidence:</span>
-                                  <p className="text-lg font-bold text-blue-600">{(thumb.confidence_score * 100).toFixed(0)}%</p>
-                                </div>
-                              </div>
-                              
-                              <div className="flex gap-2 text-xs mb-2">
-                                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded">
-                                  CNN: {thumb.cnn_activation}%
-                                </span>
-                                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded">
-                                  Diversity: {thumb.cnn_diversity}%
-                                </span>
-                              </div>
-                              
-                              {thumb.rank !== 1 && (
-                                <p className="text-xs text-orange-600 font-medium mt-1">
-                                  ⚠️ {thumb.performance_vs_best}
-                                </p>
-                              )}
-                            </div>
-                            
-                            <button
-                              type="button"
-                              className={`self-center px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-                                thumb.rank === 1 
-                                  ? 'bg-green-600 hover:bg-green-700 text-white' 
-                                  : 'bg-purple-600 hover:bg-purple-700 text-white'
-                              }`}
-                            >
-                              {thumb.rank === 1 ? '✓ Use Best' : 'Select'}
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
+              </Field>
+              <Field label="Subscribers" hint={personalModel ? 'Set from your channel model.' : undefined}>
+                {(p) => (
+                  <Select {...p} value={rangeFor(form.subscriber_count).value} onChange={(e) => set('subscriber_count', Number(e.target.value))}>
+                    {SUBSCRIBER_RANGES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+                  </Select>
+                )}
+              </Field>
+              <div className="sm:col-span-2">
+                <span className="label" id="duration-label">Duration</span>
+                <div className="flex flex-wrap items-center gap-2" role="group" aria-labelledby="duration-label">
+                  <div className="flex items-center gap-1.5">
+                    <Input type="number" min="0" inputMode="numeric" aria-label="Minutes" value={minutes} onChange={(e) => setDuration(e.target.value, seconds)} className="w-20 text-center font-mono" />
+                    <span className="text-xs text-ink-400">min</span>
+                    <Input type="number" min="0" max="59" inputMode="numeric" aria-label="Seconds" value={seconds} onChange={(e) => setDuration(minutes, Math.min(59, Number(e.target.value)))} className="w-20 text-center font-mono" />
+                    <span className="text-xs text-ink-400">sec</span>
                   </div>
-                )}
-              </div>
-            )}
-
-            {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-                {error}
-              </div>
-            )}
-
-            <button 
-              className="w-full bg-blue-500 text-white font-bold text-lg py-4 rounded-full hover:bg-blue-600 hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              onClick={handlePredict}
-              disabled={isLoading || !formData.title || !formData.description}
-            >
-              {isLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  Analyzing with AI...
-                </>
-              ) : (
-                <>
-                  Generate Prediction
-                  <span className="text-xl">⚡</span>
-                </>
-              )}
-            </button>
-          </div>
-        </section>
-        
-        {predictions && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-              <p className="text-sm font-medium text-gray-600 mb-2">Predicted Views</p>
-              <h3 className="text-3xl font-bold text-gray-900 mb-3">{formatNumber(predictions.predicted_views)}</h3>
-              <div className="flex items-center gap-1 text-blue-500">
-                <span className="text-sm">📊</span>
-                <span className="text-xs font-bold">{(predictions.confidence_score * 100).toFixed(0)}% Confidence</span>
-              </div>
-              {predictions.model_type === 'personalized' && (
-                <div className="mt-3 pt-3 border-t border-gray-200">
-                  <p className="text-xs text-purple-700 font-semibold mb-1">vs Your Channel:</p>
-                  <p className="text-sm text-gray-700">Avg: {predictions.comparison.vs_channel_avg}</p>
-                  <p className="text-sm text-gray-700">Median: {predictions.comparison.vs_channel_median}</p>
+                  <div className="flex flex-wrap gap-1.5 sm:ml-auto">
+                    {DURATION_PRESETS.map((d) => (
+                      <button key={d.label} type="button" onClick={() => set('duration_seconds', d.seconds)}
+                        className={cx('rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors',
+                          form.duration_seconds === d.seconds ? 'border-brand-500/50 bg-brand-500/10 text-brand-300' : 'border-ov/10 text-ink-300 hover:border-ov/20 hover:text-fg')}>
+                        {d.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              )}
-            </div>
-
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
-              <p className="text-sm font-medium text-gray-600 mb-2">
-                {predictions.model_type === 'personalized' ? 'Your Channel' : 'Subscriber Range'}
-              </p>
-              <h3 className="text-3xl font-bold text-gray-900 mb-3">
-                {predictions.model_type === 'personalized' 
-                  ? predictions.channel_stats.channel_name 
-                  : predictions.subscriber_range}
-              </h3>
-              <div className="flex items-center gap-1 text-gray-500">
-                <span className="text-sm">{predictions.model_type === 'personalized' ? '🎯' : '👥'}</span>
-                <span className="text-xs font-bold">
-                  {predictions.model_type === 'personalized' ? 'Personalized Model' : 'Channel Size'}
-                </span>
+                {errors.duration_seconds && <p className="mt-1.5 text-xs text-brand-300">{errors.duration_seconds}</p>}
               </div>
             </div>
+          </Card>
+
+          <Card>
+            <CardHeader icon={<FiImage className="h-4 w-4" />} title="Thumbnail" />
+            <div className="p-5">
+              <ThumbnailInput
+                file={form.thumbnail_file}
+                url={form.thumbnail_url}
+                previewUrl={previewUrl}
+                onFile={(f) => setForm((p) => ({ ...p, thumbnail_file: f, thumbnail_url: f ? '' : p.thumbnail_url }))}
+                onUrl={(u) => setForm((p) => ({ ...p, thumbnail_url: u, thumbnail_file: u ? null : p.thumbnail_file }))}
+                onError={setRequestError}
+              />
+            </div>
+          </Card>
+
+          <Card>
+            <CardHeader icon={<FiActivity className="h-4 w-4" />} title="Prediction model" />
+            <div className="p-5">
+              <ChannelModelPicker
+                model={personalModel}
+                onError={setRequestError}
+                onModel={(m) => {
+                  setPersonalModel(m);
+                  if (m?.stats?.subscriber_count) set('subscriber_count', m.stats.subscriber_count);
+                }}
+              />
+            </div>
+          </Card>
+
+          {requestError && <Alert onDismiss={() => setRequestError(null)}>{requestError}</Alert>}
+
+          <div className="sticky bottom-4 z-10 flex gap-2 lg:static">
+            <Button type="submit" size="lg" loading={isPredicting} className="flex-1 shadow-2xl lg:shadow-none">
+              {isPredicting ? 'Running model…' : (<><FiZap className="h-4 w-4" /> {predictions ? 'Re-run prediction' : 'Predict performance'}</>)}
+              {!isPredicting && <kbd className="ml-2 hidden rounded border border-white/25 px-1.5 font-mono text-[10px] text-white/80 sm:inline">{IS_MAC ? '⌘↵' : 'Ctrl ↵'}</kbd>}
+            </Button>
+            {predictions && (
+              <Button type="button" size="lg" variant="secondary" onClick={reset} aria-label="Start over">
+                <FiRefreshCw className="h-4 w-4" />
+              </Button>
+            )}
           </div>
-        )}
-      </div>
-      
-      <aside className="w-full lg:w-96 flex flex-col gap-8">
-        <div className="bg-green-50 border border-green-200 p-8 rounded-xl">
-          <div className="flex items-center gap-3 mb-4 text-gray-900">
-            <span className="text-green-500 text-3xl">💡</span>
-            <h4 className="text-xl font-bold">Pro Tips: CTR Optimization</h4>
-          </div>
-          <div className="space-y-4 text-sm text-gray-700">
-            <div>
-              <p className="font-semibold text-gray-900 mb-1">🎬 Thumbnail Design</p>
-              <ul className="space-y-2 ml-4">
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
-                  <span>High contrast thumbnails grab attention — orange, red, and green beat muted blues and grays</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
-                  <span>Video thumbnails with clear imagery can increase CTR by 200-300% vs text-only</span>
-                </li>
-              </ul>
-            </div>
-            
-            <div>
-              <p className="font-semibold text-gray-900 mb-1">📝 Titles & Headlines</p>
-              <ul className="space-y-2 ml-4">
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
-                  <span>Titles with numbers perform 36% better — try "7 Proven Ways" instead of "Tips for Better Results"</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
-                  <span>Words like "unlock," "boost," "transform" trigger curiosity and action</span>
-                </li>
-              </ul>
-            </div>
-            
-            <div>
-              <p className="font-semibold text-gray-900 mb-1">⚡ Urgency & Mobile</p>
-              <ul className="space-y-2 ml-4">
-                <li className="flex items-start gap-2">
-                  <span className="text-green-500 mt-0.5">•</span>
-                  <span>60%+ of views are mobile — ensure thumbnail text is readable on phone screens</span>
-                </li>
-              </ul>
-            </div>
-            
-            <div>
-              <p className="font-semibold text-gray-900 mb-1">⚠️ Common Mistakes</p>
-              <ul className="space-y-2 ml-4">
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 mt-0.5">✗</span>
-                  <span>Avoid clickbait — misleading thumbnails erode trust and increase bounce rates</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-500 mt-0.5">✗</span>
-                  <span>Don't "set it & forget it" — regular A/B testing keeps CTR alive</span>
-                </li>
-              </ul>
-            </div>
-            
-            <div className="pt-3 border-t border-green-200">
-              <p className="text-xs text-gray-600 italic">
-                Source: Vashkevich, K. (2025, October 1). Proven Tactics to Improve CTR. RedTrack.
-              </p>
-            </div>
-          </div>
+        </form>
+
+        {/* Preview + results */}
+        <div className="scroll-mt-20 space-y-5" id="results">
+          <LivePreview form={form} previewUrl={previewUrl} channelName={personalModel?.stats?.channel_name || location.state?.channel_name} />
+          {isPredicting ? (
+            <ResultsLoading />
+          ) : predictions ? (
+            <>
+              {isStale && (
+                <Alert tone="warning">
+                  Inputs changed since this prediction.{' '}
+                  <button onClick={handlePredict} className="font-medium text-fg underline underline-offset-2">Re-run</button>
+                </Alert>
+              )}
+              <Results predictions={predictions} payload={lastPayload} onUseTitle={applyTitle} />
+            </>
+          ) : (
+            <EmptyState
+              icon={<FiZap className="h-5 w-5" />}
+              title="No prediction yet"
+              description="Fill in your video details and run the model to see projected views, the factors behind them and better title options."
+            />
+          )}
         </div>
-      </aside>
+      </div>
     </>
   );
-};
-
-export default PostPredictor;
+}
