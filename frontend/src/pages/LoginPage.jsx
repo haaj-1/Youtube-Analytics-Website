@@ -63,7 +63,7 @@ export default function LoginPage() {
     <AuthShell
       title="Welcome back"
       subtitle="Log in for unlimited predictions."
-      footer={<>New to PrePost? <Link to="/signup" state={location.state} className="font-medium text-white hover:text-brand-300">Create an account</Link></>}
+      footer={<>New to PrePost? <Link to="/signup" state={location.state} className="font-medium text-fg hover:text-brand-300">Create an account</Link></>}
     >
       <GoogleButton onCredential={handleGoogleResponse} />
 
@@ -82,7 +82,7 @@ export default function LoginPage() {
                 value={formData.password} onChange={handleChange} placeholder="••••••••" disabled={loading}
                 invalid={!!errors.password} className="pr-11" />
               <button type="button" onClick={() => setShowPassword((s) => !s)} aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-ink-400 hover:text-white">
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-ink-400 hover:text-fg">
                 {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
               </button>
             </div>

@@ -4,11 +4,15 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#06070a" />
+    <meta name="theme-color" content="#f6f7f9" />
     <meta name="description" content="Predict YouTube video performance before you publish. ML-powered view forecasts, title optimization and channel analytics." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <title>PrePost Analytics — Predict YouTube performance</title>
+    <script>
+      // Pick the theme before first paint (kept in sync with src/lib/theme.js)
+      if (!/^\/about\/?$/.test(location.pathname)) document.documentElement.classList.add('theme-light');
+    </script>
   </head>
   <body>
     <div id="root"></div>

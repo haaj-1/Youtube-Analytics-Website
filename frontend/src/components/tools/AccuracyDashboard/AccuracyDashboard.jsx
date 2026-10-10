@@ -173,10 +173,10 @@ function Pipeline() {
     <div className="grid items-center gap-4 lg:grid-cols-[1fr_auto_auto_auto_auto]">
       <div className="space-y-2">
         {inputs.map(({ label, model, dims, icon: Icon }) => (
-          <div key={label} className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5">
+          <div key={label} className="flex items-center gap-3 rounded-xl border border-ov/[0.07] bg-ov/[0.02] px-3.5 py-2.5">
             <Icon className="h-4 w-4 shrink-0 text-ink-300" />
             <div className="min-w-0 flex-1">
-              <p className="text-sm text-white">{label}</p>
+              <p className="text-sm text-fg">{label}</p>
               <p className="text-xs text-ink-400">{model}</p>
             </div>
             <span className="font-mono text-xs tabular-nums text-ink-200">{dims}d</span>
@@ -184,13 +184,13 @@ function Pipeline() {
         ))}
       </div>
       <FiArrowRight className="mx-auto h-4 w-4 rotate-90 text-ink-500 lg:rotate-0" />
-      <div className="rounded-xl border border-white/10 bg-ink-850 px-4 py-3 text-center">
-        <p className="font-mono text-lg font-semibold text-white">1,294</p>
+      <div className="rounded-xl border border-ov/10 bg-ink-850 px-4 py-3 text-center">
+        <p className="font-mono text-lg font-semibold text-fg">1,294</p>
         <p className="text-xs text-ink-400">feature vector</p>
       </div>
       <FiArrowRight className="mx-auto h-4 w-4 rotate-90 text-ink-500 lg:rotate-0" />
       <div className="rounded-xl border border-brand-500/30 bg-brand-500/[0.07] px-4 py-3 text-center shadow-glow">
-        <p className="text-sm font-semibold text-white">XGBoost</p>
+        <p className="text-sm font-semibold text-fg">XGBoost</p>
         <p className="text-xs text-brand-300">→ predicted views</p>
       </div>
     </div>
@@ -202,7 +202,7 @@ function CheckList({ items, tone = 'brand' }) {
     <ul className="space-y-2.5">
       {items.map((t) => (
         <li key={t} className="flex items-start gap-2.5 text-sm text-ink-200">
-          <FiCheck className={cx('mt-0.5 h-4 w-4 shrink-0', tone === 'brand' ? 'text-brand-400' : 'text-emerald-400')} />
+          <FiCheck className={cx('mt-0.5 h-4 w-4 shrink-0', tone === 'brand' ? 'text-brand-400' : 'text-success-400')} />
           {t}
         </li>
       ))}
@@ -231,23 +231,23 @@ const AccuracyDashboard = () => {
         <Card className="relative overflow-hidden p-5">
           <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-brand-500/25 blur-3xl" aria-hidden="true" />
           <p className="text-xs text-ink-300">Accuracy (R²)</p>
-          <p className="mt-2 font-mono text-4xl font-semibold tabular-nums text-white">{r2}%</p>
+          <p className="mt-2 font-mono text-4xl font-semibold tabular-nums text-fg">{r2}%</p>
           <p className="mt-1 text-xs text-ink-400">of variance in views explained</p>
         </Card>
         <Card className="p-5">
           <p className="text-xs text-ink-300">Training data</p>
-          <p className="mt-2 font-mono text-4xl font-semibold tabular-nums text-white">{modelInfo.overview.training_samples.toLocaleString()}</p>
+          <p className="mt-2 font-mono text-4xl font-semibold tabular-nums text-fg">{modelInfo.overview.training_samples.toLocaleString()}</p>
           <p className="mt-1 text-xs text-ink-400">videos across all categories</p>
         </Card>
         <Card className="p-5">
           <p className="text-xs text-ink-300">Architecture</p>
-          <p className="mt-2 text-2xl font-semibold text-white">Ensemble</p>
+          <p className="mt-2 text-2xl font-semibold text-fg">Ensemble</p>
           <p className="mt-1 text-xs text-ink-400">BERT + CNN + XGBoost</p>
         </Card>
       </div>
 
       <Card>
-        <div role="tablist" aria-label="Model details" onKeyDown={onTabKey} className="flex gap-1 overflow-x-auto border-b border-white/[0.06] px-3">
+        <div role="tablist" aria-label="Model details" onKeyDown={onTabKey} className="flex gap-1 overflow-x-auto border-b border-ov/[0.06] px-3">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -259,7 +259,7 @@ const AccuracyDashboard = () => {
               onClick={() => setActiveTab(tab.id)}
               className={cx(
                 'relative whitespace-nowrap px-3 py-3.5 text-sm font-medium transition-colors',
-                activeTab === tab.id ? 'text-white' : 'text-ink-300 hover:text-white',
+                activeTab === tab.id ? 'text-fg' : 'text-ink-300 hover:text-fg',
               )}
             >
               {tab.label}
@@ -282,15 +282,15 @@ const AccuracyDashboard = () => {
                   {modelInfo.components.map((c, idx) => {
                     const Icon = componentIcons[idx];
                     return (
-                      <div key={c.name} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
+                      <div key={c.name} className="rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-5">
                         <div className="mb-3 flex items-center gap-2.5">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-brand-400">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-ov/10 bg-ov/[0.04] text-brand-400">
                             <Icon className="h-4 w-4" />
                           </div>
                           <h4 className="font-semibold">{c.name}</h4>
                         </div>
                         <p className="text-sm leading-relaxed text-ink-300">{c.purpose}</p>
-                        <dl className="mt-4 space-y-1.5 border-t border-white/[0.06] pt-4 text-xs">
+                        <dl className="mt-4 space-y-1.5 border-t border-ov/[0.06] pt-4 text-xs">
                           {[['Model', c.model], ['Parameters', c.parameters], ['Output', c.output]].map(([k, v]) => (
                             <div key={k} className="flex justify-between gap-2">
                               <dt className="text-ink-400">{k}</dt>
@@ -308,10 +308,10 @@ const AccuracyDashboard = () => {
                 <h3 className="mb-4 text-base font-semibold">Feature importance</h3>
                 <div className="space-y-3">
                   {Object.values(modelInfo.features).map((f) => (
-                    <div key={f.description} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
+                    <div key={f.description} className="rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-5">
                       <div className="mb-3 flex items-baseline justify-between gap-4">
                         <h4 className="text-sm font-medium">{f.description}</h4>
-                        <span className="font-mono text-xl font-semibold tabular-nums text-white">{f.importance}%</span>
+                        <span className="font-mono text-xl font-semibold tabular-nums text-fg">{f.importance}%</span>
                       </div>
                       <Bar value={f.importance} className="h-2" />
                       <div className="mt-3 flex flex-wrap gap-1.5">
@@ -326,13 +326,13 @@ const AccuracyDashboard = () => {
 
           {activeTab === 'how-it-works' && (
             <div className="animate-fade-up space-y-8">
-              <ol className="relative space-y-4 before:absolute before:bottom-4 before:left-[15px] before:top-4 before:w-px before:bg-white/10">
+              <ol className="relative space-y-4 before:absolute before:bottom-4 before:left-[15px] before:top-4 before:w-px before:bg-ov/10">
                 {modelInfo.how_it_works.map((s) => (
                   <li key={s.step} className="relative flex gap-4">
                     <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-brand-500/40 bg-ink-900 font-mono text-xs text-brand-300">
                       {s.step}
                     </span>
-                    <div className="flex-1 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+                    <div className="flex-1 rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-4">
                       <h4 className="text-sm font-semibold">{s.title}</h4>
                       <p className="mt-1 text-sm leading-relaxed text-ink-300">{s.description}</p>
                     </div>
@@ -341,18 +341,18 @@ const AccuracyDashboard = () => {
               </ol>
 
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border border-white/[0.07] p-5">
+                <div className="rounded-xl border border-ov/[0.07] p-5">
                   <p className="eyebrow mb-3">Input dimensions</p>
-                  <p className="font-mono text-2xl font-semibold text-white">1,294</p>
+                  <p className="font-mono text-2xl font-semibold text-fg">1,294</p>
                   <dl className="mt-3 space-y-1.5 text-sm">
                     {[['BERT (text)', 768], ['CNN (image)', 512], ['Metadata', 14]].map(([k, v]) => (
                       <div key={k} className="flex justify-between"><dt className="text-ink-300">{k}</dt><dd className="font-mono text-ink-100">{v}</dd></div>
                     ))}
                   </dl>
                 </div>
-                <div className="rounded-xl border border-white/[0.07] p-5">
+                <div className="rounded-xl border border-ov/[0.07] p-5">
                   <p className="eyebrow mb-3">Processing time</p>
-                  <p className="font-mono text-2xl font-semibold text-white">~2–3s</p>
+                  <p className="font-mono text-2xl font-semibold text-fg">~2–3s</p>
                   <dl className="mt-3 space-y-1.5 text-sm">
                     {[['BERT', '~1s'], ['CNN', '~0.5s'], ['XGBoost', '~0.1s']].map(([k, v]) => (
                       <div key={k} className="flex justify-between"><dt className="text-ink-300">{k}</dt><dd className="font-mono text-ink-100">{v}</dd></div>
@@ -371,9 +371,9 @@ const AccuracyDashboard = () => {
                   { k: 'MAE', v: `±${fmtViews(pm.mae.value)}`, m: pm.mae },
                   { k: 'RMSE', v: fmtViews(pm.rmse.value), m: pm.rmse },
                 ].map(({ k, v, m }) => (
-                  <div key={k} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
+                  <div key={k} className="rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-5">
                     <p className="eyebrow">{k}</p>
-                    <p className="mt-2 font-mono text-3xl font-semibold tabular-nums text-white">{v}</p>
+                    <p className="mt-2 font-mono text-3xl font-semibold tabular-nums text-fg">{v}</p>
                     <p className="mt-3 text-sm text-ink-300">{m.description}</p>
                     <p className="mt-2 text-xs text-brand-300">{m.interpretation}</p>
                   </div>
@@ -381,11 +381,11 @@ const AccuracyDashboard = () => {
               </div>
 
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border border-white/[0.07] p-5">
+                <div className="rounded-xl border border-ov/[0.07] p-5">
                   <h4 className="mb-3 text-sm font-semibold">Dataset</h4>
                   <CheckList items={[`${td.dataset_size.toLocaleString()} videos`, ...td.data_sources]} />
                 </div>
-                <div className="rounded-xl border border-white/[0.07] p-5">
+                <div className="rounded-xl border border-ov/[0.07] p-5">
                   <h4 className="mb-3 text-sm font-semibold">Training</h4>
                   <dl className="space-y-2 text-sm">
                     {[['Validation split', td.validation_split], ['Training time', td.training_time], ['Last retrained', td.last_retrained]].map(([k, v]) => (
@@ -395,12 +395,12 @@ const AccuracyDashboard = () => {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-white/[0.07] p-5">
+              <div className="rounded-xl border border-ov/[0.07] p-5">
                 <h4 className="text-sm font-semibold">Reading the R² score</h4>
                 <p className="mt-1 text-sm text-ink-300">R² measures how much of the variation in views the model explains.</p>
                 <div className="mt-4 flex h-2 overflow-hidden rounded-full">
-                  <div className="w-[70%] bg-white/10" title="Below 70%: limited" />
-                  <div className="w-[20%] bg-white/25" title="70–90%: good" />
+                  <div className="w-[70%] bg-ov/10" title="Below 70%: limited" />
+                  <div className="w-[20%] bg-ov/25" title="70–90%: good" />
                   <div className="w-[10%] bg-brand-500" title="90–100%: excellent" />
                 </div>
                 <div className="mt-2 grid grid-cols-[70%_20%_10%] text-[11px] text-ink-400">
@@ -417,8 +417,8 @@ const AccuracyDashboard = () => {
               </Alert>
               <div className="grid gap-3 md:grid-cols-2">
                 {modelInfo.limitations.map((l) => (
-                  <div key={l.title} className="flex gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
-                    <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
+                  <div key={l.title} className="flex gap-3 rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-4">
+                    <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning-400" />
                     <div>
                       <h4 className="text-sm font-semibold">{l.title}</h4>
                       <p className="mt-1 text-sm leading-relaxed text-ink-300">{l.description}</p>
@@ -427,11 +427,11 @@ const AccuracyDashboard = () => {
                 ))}
               </div>
               <div className="grid gap-4 md:grid-cols-2">
-                <div className="rounded-xl border border-white/[0.07] p-5">
+                <div className="rounded-xl border border-ov/[0.07] p-5">
                   <h4 className="mb-3 text-sm font-semibold">Ethical considerations</h4>
                   <CheckList items={modelInfo.ethical_considerations} tone="success" />
                 </div>
-                <div className="rounded-xl border border-white/[0.07] p-5">
+                <div className="rounded-xl border border-ov/[0.07] p-5">
                   <h4 className="mb-3 text-sm font-semibold">Best practices</h4>
                   <CheckList items={[
                     'Use predictions as guidance, not absolute truth',

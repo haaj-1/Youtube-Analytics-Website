@@ -46,11 +46,11 @@ export default function ChannelModelPicker({ model, onModel, onError }) {
 
   const segment = (active) =>
     cx('flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-      active ? 'bg-white/10 text-white shadow-[0_0_0_1px_rgba(255,255,255,0.08)_inset]' : 'text-ink-300 hover:text-white');
+      active ? 'bg-ov/10 text-fg shadow-[0_0_0_1px_rgba(255,255,255,0.08)_inset]' : 'text-ink-300 hover:text-fg');
 
   return (
     <div>
-      <div className="flex rounded-xl border border-white/10 bg-ink-850 p-1" role="radiogroup" aria-label="Prediction model">
+      <div className="flex rounded-xl border border-ov/10 bg-ink-850 p-1" role="radiogroup" aria-label="Prediction model">
         <button type="button" role="radio" aria-checked={!model && !open} onClick={() => { onModel(null); setOpen(false); }} className={segment(!model && !open)}>
           <FiGlobe className="h-4 w-4" /> Global
         </button>
@@ -60,13 +60,13 @@ export default function ChannelModelPicker({ model, onModel, onError }) {
       </div>
 
       {model ? (
-        <div className="mt-3 flex items-start gap-3 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.06] p-3">
-          <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+        <div className="mt-3 flex items-start gap-3 rounded-xl border border-success-500/25 bg-success-500/[0.06] p-3">
+          <FiCheck className="mt-0.5 h-4 w-4 shrink-0 text-success-400" />
           <div className="min-w-0 flex-1 text-sm">
-            <p className="font-medium text-white">{model.stats.channel_name}</p>
+            <p className="font-medium text-fg">{model.stats.channel_name}</p>
             <p className="text-xs text-ink-300">Trained on {model.stats.videos_analyzed} videos · avg {fmt(model.stats.avg_views)} views</p>
           </div>
-          <button type="button" onClick={() => onModel(null)} className="text-xs text-ink-300 underline-offset-2 hover:text-white hover:underline">Reset</button>
+          <button type="button" onClick={() => onModel(null)} className="text-xs text-ink-300 underline-offset-2 hover:text-fg hover:underline">Reset</button>
         </div>
       ) : open ? (
         <div className="mt-3 space-y-2">
@@ -85,11 +85,11 @@ export default function ChannelModelPicker({ model, onModel, onError }) {
                     type="button"
                     disabled={!!training}
                     onClick={() => train(ch)}
-                    className="flex w-full items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-2.5 text-left transition-colors hover:border-white/20 hover:bg-white/[0.05] disabled:opacity-60"
+                    className="flex w-full items-center gap-3 rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-2.5 text-left transition-colors hover:border-ov/20 hover:bg-ov/[0.05] disabled:opacity-60"
                   >
                     <img src={ch.snippet.thumbnails?.default?.url} alt="" className="h-9 w-9 shrink-0 rounded-full object-cover" />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium text-white">{ch.snippet.title}</p>
+                      <p className="truncate text-sm font-medium text-fg">{ch.snippet.title}</p>
                       <p className="truncate text-xs text-ink-400">{ch.snippet.description || 'No description'}</p>
                     </div>
                     {training === ch.id.channelId && <Spinner className="h-4 w-4 text-brand-400" />}

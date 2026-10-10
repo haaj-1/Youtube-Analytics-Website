@@ -21,7 +21,7 @@ export default function ThumbnailInput({ file, url, previewUrl, onFile, onUrl, o
 
   return (
     <div>
-      <div className="mb-3 inline-flex rounded-lg border border-white/10 bg-ink-850 p-0.5 text-xs" role="tablist" aria-label="Thumbnail source">
+      <div className="mb-3 inline-flex rounded-lg border border-ov/10 bg-ink-850 p-0.5 text-xs" role="tablist" aria-label="Thumbnail source">
         {[
           { id: 'upload', label: 'Upload', icon: FiUploadCloud },
           { id: 'url', label: 'Paste URL', icon: FiLink },
@@ -32,7 +32,7 @@ export default function ThumbnailInput({ file, url, previewUrl, onFile, onUrl, o
             role="tab"
             aria-selected={mode === id}
             onClick={() => setMode(id)}
-            className={cx('flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium transition-colors', mode === id ? 'bg-white/10 text-white' : 'text-ink-300 hover:text-white')}
+            className={cx('flex items-center gap-1.5 rounded-md px-3 py-1.5 font-medium transition-colors', mode === id ? 'bg-ov/10 text-fg' : 'text-ink-300 hover:text-fg')}
           >
             <Icon className="h-3.5 w-3.5" /> {label}
           </button>
@@ -40,13 +40,13 @@ export default function ThumbnailInput({ file, url, previewUrl, onFile, onUrl, o
       </div>
 
       {hasImage ? (
-        <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-ink-850 p-2.5">
+        <div className="flex items-center gap-3 rounded-xl border border-ov/10 bg-ink-850 p-2.5">
           <img src={previewUrl} alt="" className="h-12 w-20 shrink-0 rounded-md object-cover" />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm text-white">{file ? file.name : url}</p>
+            <p className="truncate text-sm text-fg">{file ? file.name : url}</p>
             <p className="text-xs text-ink-400">{file ? `${(file.size / 1024).toFixed(0)} KB · uploaded` : 'from URL'}</p>
           </div>
-          <button type="button" onClick={() => { onFile(null); onUrl(''); }} aria-label="Remove thumbnail" className="rounded-lg p-2 text-ink-300 hover:bg-white/[0.06] hover:text-white">
+          <button type="button" onClick={() => { onFile(null); onUrl(''); }} aria-label="Remove thumbnail" className="rounded-lg p-2 text-ink-300 hover:bg-ov/[0.06] hover:text-fg">
             <FiX className="h-4 w-4" />
           </button>
         </div>
@@ -59,11 +59,11 @@ export default function ThumbnailInput({ file, url, previewUrl, onFile, onUrl, o
           onDrop={(e) => { e.preventDefault(); setDragging(false); accept(e.dataTransfer.files?.[0]); }}
           className={cx(
             'flex w-full flex-col items-center justify-center rounded-xl border border-dashed px-4 py-7 text-center transition-colors',
-            dragging ? 'border-brand-500/70 bg-brand-500/[0.06]' : 'border-white/15 bg-ink-850/50 hover:border-white/25 hover:bg-ink-850',
+            dragging ? 'border-brand-500/70 bg-brand-500/[0.06]' : 'border-ov/15 bg-ink-850/50 hover:border-ov/25 hover:bg-ink-850',
           )}
         >
           <FiImage className="mb-2 h-5 w-5 text-ink-300" />
-          <span className="text-sm text-white">Drop an image or <span className="text-brand-400">browse</span></span>
+          <span className="text-sm text-fg">Drop an image or <span className="text-brand-400">browse</span></span>
           <span className="mt-1 text-xs text-ink-400">PNG or JPG, 1280×720 recommended, up to 5 MB</span>
           <input ref={inputRef} type="file" accept="image/*" className="sr-only" onChange={(e) => accept(e.target.files?.[0])} tabIndex={-1} />
         </button>

@@ -54,9 +54,9 @@ export function GoogleButton({ onCredential, text = 'continue_with' }) {
     <>
       <div ref={ref} className="flex min-h-[44px] w-full justify-center" />
       <div className="my-6 flex items-center gap-4">
-        <div className="h-px flex-1 bg-white/[0.08]" />
+        <div className="h-px flex-1 bg-ov/[0.08]" />
         <span className="text-xs text-ink-400">or with email</span>
-        <div className="h-px flex-1 bg-white/[0.08]" />
+        <div className="h-px flex-1 bg-ov/[0.08]" />
       </div>
     </>
   );
@@ -81,11 +81,11 @@ export default function AuthShell({ title, subtitle, children, footer }) {
         <ul className="mt-10 max-w-md space-y-5">
           {POINTS.map(({ icon: Icon, title: t, body }) => (
             <li key={t} className="flex gap-4">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-brand-400">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-ov/10 bg-ov/[0.03] text-brand-400">
                 <Icon className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-sm font-medium text-white">{t}</p>
+                <p className="text-sm font-medium text-fg">{t}</p>
                 <p className="mt-0.5 text-sm text-ink-300">{body}</p>
               </div>
             </li>

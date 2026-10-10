@@ -43,13 +43,13 @@ function LivePreview({ form, previewUrl, channelName }) {
   const category = CATEGORIES.find((c) => c.id === form.category_id)?.name;
   return (
     <Card className="overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-white/[0.06] px-4 py-2.5">
+      <div className="flex items-center gap-2 border-b border-ov/[0.06] px-4 py-2.5">
         <span className="flex gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-          <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
-          <span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+          <span className="h-2.5 w-2.5 rounded-full bg-ov/10" />
+          <span className="h-2.5 w-2.5 rounded-full bg-ov/10" />
+          <span className="h-2.5 w-2.5 rounded-full bg-ov/10" />
         </span>
-        <span className="mx-auto rounded-md bg-white/[0.04] px-3 py-0.5 font-mono text-[11px] text-ink-400">youtube.com/watch</span>
+        <span className="mx-auto rounded-md bg-ov/[0.04] px-3 py-0.5 font-mono text-[11px] text-ink-400">youtube.com/watch</span>
         <span className="eyebrow">Preview</span>
       </div>
       <div className="p-4">
@@ -71,7 +71,7 @@ function LivePreview({ form, previewUrl, channelName }) {
         <div className="mt-3 flex gap-3">
           <div className="h-9 w-9 shrink-0 rounded-full bg-gradient-to-br from-ink-600 to-ink-700" />
           <div className="min-w-0">
-            <p className={cx('line-clamp-2 text-sm font-medium leading-snug', form.title ? 'text-white' : 'text-ink-500')}>
+            <p className={cx('line-clamp-2 text-sm font-medium leading-snug', form.title ? 'text-fg' : 'text-ink-500')}>
               {form.title || 'Your video title will appear here'}
             </p>
             <p className="mt-1 text-xs text-ink-400">
@@ -220,14 +220,14 @@ export default function PostPredictor() {
       </Modal>
 
       {!isLoggedIn && (
-        <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-2.5 text-sm">
+        <div className="mb-6 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-xl border border-ov/[0.07] bg-ov/[0.02] px-4 py-2.5 text-sm">
           <div className="flex gap-1" aria-hidden="true">
             {Array.from({ length: GUEST_DAILY_LIMIT }).map((_, i) => (
-              <span key={i} className={cx('h-1.5 w-4 rounded-full', i < remaining ? 'bg-brand-500' : 'bg-white/10')} />
+              <span key={i} className={cx('h-1.5 w-4 rounded-full', i < remaining ? 'bg-brand-500' : 'bg-ov/10')} />
             ))}
           </div>
           <span className="text-ink-200">
-            <span className="font-mono text-white">{remaining}</span> of {GUEST_DAILY_LIMIT} free predictions left today
+            <span className="font-mono text-fg">{remaining}</span> of {GUEST_DAILY_LIMIT} free predictions left today
           </span>
           <Button to="/signup" variant="ghost" size="sm" className="ml-auto">Get unlimited →</Button>
         </div>
@@ -255,7 +255,7 @@ export default function PostPredictor() {
                       className="pr-16"
                     />
                     <span className={cx('pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 font-mono text-[11px] tabular-nums',
-                      form.title.length > TITLE_MAX ? 'text-brand-400' : form.title.length > 70 ? 'text-amber-400' : 'text-ink-400')}>
+                      form.title.length > TITLE_MAX ? 'text-brand-400' : form.title.length > 70 ? 'text-warning-400' : 'text-ink-400')}>
                       {form.title.length}/{TITLE_MAX}
                     </span>
                   </div>
@@ -307,7 +307,7 @@ export default function PostPredictor() {
                     {DURATION_PRESETS.map((d) => (
                       <button key={d.label} type="button" onClick={() => set('duration_seconds', d.seconds)}
                         className={cx('rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors',
-                          form.duration_seconds === d.seconds ? 'border-brand-500/50 bg-brand-500/10 text-brand-300' : 'border-white/10 text-ink-300 hover:border-white/20 hover:text-white')}>
+                          form.duration_seconds === d.seconds ? 'border-brand-500/50 bg-brand-500/10 text-brand-300' : 'border-ov/10 text-ink-300 hover:border-ov/20 hover:text-fg')}>
                         {d.label}
                       </button>
                     ))}
@@ -371,7 +371,7 @@ export default function PostPredictor() {
               {isStale && (
                 <Alert tone="warning">
                   Inputs changed since this prediction.{' '}
-                  <button onClick={handlePredict} className="font-medium text-white underline underline-offset-2">Re-run</button>
+                  <button onClick={handlePredict} className="font-medium text-fg underline underline-offset-2">Re-run</button>
                 </Alert>
               )}
               <Results predictions={predictions} payload={lastPayload} onUseTitle={applyTitle} />

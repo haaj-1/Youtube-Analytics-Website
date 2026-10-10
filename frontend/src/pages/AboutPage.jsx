@@ -57,9 +57,9 @@ function HeroMock() {
     <div className="relative">
       <div className="pointer-events-none absolute -inset-8 rounded-[2rem] bg-brand-500/10 blur-3xl" aria-hidden="true" />
       <div className="panel relative overflow-hidden bg-ink-900/90">
-        <div className="flex items-center gap-2 border-b border-white/[0.06] px-4 py-3">
+        <div className="flex items-center gap-2 border-b border-ov/[0.06] px-4 py-3">
           <span className="flex gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-white/10" /><span className="h-2.5 w-2.5 rounded-full bg-white/10" /><span className="h-2.5 w-2.5 rounded-full bg-white/10" />
+            <span className="h-2.5 w-2.5 rounded-full bg-ov/10" /><span className="h-2.5 w-2.5 rounded-full bg-ov/10" /><span className="h-2.5 w-2.5 rounded-full bg-ov/10" />
           </span>
           <span className="ml-2 font-mono text-[11px] text-ink-400">prepost / predict</span>
           <Badge tone="brand" className="ml-auto">Global model</Badge>
@@ -67,12 +67,12 @@ function HeroMock() {
         <div className="space-y-5 p-5 sm:p-6">
           <div>
             <p className="eyebrow">Title</p>
-            <p className="mt-1.5 text-sm text-white">7 Python Tricks That Will Change How You Code</p>
+            <p className="mt-1.5 text-sm text-fg">7 Python Tricks That Will Change How You Code</p>
           </div>
-          <div className="flex items-end justify-between gap-4 border-t border-white/[0.06] pt-5">
+          <div className="flex items-end justify-between gap-4 border-t border-ov/[0.06] pt-5">
             <div>
               <p className="eyebrow">Predicted views</p>
-              <p className="mt-1 font-mono text-5xl font-semibold tracking-tight text-white">128.4K</p>
+              <p className="mt-1 font-mono text-5xl font-semibold tracking-tight text-fg">128.4K</p>
               <p className="mt-1 font-mono text-xs text-ink-300">95% range · 92K – 171K</p>
             </div>
             <div className="hidden w-28 sm:block">
@@ -91,11 +91,11 @@ function HeroMock() {
             <div className="mb-1.5 flex justify-between text-xs"><span className="text-ink-300">Model confidence</span><span className="font-mono text-ink-100">87%</span></div>
             <Bar value={87} />
           </div>
-          <ul className="space-y-2 border-t border-white/[0.06] pt-5">
+          <ul className="space-y-2 border-t border-ov/[0.06] pt-5">
             {factors.map((f) => (
               <li key={f.label} className="flex items-center justify-between text-sm">
                 <span className="text-ink-200">{f.label}</span>
-                <span className={`font-mono text-xs ${f.up ? 'text-emerald-400' : 'text-brand-400'}`}>{f.v}</span>
+                <span className={`font-mono text-xs ${f.up ? 'text-success-400' : 'text-brand-400'}`}>{f.v}</span>
               </li>
             ))}
           </ul>
@@ -116,7 +116,7 @@ export default function AboutPage() {
         <div className="relative mx-auto grid max-w-7xl items-center gap-14 px-4 pb-20 pt-14 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:px-10 lg:pb-28 lg:pt-20">
           <div className="animate-fade-up">
             <a href={REPO_URL} target="_blank" rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] py-1 pl-1 pr-3 text-xs text-ink-200 transition-colors hover:border-white/20">
+              className="inline-flex items-center gap-2 rounded-full border border-ov/10 bg-ov/[0.03] py-1 pl-1 pr-3 text-xs text-ink-200 transition-colors hover:border-ov/20">
               <span className="rounded-full bg-brand-500/15 px-2 py-0.5 font-medium text-brand-300">Open source</span>
               BERT + CNN + XGBoost ensemble <FiArrowRight className="h-3 w-3" />
             </a>
@@ -137,12 +137,12 @@ export default function AboutPage() {
       </section>
 
       {/* Stats */}
-      <section className="border-y border-white/[0.06] bg-ink-900/40">
-        <dl className="mx-auto grid max-w-7xl grid-cols-2 divide-white/[0.06] px-4 sm:px-6 lg:grid-cols-4 lg:divide-x lg:px-10">
+      <section className="border-y border-ov/[0.06] bg-ink-900/40">
+        <dl className="mx-auto grid max-w-7xl grid-cols-2 divide-ov/[0.06] px-4 sm:px-6 lg:grid-cols-4 lg:divide-x lg:px-10">
           {STATS.map((s) => (
             <div key={s.label} className="px-2 py-8 lg:px-8">
               <dt className="order-2 mt-1 text-sm text-ink-300">{s.label}</dt>
-              <dd className="font-mono text-3xl font-semibold tracking-tight text-white">{s.value}</dd>
+              <dd className="font-mono text-3xl font-semibold tracking-tight text-fg">{s.value}</dd>
             </div>
           ))}
         </dl>
@@ -156,14 +156,14 @@ export default function AboutPage() {
         </div>
         <div className="mt-12 grid gap-4 md:grid-cols-2">
           {FEATURES.map(({ icon: Icon, title, body, to }) => (
-            <Link key={title} to={to} className="panel group relative overflow-hidden p-6 transition-colors hover:border-white/15 sm:p-7">
+            <Link key={title} to={to} className="panel group relative overflow-hidden p-6 transition-colors hover:border-ov/15 sm:p-7">
               <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-brand-500/0 blur-3xl transition-colors group-hover:bg-brand-500/15" aria-hidden="true" />
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] text-brand-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-ov/10 bg-ov/[0.03] text-brand-400">
                 <Icon className="h-5 w-5" />
               </div>
               <h3 className="mt-5 text-lg font-semibold">{title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-ink-300">{body}</p>
-              <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-white">
+              <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-fg">
                 Open <FiArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </span>
             </Link>
@@ -172,7 +172,7 @@ export default function AboutPage() {
       </section>
 
       {/* How it works */}
-      <section className="border-t border-white/[0.06]">
+      <section className="border-t border-ov/[0.06]">
         <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-10">
           <div className="grid gap-12 lg:grid-cols-[1fr_1.4fr]">
             <div>
@@ -201,7 +201,7 @@ export default function AboutPage() {
       </section>
 
       {/* Principles */}
-      <section className="border-t border-white/[0.06]">
+      <section className="border-t border-ov/[0.06]">
         <div className="mx-auto grid max-w-7xl gap-8 px-4 py-20 sm:px-6 md:grid-cols-3 lg:px-10">
           {[
             { icon: FiEye, t: 'Transparent', d: 'Accuracy, error margins and known blind spots are published, not hidden.' },

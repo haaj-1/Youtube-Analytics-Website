@@ -5,8 +5,68 @@
 @tailwind utilities;
 
 @layer base {
+  /* Dark theme (landing page) */
   :root {
     color-scheme: dark;
+    --ink-950: 6 7 10;
+    --ink-900: 11 13 17;
+    --ink-850: 16 19 24;
+    --ink-800: 21 25 32;
+    --ink-700: 29 34 43;
+    --ink-600: 42 48 59;
+    --ink-500: 58 65 78;
+    --ink-400: 92 100 114;
+    --ink-300: 138 145 158;
+    --ink-200: 181 186 196;
+    --ink-100: 221 224 230;
+    --ink-50: 243 244 246;
+    --fg: 255 255 255;
+    --ov: 255 255 255;
+    --brand-200: 255 197 197;
+    --brand-300: 255 157 157;
+    --brand-400: 255 100 100;
+    --success-300: 110 231 183;
+    --success-400: 52 211 153;
+    --success-500: 16 185 129;
+    --success-600: 5 150 105;
+    --warning-200: 253 230 138;
+    --warning-300: 252 211 77;
+    --warning-400: 251 191 36;
+    --warning-500: 245 158 11;
+    --grid-line: 0.045;
+    --shadow-card: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset, 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Light theme (tools, auth and legal pages) — the ink scale is inverted */
+  :root.theme-light {
+    color-scheme: light;
+    --ink-950: 246 247 249;
+    --ink-900: 255 255 255;
+    --ink-850: 249 250 251;
+    --ink-800: 243 244 246;
+    --ink-700: 229 231 235;
+    --ink-600: 209 213 219;
+    --ink-500: 156 163 175;
+    --ink-400: 107 114 128;
+    --ink-300: 75 85 99;
+    --ink-200: 55 65 81;
+    --ink-100: 31 41 55;
+    --ink-50: 17 24 39;
+    --fg: 11 13 17;
+    --ov: 15 23 42;
+    --brand-200: 136 24 24;
+    --brand-300: 200 20 20;
+    --brand-400: 237 28 28;
+    --success-300: 4 120 87;
+    --success-400: 5 150 105;
+    --success-500: 16 185 129;
+    --success-600: 5 150 105;
+    --warning-200: 120 53 15;
+    --warning-300: 146 64 14;
+    --warning-400: 217 119 6;
+    --warning-500: 245 158 11;
+    --grid-line: 0.06;
+    --shadow-card: 0 1px 2px rgba(16, 24, 40, 0.05), 0 8px 24px -12px rgba(16, 24, 40, 0.12);
   }
 
   html {
@@ -21,11 +81,11 @@
   }
 
   ::selection {
-    @apply bg-brand-500/30 text-white;
+    @apply bg-brand-500/30 text-fg;
   }
 
   h1, h2, h3, h4 {
-    @apply tracking-tight text-white;
+    @apply tracking-tight text-fg;
   }
 
   :focus-visible {
@@ -49,12 +109,12 @@
 
 @layer components {
   .panel {
-    @apply rounded-2xl border border-white/[0.07] bg-ink-900/80 shadow-card backdrop-blur-sm;
+    @apply rounded-2xl border border-ov/[0.07] bg-ink-900/80 shadow-card backdrop-blur-sm;
   }
 
   .input {
-    @apply h-11 w-full rounded-xl border border-white/10 bg-ink-850 px-3.5 text-sm text-ink-50 placeholder:text-ink-400
-      transition-colors hover:border-white/20 focus:border-brand-500/70 focus:outline-none focus:ring-4 focus:ring-brand-500/15
+    @apply h-11 w-full rounded-xl border border-ov/10 bg-ink-850 px-3.5 text-sm text-ink-50 placeholder:text-ink-400
+      transition-colors hover:border-ov/20 focus:border-brand-500/70 focus:outline-none focus:ring-4 focus:ring-brand-500/15
       disabled:cursor-not-allowed disabled:opacity-50;
   }
 
@@ -67,28 +127,28 @@
   }
 
   .text-gradient {
-    @apply bg-gradient-to-r from-white via-white to-brand-300 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-fg via-fg to-brand-300 bg-clip-text text-transparent;
   }
 
   /* Faint engineering grid used behind hero areas */
   .grid-bg {
     background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+      linear-gradient(to right, rgb(var(--ov) / var(--grid-line)) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(var(--ov) / var(--grid-line)) 1px, transparent 1px);
     background-size: 48px 48px;
     mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
   }
 
   .skeleton {
     @apply rounded-lg bg-[length:200%_100%] animate-shimmer;
-    background-image: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.09) 50%, rgba(255,255,255,0.04) 100%);
+    background-image: linear-gradient(90deg, rgb(var(--ov) / 0.04) 0%, rgb(var(--ov) / 0.09) 50%, rgb(var(--ov) / 0.04) 100%);
   }
 }
 
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.08); border-radius: 999px; border: 2px solid #06070a; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.16); }
+::-webkit-scrollbar-thumb { background: rgb(var(--ov) / 0.12); border-radius: 999px; border: 2px solid rgb(var(--ink-950)); }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--ov) / 0.22); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

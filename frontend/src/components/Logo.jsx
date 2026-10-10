@@ -25,7 +25,7 @@ export default function Logo({ collapsed = false, to = '/' }) {
       <LogoMark className="h-8 w-8 shrink-0 transition-transform group-hover:scale-105" />
       {!collapsed && (
         <span className="flex items-baseline gap-1.5">
-          <span className="text-[15px] font-semibold tracking-tight text-white">PrePost</span>
+          <span className="text-[15px] font-semibold tracking-tight text-fg">PrePost</span>
           <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-400">Analytics</span>
         </span>
       )}

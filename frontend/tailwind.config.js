@@ -3,34 +3,51 @@ export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
+      // Theme-aware colors: values live in CSS variables (see index.css) so the
+      // same classes render dark on the landing page and light everywhere else.
       colors: {
-        // Neutral surfaces for the dark UI
         ink: {
-          950: '#06070a',
-          900: '#0b0d11',
-          850: '#101318',
-          800: '#151920',
-          700: '#1d222b',
-          600: '#2a303b',
-          500: '#3a414e',
-          400: '#5c6472',
-          300: '#8a919e',
-          200: '#b5bac4',
-          100: '#dde0e6',
-          50: '#f3f4f6',
+          950: 'rgb(var(--ink-950) / <alpha-value>)',
+          900: 'rgb(var(--ink-900) / <alpha-value>)',
+          850: 'rgb(var(--ink-850) / <alpha-value>)',
+          800: 'rgb(var(--ink-800) / <alpha-value>)',
+          700: 'rgb(var(--ink-700) / <alpha-value>)',
+          600: 'rgb(var(--ink-600) / <alpha-value>)',
+          500: 'rgb(var(--ink-500) / <alpha-value>)',
+          400: 'rgb(var(--ink-400) / <alpha-value>)',
+          300: 'rgb(var(--ink-300) / <alpha-value>)',
+          200: 'rgb(var(--ink-200) / <alpha-value>)',
+          100: 'rgb(var(--ink-100) / <alpha-value>)',
+          50: 'rgb(var(--ink-50) / <alpha-value>)',
         },
-        // Signal accent (YouTube-adjacent red)
+        // Primary foreground (white on dark, near-black on light)
+        fg: 'rgb(var(--fg) / <alpha-value>)',
+        // Overlay tint for borders/hover fills (white on dark, slate on light)
+        ov: 'rgb(var(--ov) / <alpha-value>)',
+        // Signal accent (YouTube-adjacent red); text shades 200–400 darken in light mode
         brand: {
           50: '#fff1f1',
           100: '#ffdfdf',
-          200: '#ffc5c5',
-          300: '#ff9d9d',
-          400: '#ff6464',
+          200: 'rgb(var(--brand-200) / <alpha-value>)',
+          300: 'rgb(var(--brand-300) / <alpha-value>)',
+          400: 'rgb(var(--brand-400) / <alpha-value>)',
           500: '#ff3b3b',
           600: '#ed1c1c',
           700: '#c81414',
           800: '#a51515',
           900: '#881818',
+        },
+        success: {
+          300: 'rgb(var(--success-300) / <alpha-value>)',
+          400: 'rgb(var(--success-400) / <alpha-value>)',
+          500: 'rgb(var(--success-500) / <alpha-value>)',
+          600: 'rgb(var(--success-600) / <alpha-value>)',
+        },
+        warning: {
+          200: 'rgb(var(--warning-200) / <alpha-value>)',
+          300: 'rgb(var(--warning-300) / <alpha-value>)',
+          400: 'rgb(var(--warning-400) / <alpha-value>)',
+          500: 'rgb(var(--warning-500) / <alpha-value>)',
         },
       },
       fontFamily: {
@@ -39,7 +56,7 @@ export default {
       },
       boxShadow: {
         glow: '0 0 0 1px rgba(255,59,59,0.35), 0 8px 32px -8px rgba(255,59,59,0.45)',
-        card: '0 1px 0 0 rgba(255,255,255,0.04) inset, 0 12px 32px -16px rgba(0,0,0,0.6)',
+        card: 'var(--shadow-card)',
       },
       keyframes: {
         'fade-up': {

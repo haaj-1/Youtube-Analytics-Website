@@ -31,12 +31,12 @@ export default function TermsOfService() {
           machine learning models, abuse the API, or use the service to violate any laws or regulations.
         </p>
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
-            <p className="font-mono text-2xl font-semibold text-white">5 / day</p>
+          <div className="rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-4">
+            <p className="font-mono text-2xl font-semibold text-fg">5 / day</p>
             <p className="mt-1 text-sm text-ink-300">Predictions for guest users</p>
           </div>
-          <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
-            <p className="font-mono text-2xl font-semibold text-white">Unlimited</p>
+          <div className="rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-4">
+            <p className="font-mono text-2xl font-semibold text-fg">Unlimited</p>
             <p className="mt-1 text-sm text-ink-300">Predictions for registered users</p>
           </div>
         </div>
@@ -51,9 +51,9 @@ export default function TermsOfService() {
       </LegalSection>
 
       <LegalSection id="liability" title="Limitation of liability" tag="Important legal notice">
-        <div className="flex gap-4 rounded-2xl border border-amber-500/25 bg-amber-500/[0.06] p-5">
-          <FiAlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
-          <p className="font-semibold uppercase tracking-wide text-white">Predictions are estimates, not guarantees</p>
+        <div className="flex gap-4 rounded-2xl border border-warning-500/25 bg-warning-500/[0.06] p-5">
+          <FiAlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning-400" />
+          <p className="font-semibold uppercase tracking-wide text-fg">Predictions are estimates, not guarantees</p>
         </div>
         <p>
           PrePost Analytics provides statistical predictions based on machine learning models with 95.6% accuracy (R² score). However, actual

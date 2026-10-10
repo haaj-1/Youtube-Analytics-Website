@@ -42,7 +42,7 @@ function SearchView({ onSelect, loadingId }) {
   return (
     <Card className="mx-auto max-w-2xl p-6 sm:p-8">
       <div className="mb-6 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-brand-400">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-ov/10 bg-ov/[0.03] text-brand-400">
           <FiBarChart2 className="h-5 w-5" />
         </div>
         <h2 className="text-xl font-semibold">Analyze any channel</h2>
@@ -70,16 +70,16 @@ function SearchView({ onSelect, loadingId }) {
                 <button
                   onClick={() => onSelect(ch)}
                   disabled={!!loadingId}
-                  className="group flex w-full items-center gap-4 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 text-left transition-colors hover:border-white/20 hover:bg-white/[0.05] disabled:opacity-60"
+                  className="group flex w-full items-center gap-4 rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-3 text-left transition-colors hover:border-ov/20 hover:bg-ov/[0.05] disabled:opacity-60"
                 >
                   <img src={ch.snippet.thumbnails?.default?.url} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium text-white">{ch.snippet.title}</p>
+                    <p className="truncate font-medium text-fg">{ch.snippet.title}</p>
                     <p className="line-clamp-1 text-sm text-ink-400">{ch.snippet.description || 'No description'}</p>
                   </div>
                   {loadingId === ch.id.channelId
                     ? <Spinner className="h-4 w-4 text-brand-400" />
-                    : <FiArrowRight className="h-4 w-4 text-ink-500 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />}
+                    : <FiArrowRight className="h-4 w-4 text-ink-500 transition-transform group-hover:translate-x-0.5 group-hover:text-fg" />}
                 </button>
               </li>
             ))}
@@ -96,7 +96,7 @@ function LoadingView({ channel }) {
       <Card className="flex items-center gap-4 p-5">
         <img src={channel.snippet.thumbnails?.default?.url} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover" />
         <div>
-          <p className="font-medium text-white">{channel.snippet.title}</p>
+          <p className="font-medium text-fg">{channel.snippet.title}</p>
           <p className="mt-1 flex items-center gap-2 text-sm text-ink-300"><Spinner className="h-3.5 w-3.5 text-brand-400" /> Fetching and analyzing the 100 most recent videos…</p>
         </div>
       </Card>
@@ -130,11 +130,11 @@ function Dashboard({ analytics, onReset }) {
     <div className="space-y-6 animate-fade-up">
       {/* Channel header */}
       <Card className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
-        <img src={info.thumbnail} alt="" className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-white/10" />
+        <img src={info.thumbnail} alt="" className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-ov/10" />
         <div className="min-w-0 flex-1">
           <h2 className="truncate text-xl font-semibold">{info.title}</h2>
           <p className="mt-1 text-sm text-ink-300">
-            <span className="font-mono text-white">{fmt(info.subscriber_count)}</span> subscribers · last {overview.total_videos} uploads analyzed
+            <span className="font-mono text-fg">{fmt(info.subscriber_count)}</span> subscribers · last {overview.total_videos} uploads analyzed
           </p>
         </div>
         <div className="flex gap-2">
@@ -148,9 +148,9 @@ function Dashboard({ analytics, onReset }) {
         <Stat label="Videos analyzed" value={overview.total_videos} sub="Most recent uploads" />
         <Stat label="Avg views" value={fmt(overview.avg_views)} sub="Per video" />
         <Stat label="Avg engagement" value={`${overview.avg_engagement_rate}%`} sub="(Likes + comments) / views" />
-        <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+        <div className="rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-4">
           <p className="text-xs text-ink-300">Growth</p>
-          <p className={cx('mt-1.5 flex items-center gap-1.5 font-mono text-2xl font-semibold tabular-nums', growth >= 0 ? 'text-emerald-400' : 'text-brand-400')}>
+          <p className={cx('mt-1.5 flex items-center gap-1.5 font-mono text-2xl font-semibold tabular-nums', growth >= 0 ? 'text-success-400' : 'text-brand-400')}>
             {growth >= 0 ? <FiTrendingUp className="h-5 w-5" /> : <FiTrendingDown className="h-5 w-5" />}
             {growth >= 0 ? '+' : ''}{growth}%
           </p>
@@ -163,15 +163,15 @@ function Dashboard({ analytics, onReset }) {
           {/* Posting patterns */}
           <Card>
             <CardHeader icon={<FiCalendar className="h-4 w-4" />} title="When to post" description="Average views by publish day and hour." />
-            <div className="grid gap-4 border-b border-white/[0.05] p-5 sm:grid-cols-2">
+            <div className="grid gap-4 border-b border-ov/[0.05] p-5 sm:grid-cols-2">
               <div className="rounded-xl border border-brand-500/25 bg-brand-500/[0.05] p-4">
                 <p className="text-xs text-ink-300">Best day</p>
-                <p className="mt-1 text-xl font-semibold text-white">{posting.best_day.day}</p>
+                <p className="mt-1 text-xl font-semibold text-fg">{posting.best_day.day}</p>
                 <p className="mt-0.5 font-mono text-xs text-brand-300">{fmt(posting.best_day.avg_views)} avg views</p>
               </div>
-              <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+              <div className="rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-4">
                 <p className="text-xs text-ink-300">Best hour <span className="text-ink-400">(your local time)</span></p>
-                <p className="mt-1 text-xl font-semibold text-white">{localHour(posting.best_hour.hour)}</p>
+                <p className="mt-1 text-xl font-semibold text-fg">{localHour(posting.best_hour.hour)}</p>
                 <p className="mt-0.5 font-mono text-xs text-ink-300">{String(posting.best_hour.hour).padStart(2, '0')}:00 UTC · {fmt(posting.best_hour.avg_views)} avg views</p>
               </div>
             </div>
@@ -181,7 +181,7 @@ function Dashboard({ analytics, onReset }) {
                 const best = day === posting.best_day.day;
                 return (
                   <li key={day} className="grid grid-cols-[3rem_1fr_auto] items-center gap-3 text-sm sm:grid-cols-[6rem_1fr_7rem]">
-                    <span className={cx(best ? 'text-white' : 'text-ink-300')}>
+                    <span className={cx(best ? 'text-fg' : 'text-ink-300')}>
                       <span className="sm:hidden">{day.slice(0, 3)}</span><span className="hidden sm:inline">{day}</span>
                     </span>
                     <Bar value={d.avg_views} max={maxDayViews} tone={best ? 'brand' : 'neutral'} className="h-2" />
@@ -192,7 +192,7 @@ function Dashboard({ analytics, onReset }) {
                 );
               })}
             </ul>
-            <p className="border-t border-white/[0.05] px-5 py-3 text-xs text-ink-400">Days are based on UTC publish time. Grey number = videos posted that day.</p>
+            <p className="border-t border-ov/[0.05] px-5 py-3 text-xs text-ink-400">Days are based on UTC publish time. Grey number = videos posted that day.</p>
           </Card>
 
           {/* Duration */}
@@ -202,12 +202,12 @@ function Dashboard({ analytics, onReset }) {
               {durationEntries.map((d) => {
                 const best = d === bestDuration;
                 return (
-                  <div key={d.label} className={cx('rounded-xl border p-4', best ? 'border-brand-500/25 bg-brand-500/[0.05]' : 'border-white/[0.07] bg-white/[0.02]')}>
+                  <div key={d.label} className={cx('rounded-xl border p-4', best ? 'border-brand-500/25 bg-brand-500/[0.05]' : 'border-ov/[0.07] bg-ov/[0.02]')}>
                     <div className="flex items-center justify-between">
                       <p className="text-xs text-ink-300">{d.label}</p>
                       {best && <Badge tone="brand">Best</Badge>}
                     </div>
-                    <p className="mt-2 font-mono text-xl font-semibold tabular-nums text-white">{fmt(d.avg_views)}</p>
+                    <p className="mt-2 font-mono text-xl font-semibold tabular-nums text-fg">{fmt(d.avg_views)}</p>
                     <Bar value={d.avg_views} max={maxDurViews} tone={best ? 'brand' : 'neutral'} className="mt-3" />
                     <p className="mt-2 text-xs text-ink-400">{d.video_count} videos</p>
                   </div>
@@ -219,19 +219,19 @@ function Dashboard({ analytics, onReset }) {
           {/* Top videos */}
           <Card>
             <CardHeader icon={<FiTrendingUp className="h-4 w-4" />} title="Top performing videos" />
-            <ol className="divide-y divide-white/[0.05]">
+            <ol className="divide-y divide-ov/[0.05]">
               {topVideos.map((v, i) => (
                 <li key={v.video_id}>
                   <a
                     href={`https://www.youtube.com/watch?v=${v.video_id}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="group flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-white/[0.03]"
+                    className="group flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-ov/[0.03]"
                   >
                     <span className="w-5 shrink-0 font-mono text-xs text-ink-400">{String(i + 1).padStart(2, '0')}</span>
                     <img src={v.thumbnail} alt="" className="aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-32" loading="lazy" />
                     <div className="min-w-0 flex-1">
-                      <p className="line-clamp-2 text-sm font-medium text-white">{v.title}</p>
+                      <p className="line-clamp-2 text-sm font-medium text-fg">{v.title}</p>
                       <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-ink-300">
                         <span className="flex items-center gap-1"><FiEye className="h-3 w-3" />{fmt(v.views)}</span>
                         <span className="flex items-center gap-1"><FiThumbsUp className="h-3 w-3" />{fmt(v.likes)}</span>
@@ -252,9 +252,9 @@ function Dashboard({ analytics, onReset }) {
             <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-brand-500/25 blur-3xl" aria-hidden="true" />
             <p className="eyebrow relative">Recommended strategy</p>
             <p className="relative mt-3 text-sm leading-relaxed text-ink-100">
-              Publish on <span className="font-semibold text-white">{posting.best_day.day}</span> around{' '}
-              <span className="font-semibold text-white">{localHour(posting.best_hour.hour)}</span>
-              {bestDuration && <> and aim for <span className="font-semibold text-white">{bestDuration.label.toLowerCase()}</span> videos</>}.
+              Publish on <span className="font-semibold text-fg">{posting.best_day.day}</span> around{' '}
+              <span className="font-semibold text-fg">{localHour(posting.best_hour.hour)}</span>
+              {bestDuration && <> and aim for <span className="font-semibold text-fg">{bestDuration.label.toLowerCase()}</span> videos</>}.
             </p>
             <Button onClick={goPredict} className="relative mt-4 w-full">Forecast your next video</Button>
           </Card>
@@ -265,7 +265,7 @@ function Dashboard({ analytics, onReset }) {
               <div>
                 <div className="mb-1.5 flex justify-between text-sm">
                   <span className="text-ink-200">High performers</span>
-                  <span className="font-mono text-emerald-400">{engagement.high_performers}</span>
+                  <span className="font-mono text-success-400">{engagement.high_performers}</span>
                 </div>
                 <Bar value={engagement.high_performers} max={overview.total_videos} tone="success" />
               </div>
@@ -276,9 +276,9 @@ function Dashboard({ analytics, onReset }) {
                 </div>
                 <Bar value={engagement.low_performers} max={overview.total_videos} />
               </div>
-              <div className="border-t border-white/[0.06] pt-4">
+              <div className="border-t border-ov/[0.06] pt-4">
                 <p className="text-xs text-ink-300">Consistency score</p>
-                <p className="mt-1 font-mono text-3xl font-semibold tabular-nums text-white">{engagement.consistency_score}%</p>
+                <p className="mt-1 font-mono text-3xl font-semibold tabular-nums text-fg">{engagement.consistency_score}%</p>
                 <p className="mt-1 text-xs text-ink-400">How stable engagement is from video to video.</p>
               </div>
             </div>
@@ -289,7 +289,7 @@ function Dashboard({ analytics, onReset }) {
               <CardHeader icon={<FiHash className="h-4 w-4" />} title="Words in top titles" description="Recurring terms in this channel's best videos." />
               <div className="flex flex-wrap gap-2 p-5">
                 {content.common_words_in_top_videos.map((w) => (
-                  <span key={w.word} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 text-sm text-ink-100">
+                  <span key={w.word} className="inline-flex items-center gap-1.5 rounded-lg border border-ov/10 bg-ov/[0.03] px-2.5 py-1 text-sm text-ink-100">
                     {w.word}<span className="font-mono text-[11px] text-ink-400">×{w.count}</span>
                   </span>
                 ))}
@@ -337,9 +337,9 @@ const PerformanceHistory = () => {
           { icon: FiClock, t: 'Length sweet spot', d: 'Which durations earn the most views' },
           { icon: FiHash, t: 'Title keywords', d: 'Words that recur in top performers' },
         ].map(({ icon: Icon, t, d }) => (
-          <div key={t} className="rounded-xl border border-white/[0.06] p-4">
+          <div key={t} className="rounded-xl border border-ov/[0.06] p-4">
             <Icon className="h-4 w-4 text-ink-300" />
-            <p className="mt-3 text-sm font-medium text-white">{t}</p>
+            <p className="mt-3 text-sm font-medium text-fg">{t}</p>
             <p className="mt-1 text-xs text-ink-400">{d}</p>
           </div>
         ))}

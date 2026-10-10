@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AppShell, PublicLayout } from './components/Layout';
 import ScrollToTop from './components/ScrollToTop';
 import PrivacyPolicy from './pages/PrivacyPolicy';
@@ -10,11 +10,18 @@ import LoginPage from './pages/LoginPage';
 import AboutPage from './pages/AboutPage';
 import SignUpPage from './pages/SignUpPage';
 import NotFoundPage from './pages/NotFound';
+import { useRouteTheme } from './lib/theme';
+
+function RouteTheme() {
+  useRouteTheme(useLocation().pathname);
+  return null;
+}
 
 function App() {
   return (
     <Router>
       <ScrollToTop />
+      <RouteTheme />
       <Routes>
         {/* Tool pages with sidebar */}
         <Route element={<AppShell />}>

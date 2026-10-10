@@ -93,7 +93,7 @@ const SignUpPage = () => {
     <AuthShell
       title="Create your account"
       subtitle="Free forever. Unlimited predictions."
-      footer={<>Already have an account? <Link to="/login" state={location.state} className="font-medium text-white hover:text-brand-300">Log in</Link></>}
+      footer={<>Already have an account? <Link to="/login" state={location.state} className="font-medium text-fg hover:text-brand-300">Log in</Link></>}
     >
       <GoogleButton onCredential={handleGoogleResponse} text="signup_with" />
 
@@ -114,7 +114,7 @@ const SignUpPage = () => {
                   value={formData.password} onChange={handleChange} placeholder="At least 8 characters" disabled={loading}
                   invalid={!!errors.password} className="pr-11" />
                 <button type="button" onClick={() => setShowPassword((s) => !s)} aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-ink-400 hover:text-white">
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-2 text-ink-400 hover:text-fg">
                   {showPassword ? <FiEyeOff className="h-4 w-4" /> : <FiEye className="h-4 w-4" />}
                 </button>
               </div>
@@ -123,7 +123,7 @@ const SignUpPage = () => {
                   <div className="flex flex-1 gap-1">
                     {[0, 1, 2, 3].map((i) => (
                       <span key={i} className={cx('h-1 flex-1 rounded-full transition-colors',
-                        i < pwScore ? (pwScore >= 3 ? 'bg-emerald-500' : pwScore === 2 ? 'bg-amber-500' : 'bg-brand-500') : 'bg-white/10')} />
+                        i < pwScore ? (pwScore >= 3 ? 'bg-success-500' : pwScore === 2 ? 'bg-warning-500' : 'bg-brand-500') : 'bg-ov/10')} />
                     ))}
                   </div>
                   <span className="w-16 text-right text-xs text-ink-300">{STRENGTH_LABELS[pwScore]}</span>
@@ -136,10 +136,10 @@ const SignUpPage = () => {
         <div>
           <label className="flex cursor-pointer items-start gap-2.5 text-sm text-ink-300">
             <input type="checkbox" name="agree" checked={formData.agree} onChange={handleChange}
-              className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-white/20 bg-ink-850 accent-brand-500" />
+              className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-ov/20 bg-ink-850 accent-brand-500" />
             <span>
-              I agree to the <Link to="/terms" className="text-white underline-offset-2 hover:underline">Terms</Link> and{' '}
-              <Link to="/privacy" className="text-white underline-offset-2 hover:underline">Privacy Policy</Link>
+              I agree to the <Link to="/terms" className="text-fg underline-offset-2 hover:underline">Terms</Link> and{' '}
+              <Link to="/privacy" className="text-fg underline-offset-2 hover:underline">Privacy Policy</Link>
             </span>
           </label>
           {errors.agree && <p className="mt-1.5 text-xs text-brand-300">{errors.agree}</p>}

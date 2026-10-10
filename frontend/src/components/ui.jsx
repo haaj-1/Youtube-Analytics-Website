@@ -9,14 +9,14 @@ export function Card({ className, children, ...props }) {
 
 export function CardHeader({ title, description, icon, action, className }) {
   return (
-    <div className={cx('flex items-start gap-3 border-b border-white/[0.06] px-5 py-4', className)}>
+    <div className={cx('flex items-start gap-3 border-b border-ov/[0.06] px-5 py-4', className)}>
       {icon && (
-        <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/[0.03] text-ink-200">
+        <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-ov/10 bg-ov/[0.03] text-ink-200">
           {icon}
         </div>
       )}
       <div className="min-w-0 flex-1">
-        <h3 className="text-sm font-semibold text-white">{title}</h3>
+        <h3 className="text-sm font-semibold text-fg">{title}</h3>
         {description && <p className="mt-0.5 text-xs text-ink-300">{description}</p>}
       </div>
       {action}
@@ -27,9 +27,9 @@ export function CardHeader({ title, description, icon, action, className }) {
 const variants = {
   primary:
     'bg-brand-500 text-white hover:bg-brand-400 shadow-[0_0_0_1px_rgba(255,255,255,0.08)_inset,0_8px_24px_-8px_rgba(255,59,59,0.6)]',
-  secondary: 'border border-white/10 bg-white/[0.04] text-ink-50 hover:bg-white/[0.08] hover:border-white/20',
-  ghost: 'text-ink-200 hover:text-white hover:bg-white/[0.06]',
-  light: 'bg-white text-ink-950 hover:bg-ink-100',
+  secondary: 'border border-ov/10 bg-ov/[0.04] text-ink-50 hover:bg-ov/[0.08] hover:border-ov/20',
+  ghost: 'text-ink-200 hover:text-fg hover:bg-ov/[0.06]',
+  light: 'bg-fg text-ink-950 hover:bg-ink-100',
 };
 const sizes = {
   sm: 'h-8 px-3 text-xs gap-1.5 rounded-lg',
@@ -106,10 +106,10 @@ export function Select({ className, children, ...props }) {
 }
 
 const badgeTones = {
-  neutral: 'border-white/10 bg-white/[0.04] text-ink-200',
+  neutral: 'border-ov/10 bg-ov/[0.04] text-ink-200',
   brand: 'border-brand-500/30 bg-brand-500/10 text-brand-300',
-  success: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-300',
-  warning: 'border-amber-500/30 bg-amber-500/10 text-amber-300',
+  success: 'border-success-500/30 bg-success-500/10 text-success-300',
+  warning: 'border-warning-500/30 bg-warning-500/10 text-warning-300',
 };
 export function Badge({ tone = 'neutral', className, children }) {
   return (
@@ -122,8 +122,8 @@ export function Badge({ tone = 'neutral', className, children }) {
 export function Alert({ tone = 'error', children, onDismiss }) {
   const tones = {
     error: 'border-brand-500/30 bg-brand-500/[0.08] text-brand-200',
-    warning: 'border-amber-500/30 bg-amber-500/[0.08] text-amber-200',
-    info: 'border-white/10 bg-white/[0.04] text-ink-200',
+    warning: 'border-warning-500/30 bg-warning-500/[0.08] text-warning-200',
+    info: 'border-ov/10 bg-ov/[0.04] text-ink-200',
   };
   return (
     <div role={tone === 'error' ? 'alert' : 'status'} className={cx('flex items-start gap-2.5 rounded-xl border px-3.5 py-3 text-sm', tones[tone])}>
@@ -140,9 +140,9 @@ export function Alert({ tone = 'error', children, onDismiss }) {
 
 export function Stat({ label, value, sub, accent, className }) {
   return (
-    <div className={cx('rounded-xl border border-white/[0.07] bg-white/[0.02] p-4', className)}>
+    <div className={cx('rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-4', className)}>
       <p className="text-xs text-ink-300">{label}</p>
-      <p className={cx('mt-1.5 font-mono text-2xl font-semibold tabular-nums', accent ? 'text-brand-400' : 'text-white')}>{value}</p>
+      <p className={cx('mt-1.5 font-mono text-2xl font-semibold tabular-nums', accent ? 'text-brand-400' : 'text-fg')}>{value}</p>
       {sub && <p className="mt-1 text-xs text-ink-400">{sub}</p>}
     </div>
   );
@@ -163,13 +163,13 @@ export function PageHeader({ eyebrow, title, description, actions }) {
 
 export function EmptyState({ icon, title, description, children }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 px-6 py-14 text-center">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-ov/10 px-6 py-14 text-center">
       {icon && (
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-ink-200">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-ov/10 bg-ov/[0.03] text-ink-200">
           {icon}
         </div>
       )}
-      <p className="font-medium text-white">{title}</p>
+      <p className="font-medium text-fg">{title}</p>
       {description && <p className="mt-1 max-w-sm text-sm text-ink-300">{description}</p>}
       {children && <div className="mt-5">{children}</div>}
     </div>
@@ -182,10 +182,10 @@ export function Bar({ value, max = 100, className, tone = 'brand' }) {
   const tones = {
     brand: 'from-brand-600 to-brand-400',
     neutral: 'from-ink-400 to-ink-200',
-    success: 'from-emerald-600 to-emerald-400',
+    success: 'from-success-600 to-success-400',
   };
   return (
-    <div className={cx('h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]', className)}>
+    <div className={cx('h-1.5 w-full overflow-hidden rounded-full bg-ov/[0.06]', className)}>
       <div className={cx('h-full origin-left animate-grow-x rounded-full bg-gradient-to-r', tones[tone])} style={{ width: `${pct}%` }} />
     </div>
   );
@@ -209,7 +209,7 @@ export function Modal({ open, onClose, labelledBy, children }) {
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby={labelledBy}>
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
       <div className="panel relative w-full max-w-md animate-fade-up bg-ink-900 p-7">
-        <button onClick={onClose} aria-label="Close" className="absolute right-4 top-4 rounded-lg p-1.5 text-ink-300 hover:bg-white/5 hover:text-white">
+        <button onClick={onClose} aria-label="Close" className="absolute right-4 top-4 rounded-lg p-1.5 text-ink-300 hover:bg-ov/5 hover:text-fg">
           <FiX className="h-4 w-4" />
         </button>
         {children}

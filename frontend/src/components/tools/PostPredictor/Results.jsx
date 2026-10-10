@@ -27,10 +27,10 @@ export function ResultsLoading() {
       <p className="eyebrow mb-4">Running model</p>
       <ol className="space-y-3">
         {STAGES.map((label, i) => (
-          <li key={label} className={cx('flex items-center gap-3 text-sm transition-colors', i <= stage ? 'text-white' : 'text-ink-500')}>
+          <li key={label} className={cx('flex items-center gap-3 text-sm transition-colors', i <= stage ? 'text-fg' : 'text-ink-500')}>
             <span className={cx('flex h-5 w-5 items-center justify-center rounded-full border text-[10px]',
-              i < stage ? 'border-emerald-500/40 bg-emerald-500/15 text-emerald-300'
-                : i === stage ? 'border-brand-500/50 text-brand-300' : 'border-white/10')}>
+              i < stage ? 'border-success-500/40 bg-success-500/15 text-success-300'
+                : i === stage ? 'border-brand-500/50 text-brand-300' : 'border-ov/10')}>
               {i < stage ? '✓' : i === stage ? <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-brand-400" /> : ''}
             </span>
             {label}
@@ -53,8 +53,8 @@ export function ResultsLoading() {
 }
 
 const impactMeta = {
-  high: { icon: FiArrowUpRight, cls: 'text-emerald-400' },
-  positive: { icon: FiArrowUpRight, cls: 'text-emerald-400' },
+  high: { icon: FiArrowUpRight, cls: 'text-success-400' },
+  positive: { icon: FiArrowUpRight, cls: 'text-success-400' },
   negative: { icon: FiArrowDownRight, cls: 'text-brand-400' },
 };
 
@@ -113,11 +113,11 @@ function TitleOptimizer({ payload, onUseTitle }) {
               {data.variations.map((v, i) => {
                 const isOriginal = v.title === payload.title;
                 return (
-                  <li key={v.title} className={cx('rounded-xl border p-3', i === 0 ? 'border-brand-500/30 bg-brand-500/[0.05]' : 'border-white/[0.06] bg-white/[0.02]')}>
+                  <li key={v.title} className={cx('rounded-xl border p-3', i === 0 ? 'border-brand-500/30 bg-brand-500/[0.05]' : 'border-ov/[0.06] bg-ov/[0.02]')}>
                     <div className="flex items-start gap-3">
                       <span className="mt-0.5 w-5 shrink-0 font-mono text-xs text-ink-400">{String(i + 1).padStart(2, '0')}</span>
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm text-white">
+                        <p className="text-sm text-fg">
                           {v.title}
                           {isOriginal && <span className="ml-2 text-xs text-ink-400">(original)</span>}
                         </p>
@@ -125,7 +125,7 @@ function TitleOptimizer({ payload, onUseTitle }) {
                           <Bar value={v.predicted_views} max={maxViews} className="max-w-[160px]" tone={i === 0 ? 'brand' : 'neutral'} />
                           <span className="font-mono text-xs tabular-nums text-ink-200">{fmt(v.predicted_views)}</span>
                           {!isOriginal && (
-                            <span className={cx('font-mono text-xs tabular-nums', v.improvement_percent > 0 ? 'text-emerald-400' : v.improvement_percent < 0 ? 'text-brand-400' : 'text-ink-400')}>
+                            <span className={cx('font-mono text-xs tabular-nums', v.improvement_percent > 0 ? 'text-success-400' : v.improvement_percent < 0 ? 'text-brand-400' : 'text-ink-400')}>
                               {v.improvement_percent > 0 ? '+' : ''}{v.improvement_percent}%
                             </span>
                           )}
@@ -163,7 +163,7 @@ export default function Results({ predictions, payload, onUseTitle }) {
             <p className="eyebrow">Predicted views</p>
             <Badge tone="brand"><FiZap className="h-3 w-3" /> {payload.personalized ? 'Channel model' : 'Global model'}</Badge>
           </div>
-          <p className="mt-3 font-mono text-5xl font-semibold tabular-nums tracking-tight text-white sm:text-6xl">
+          <p className="mt-3 font-mono text-5xl font-semibold tabular-nums tracking-tight text-fg sm:text-6xl">
             {fmt(predictions.predicted_views)}
           </p>
           {ci && (
@@ -191,12 +191,12 @@ export default function Results({ predictions, payload, onUseTitle }) {
         <div className="space-y-2">
           {recs.map((r, i) => (
             <div key={i} className={cx('flex items-start gap-3 rounded-xl border p-3.5 text-sm',
-              r.type === 'success' ? 'border-emerald-500/25 bg-emerald-500/[0.06]' : 'border-amber-500/25 bg-amber-500/[0.06]')}>
+              r.type === 'success' ? 'border-success-500/25 bg-success-500/[0.06]' : 'border-warning-500/25 bg-warning-500/[0.06]')}>
               {r.type === 'success'
-                ? <FiCheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
-                : <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />}
+                ? <FiCheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-success-400" />
+                : <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning-400" />}
               <div>
-                <p className="text-white">{r.message}</p>
+                <p className="text-fg">{r.message}</p>
                 {r.action && <p className="mt-0.5 text-xs text-ink-300">{r.action}</p>}
               </div>
             </div>
@@ -207,7 +207,7 @@ export default function Results({ predictions, payload, onUseTitle }) {
       {features.length > 0 && (
         <Card>
           <CardHeader title="Why this prediction" description="The factors that moved the estimate most." />
-          <ul className="divide-y divide-white/[0.05]">
+          <ul className="divide-y divide-ov/[0.05]">
             {features.map((f, i) => {
               const meta = impactMeta[f.impact] || { icon: FiMinus, cls: 'text-ink-400' };
               const Icon = meta.icon;
@@ -215,7 +215,7 @@ export default function Results({ predictions, payload, onUseTitle }) {
                 <li key={i} className="flex items-center gap-3 px-5 py-3">
                   <Icon className={cx('h-4 w-4 shrink-0', meta.cls)} />
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-white">{f.factor}</p>
+                    <p className="text-sm text-fg">{f.factor}</p>
                     {f.description && <p className="truncate text-xs text-ink-400">{f.description}</p>}
                   </div>
                   {f.impact_percent && <span className={cx('font-mono text-sm tabular-nums', meta.cls)}>{f.impact_percent}</span>}
@@ -235,16 +235,16 @@ export default function Results({ predictions, payload, onUseTitle }) {
             title="Similar videos in the dataset"
             description={`${similar.count.toLocaleString()} videos matching “${similar.keyword}”`}
           />
-          <ul className="divide-y divide-white/[0.05]">
+          <ul className="divide-y divide-ov/[0.05]">
             {similar.videos.slice(0, 4).map((v, i) => (
               <li key={i} className="flex items-center justify-between gap-4 px-5 py-3">
                 <p className="truncate text-sm text-ink-100">{v.title}</p>
-                <span className="shrink-0 font-mono text-sm tabular-nums text-white">{v.views_formatted}</span>
+                <span className="shrink-0 font-mono text-sm tabular-nums text-fg">{v.views_formatted}</span>
               </li>
             ))}
           </ul>
-          <div className="border-t border-white/[0.05] px-5 py-3 text-xs text-ink-300">
-            Dataset average: <span className="font-mono text-white">{similar.average_views_formatted}</span> views
+          <div className="border-t border-ov/[0.05] px-5 py-3 text-xs text-ink-300">
+            Dataset average: <span className="font-mono text-fg">{similar.average_views_formatted}</span> views
           </div>
         </Card>
       )}

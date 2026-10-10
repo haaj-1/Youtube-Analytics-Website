@@ -56,7 +56,7 @@ export default function PrivacyPolicy() {
       intro="PrePost Analytics helps YouTube creators predict video performance using machine learning. This policy explains how we handle your data with transparency and respect for your privacy."
       sections={SECTIONS}
     >
-      <blockquote className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-6 text-lg italic leading-relaxed text-ink-100">
+      <blockquote className="rounded-2xl border border-ov/[0.07] bg-ov/[0.02] p-6 text-lg italic leading-relaxed text-ink-100">
         “Your data stays yours. We don't store your videos or personal content — we only analyze public YouTube data through their official API to provide predictions.”
       </blockquote>
 
@@ -68,10 +68,10 @@ export default function PrivacyPolicy() {
           'Public performance metrics (views, likes, comments, publish date)',
           'Account email and profile information (for authentication only)',
         ]} />
-        <div className="flex gap-4 rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.06] p-5">
-          <FiDatabase className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+        <div className="flex gap-4 rounded-2xl border border-success-500/25 bg-success-500/[0.06] p-5">
+          <FiDatabase className="mt-0.5 h-5 w-5 shrink-0 text-success-400" />
           <div>
-            <p className="font-semibold text-white">No data storage</p>
+            <p className="font-semibold text-fg">No data storage</p>
             <p className="mt-1 text-sm text-ink-200">
               We do NOT store your videos, thumbnails, or channel data. All predictions are made in real-time using YouTube's public API.
               Only your account credentials (email, name) are stored for login purposes.
@@ -88,8 +88,8 @@ export default function PrivacyPolicy() {
             ['Read-only access', 'By default, we only request "Read" permissions to analyze your content. We do not post or modify your account.'],
             ['Token expiry', 'Authentication tokens are refreshed frequently and stored in hardware-encrypted modules.'],
           ].map(([t, d]) => (
-            <div key={t} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
-              <dt className="text-sm font-semibold text-white">{t}</dt>
+            <div key={t} className="rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-4">
+              <dt className="text-sm font-semibold text-fg">{t}</dt>
               <dd className="mt-1.5 text-sm text-ink-300">{d}</dd>
             </div>
           ))}
@@ -103,9 +103,9 @@ export default function PrivacyPolicy() {
             { icon: FiLock, t: 'At rest', d: 'Data is encrypted using AES-256 standard with unique rotating keys for every database cluster.' },
             { icon: FiShield, t: 'In transit', d: 'All communication between your browser and our servers is secured via TLS 1.3 encryption.' },
           ].map(({ icon: Icon, t, d }) => (
-            <div key={t} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
+            <div key={t} className="rounded-xl border border-ov/[0.07] bg-ov/[0.02] p-5">
               <Icon className="h-5 w-5 text-brand-400" />
-              <p className="mt-3 font-semibold text-white">{t}</p>
+              <p className="mt-3 font-semibold text-fg">{t}</p>
               <p className="mt-1.5 text-sm text-ink-300">{d}</p>
             </div>
           ))}
@@ -119,16 +119,16 @@ export default function PrivacyPolicy() {
               <FiTrash2 className="h-4 w-4" />
             </div>
             <div>
-              <h3 className="font-semibold text-white">Right to deletion</h3>
+              <h3 className="font-semibold text-fg">Right to deletion</h3>
               <p className="mt-1 text-sm text-ink-300">Request immediate and permanent deletion of all account data at any time by emailing us.</p>
             </div>
           </div>
 
-          <div className="mt-6 overflow-hidden rounded-xl border border-white/10 bg-ink-850">
-            <div className="flex items-center justify-between border-b border-white/[0.06] px-4 py-2.5">
+          <div className="mt-6 overflow-hidden rounded-xl border border-ov/10 bg-ink-850">
+            <div className="flex items-center justify-between border-b border-ov/[0.06] px-4 py-2.5">
               <span className="font-mono text-xs text-ink-400">Email template</span>
-              <button onClick={copy} className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-ink-200 hover:bg-white/[0.06] hover:text-white">
-                {copied ? <><FiCheck className="h-3.5 w-3.5 text-emerald-400" /> Copied</> : <><FiCopy className="h-3.5 w-3.5" /> Copy</>}
+              <button onClick={copy} className="flex items-center gap-1.5 rounded-md px-2 py-1 text-xs text-ink-200 hover:bg-ov/[0.06] hover:text-fg">
+                {copied ? <><FiCheck className="h-3.5 w-3.5 text-success-400" /> Copied</> : <><FiCopy className="h-3.5 w-3.5" /> Copy</>}
               </button>
             </div>
             <pre className="whitespace-pre-wrap p-4 font-mono text-[13px] leading-relaxed text-ink-200">
@@ -138,11 +138,11 @@ export default function PrivacyPolicy() {
 
           <div className="mt-5 flex flex-wrap items-center gap-3">
             <Button as="a" href={mailto}><FiMail className="h-4 w-4" /> Open in email app</Button>
-            <span className="text-sm text-ink-400">or write to <a href={`mailto:${CONTACT_EMAIL}`} className="text-white underline-offset-2 hover:underline">{CONTACT_EMAIL}</a></span>
+            <span className="text-sm text-ink-400">or write to <a href={`mailto:${CONTACT_EMAIL}`} className="text-fg underline-offset-2 hover:underline">{CONTACT_EMAIL}</a></span>
           </div>
 
-          <div className="mt-6 border-t border-white/[0.06] pt-5">
-            <p className="text-sm font-semibold text-white">What happens next</p>
+          <div className="mt-6 border-t border-ov/[0.06] pt-5">
+            <p className="text-sm font-semibold text-fg">What happens next</p>
             <ol className="mt-3 grid gap-3 sm:grid-cols-3">
               {['We confirm receipt within 48 hours', 'Your data is permanently deleted within 30 days', 'You receive a final confirmation email'].map((t, i) => (
                 <li key={t} className="flex gap-2.5 text-sm text-ink-300">

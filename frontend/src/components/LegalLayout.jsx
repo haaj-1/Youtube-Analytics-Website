@@ -43,8 +43,8 @@ export default function LegalLayout({ eyebrow, title, meta, intro, sections, chi
                     className={cx(
                       'flex items-center gap-3 rounded-lg border px-3 py-2 text-sm transition-colors lg:border-0 lg:border-l-2 lg:rounded-none lg:py-1.5',
                       active === s.id
-                        ? 'border-brand-500/40 bg-brand-500/10 text-white lg:border-brand-500 lg:bg-transparent'
-                        : 'border-white/10 text-ink-300 hover:text-white lg:border-white/[0.06]',
+                        ? 'border-brand-500/40 bg-brand-500/10 text-fg lg:border-brand-500 lg:bg-transparent'
+                        : 'border-ov/10 text-ink-300 hover:text-fg lg:border-ov/[0.06]',
                     )}
                   >
                     <span className="font-mono text-[11px] text-ink-500">{String(i + 1).padStart(2, '0')}</span>
