@@ -1,490 +1,349 @@
 // src/components/tools/PerformanceHistory/PerformanceHistory.jsx
-import React, { useState } from 'react';
-import './PerformanceHistory.css';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import {
+  FiArrowLeft, FiArrowRight, FiBarChart2, FiCalendar, FiClock, FiExternalLink, FiEye, FiHash,
+  FiMessageCircle, FiSearch, FiThumbsUp, FiTrendingDown, FiTrendingUp,
+} from 'react-icons/fi';
+import { API_URL, request, fmt } from '../../../lib/api';
+import { Alert, Badge, Bar, Button, Card, CardHeader, Input, Spinner, Stat } from '../../ui';
+import { cx } from '../../../lib/cx';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
-const PerformanceHistory = () => {
-  const [channelName, setChannelName] = useState('');
-  const [channelResults, setChannelResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
-  const [analytics, setAnalytics] = useState(null);
+// The API reports publish hours in UTC; show them in the viewer's timezone.
+function localHour(utcHour) {
+  const d = new Date(Date.UTC(2024, 0, 1, utcHour));
+  return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+}
+
+function SearchView({ onSelect, loadingId }) {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedVideo, setSelectedVideo] = useState(null);
 
-  const handleChannelSearch = async () => {
-    if (!channelName.trim()) {
-      setError('Please enter a channel name');
-      return;
-    }
-    
-    setIsSearching(true);
+  const search = async (e) => {
+    e.preventDefault();
+    if (!query.trim()) { setError('Enter a channel name to search.'); return; }
+    setSearching(true);
     setError(null);
-    
     try {
-      const response = await fetch(`${API}/youtube/search/channel?q=${encodeURIComponent(channelName)}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to search channels');
-      }
-      
-      const data = await response.json();
-      setChannelResults(data.items || []);
-      
-      if (!data.items || data.items.length === 0) {
-        setError('No channels found. Try a different search term.');
-      }
+      const data = await request(API_URL, `/youtube/search/channel?q=${encodeURIComponent(query.trim())}`);
+      setResults(data.items || []);
+      if (!data.items?.length) setError('No channels found. Try a different spelling.');
     } catch (err) {
       setError(err.message);
     } finally {
-      setIsSearching(false);
+      setSearching(false);
     }
   };
-
-  const handleChannelSelect = async (channel) => {
-    setIsLoadingAnalytics(true);
-    setError(null);
-    setChannelResults([]);
-    
-    try {
-      const channelId = channel.id.channelId;
-      
-      const response = await fetch(`${API}/analytics/channel-analytics`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          channel_id: channelId,
-          max_videos: 100
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to load analytics');
-      }
-      
-      const data = await response.json();
-      setAnalytics(data);
-      
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoadingAnalytics(false);
-    }
-  };
-
-  const formatNumber = (num) => {
-    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
-    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
-    return num.toString();
-  };
-
-  const formatDuration = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    if (mins >= 60) {
-      const hours = Math.floor(mins / 60);
-      const remainingMins = mins % 60;
-      return `${hours}h ${remainingMins}m`;
-    }
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const getDayOrder = () => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   return (
-    <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border border-red-100 shadow-soft overflow-hidden">
-      {/* Header */}
-      <div className="border-b border-red-100 p-6 bg-white">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Channel Analytics Dashboard</h2>
-        <p className="text-slate-600">Get insights YouTube doesn't show you - posting patterns, engagement trends, and content optimization</p>
+    <Card className="mx-auto max-w-2xl p-6 sm:p-8">
+      <div className="mb-6 text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.03] text-brand-400">
+          <FiBarChart2 className="h-5 w-5" />
+        </div>
+        <h2 className="text-xl font-semibold">Analyze any channel</h2>
+        <p className="mx-auto mt-2 max-w-md text-sm text-ink-300">
+          We pull the 100 most recent uploads and surface posting patterns, length sweet spots and title keywords YouTube Studio doesn't show.
+        </p>
       </div>
 
-      {/* Channel Search */}
-      {!analytics && (
-        <div className="p-8 bg-white">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-2">Analyze Your Channel</h3>
-              <p className="text-slate-600 mb-3">Enter your channel name to get advanced analytics</p>
-              <div className="inline-flex items-center gap-2 text-sm text-red-700 bg-red-50 px-4 py-2 rounded-lg border border-red-200">
-                <span>Analyzes your 100 most recent videos for the most accurate, up-to-date insights</span>
-              </div>
-            </div>
+      <form onSubmit={search} className="flex gap-2">
+        <div className="relative flex-1">
+          <FiSearch className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-400" />
+          <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Channel name, e.g. Veritasium" aria-label="Channel name" className="h-12 pl-10" />
+        </div>
+        <Button type="submit" size="lg" loading={searching} disabled={!!loadingId}>Search</Button>
+      </form>
 
-            <div className="flex gap-3 mb-4">
-              <input
-                type="text"
-                placeholder="Enter your YouTube channel name..."
-                value={channelName}
-                onChange={(e) => setChannelName(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleChannelSearch()}
-                className="flex-1 rounded-lg border border-slate-300 bg-white h-12 px-4 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition-all"
-              />
-              <button
-                onClick={handleChannelSearch}
-                disabled={isSearching || isLoadingAnalytics}
-                className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-              >
-                {isSearching ? 'Searching...' : 'Search'}
-              </button>
-            </div>
+      {error && <div className="mt-4"><Alert onDismiss={() => setError(null)}>{error}</Alert></div>}
 
-            {error && (
-              <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
-                {error}
-              </div>
-            )}
-
-            {isLoadingAnalytics && (
-              <div className="p-8 bg-orange-50 rounded-lg border border-orange-200">
-                <div className="flex flex-col items-center gap-3">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-600"></div>
-                  <div className="text-center">
-                    <p className="font-semibold text-red-900 mb-1">Analyzing Your Channel...</p>
-                    <p className="text-sm text-red-700">Fetching your 100 most recent videos</p>
-                    <p className="text-xs text-red-600 mt-2">This gives us your current performance trends</p>
+      {results.length > 0 && (
+        <div className="mt-6">
+          <p className="eyebrow mb-3">Select a channel</p>
+          <ul className="space-y-2">
+            {results.map((ch) => (
+              <li key={ch.id.channelId}>
+                <button
+                  onClick={() => onSelect(ch)}
+                  disabled={!!loadingId}
+                  className="group flex w-full items-center gap-4 rounded-xl border border-white/[0.07] bg-white/[0.02] p-3 text-left transition-colors hover:border-white/20 hover:bg-white/[0.05] disabled:opacity-60"
+                >
+                  <img src={ch.snippet.thumbnails?.default?.url} alt="" className="h-12 w-12 shrink-0 rounded-full object-cover" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-medium text-white">{ch.snippet.title}</p>
+                    <p className="line-clamp-1 text-sm text-ink-400">{ch.snippet.description || 'No description'}</p>
                   </div>
-                </div>
-              </div>
-            )}
+                  {loadingId === ch.id.channelId
+                    ? <Spinner className="h-4 w-4 text-brand-400" />
+                    : <FiArrowRight className="h-4 w-4 text-ink-500 transition-transform group-hover:translate-x-0.5 group-hover:text-white" />}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </Card>
+  );
+}
 
-            {channelResults.length > 0 && (
-              <div className="space-y-2">
-                <p className="text-sm font-semibold text-slate-700 mb-3">Select your channel:</p>
-                {channelResults.map((channel, idx) => (
-                  <div
-                    key={idx}
-                    onClick={() => handleChannelSelect(channel)}
-                    className="flex items-center gap-3 p-4 bg-slate-50 rounded-lg border border-slate-200 hover:border-red-400 hover:bg-red-50 cursor-pointer transition-all"
-                  >
-                    <img
-                      src={channel.snippet.thumbnails.default.url}
-                      alt={channel.snippet.title}
-                      className="w-14 h-14 rounded-full"
-                    />
-                    <div className="flex-1">
-                      <p className="font-semibold text-slate-900">{channel.snippet.title}</p>
-                      <p className="text-sm text-slate-600 line-clamp-1">{channel.snippet.description}</p>
+function LoadingView({ channel }) {
+  return (
+    <div className="space-y-6" aria-live="polite">
+      <Card className="flex items-center gap-4 p-5">
+        <img src={channel.snippet.thumbnails?.default?.url} alt="" className="h-14 w-14 shrink-0 rounded-full object-cover" />
+        <div>
+          <p className="font-medium text-white">{channel.snippet.title}</p>
+          <p className="mt-1 flex items-center gap-2 text-sm text-ink-300"><Spinner className="h-3.5 w-3.5 text-brand-400" /> Fetching and analyzing the 100 most recent videos…</p>
+        </div>
+      </Card>
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => <div key={i} className="skeleton h-24" />)}
+      </div>
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="skeleton h-80 lg:col-span-2" />
+        <div className="skeleton h-80" />
+      </div>
+    </div>
+  );
+}
+
+function Dashboard({ analytics, onReset }) {
+  const navigate = useNavigate();
+  const { channel_info: info, overview, posting_patterns: posting, duration_analysis: durations,
+    top_videos: topVideos, content_insights: content, engagement_insights: engagement } = analytics;
+
+  const dayEntries = DAYS.filter((d) => posting.day_breakdown[d]);
+  const maxDayViews = Math.max(...dayEntries.map((d) => posting.day_breakdown[d].avg_views), 1);
+  const durationEntries = Object.values(durations);
+  const maxDurViews = Math.max(...durationEntries.map((d) => d.avg_views), 1);
+  const bestDuration = durationEntries.reduce((a, b) => (b.avg_views > (a?.avg_views ?? -1) ? b : a), null);
+  const growth = overview.growth_rate;
+
+  const goPredict = () =>
+    navigate('/post-performance', { state: { subscriber_count: info.subscriber_count, channel_name: info.title } });
+
+  return (
+    <div className="space-y-6 animate-fade-up">
+      {/* Channel header */}
+      <Card className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
+        <img src={info.thumbnail} alt="" className="h-16 w-16 shrink-0 rounded-full object-cover ring-2 ring-white/10" />
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-xl font-semibold">{info.title}</h2>
+          <p className="mt-1 text-sm text-ink-300">
+            <span className="font-mono text-white">{fmt(info.subscriber_count)}</span> subscribers · last {overview.total_videos} uploads analyzed
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={onReset}><FiArrowLeft className="h-4 w-4" /> New search</Button>
+          <Button onClick={goPredict}>Predict a video <FiArrowRight className="h-4 w-4" /></Button>
+        </div>
+      </Card>
+
+      {/* KPIs */}
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <Stat label="Videos analyzed" value={overview.total_videos} sub="Most recent uploads" />
+        <Stat label="Avg views" value={fmt(overview.avg_views)} sub="Per video" />
+        <Stat label="Avg engagement" value={`${overview.avg_engagement_rate}%`} sub="(Likes + comments) / views" />
+        <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+          <p className="text-xs text-ink-300">Growth</p>
+          <p className={cx('mt-1.5 flex items-center gap-1.5 font-mono text-2xl font-semibold tabular-nums', growth >= 0 ? 'text-emerald-400' : 'text-brand-400')}>
+            {growth >= 0 ? <FiTrendingUp className="h-5 w-5" /> : <FiTrendingDown className="h-5 w-5" />}
+            {growth >= 0 ? '+' : ''}{growth}%
+          </p>
+          <p className="mt-1 text-xs text-ink-400">Recent vs older uploads</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          {/* Posting patterns */}
+          <Card>
+            <CardHeader icon={<FiCalendar className="h-4 w-4" />} title="When to post" description="Average views by publish day and hour." />
+            <div className="grid gap-4 border-b border-white/[0.05] p-5 sm:grid-cols-2">
+              <div className="rounded-xl border border-brand-500/25 bg-brand-500/[0.05] p-4">
+                <p className="text-xs text-ink-300">Best day</p>
+                <p className="mt-1 text-xl font-semibold text-white">{posting.best_day.day}</p>
+                <p className="mt-0.5 font-mono text-xs text-brand-300">{fmt(posting.best_day.avg_views)} avg views</p>
+              </div>
+              <div className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+                <p className="text-xs text-ink-300">Best hour <span className="text-ink-400">(your local time)</span></p>
+                <p className="mt-1 text-xl font-semibold text-white">{localHour(posting.best_hour.hour)}</p>
+                <p className="mt-0.5 font-mono text-xs text-ink-300">{String(posting.best_hour.hour).padStart(2, '0')}:00 UTC · {fmt(posting.best_hour.avg_views)} avg views</p>
+              </div>
+            </div>
+            <ul className="space-y-2.5 p-5">
+              {dayEntries.map((day) => {
+                const d = posting.day_breakdown[day];
+                const best = day === posting.best_day.day;
+                return (
+                  <li key={day} className="grid grid-cols-[3rem_1fr_auto] items-center gap-3 text-sm sm:grid-cols-[6rem_1fr_7rem]">
+                    <span className={cx(best ? 'text-white' : 'text-ink-300')}>
+                      <span className="sm:hidden">{day.slice(0, 3)}</span><span className="hidden sm:inline">{day}</span>
+                    </span>
+                    <Bar value={d.avg_views} max={maxDayViews} tone={best ? 'brand' : 'neutral'} className="h-2" />
+                    <span className="text-right font-mono text-xs tabular-nums text-ink-200">
+                      {fmt(d.avg_views)} <span className="text-ink-500">· {d.video_count}</span>
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+            <p className="border-t border-white/[0.05] px-5 py-3 text-xs text-ink-400">Days are based on UTC publish time. Grey number = videos posted that day.</p>
+          </Card>
+
+          {/* Duration */}
+          <Card>
+            <CardHeader icon={<FiClock className="h-4 w-4" />} title="Video length" description="How each length bucket performs on this channel." />
+            <div className="grid gap-3 p-5 sm:grid-cols-3">
+              {durationEntries.map((d) => {
+                const best = d === bestDuration;
+                return (
+                  <div key={d.label} className={cx('rounded-xl border p-4', best ? 'border-brand-500/25 bg-brand-500/[0.05]' : 'border-white/[0.07] bg-white/[0.02]')}>
+                    <div className="flex items-center justify-between">
+                      <p className="text-xs text-ink-300">{d.label}</p>
+                      {best && <Badge tone="brand">Best</Badge>}
                     </div>
+                    <p className="mt-2 font-mono text-xl font-semibold tabular-nums text-white">{fmt(d.avg_views)}</p>
+                    <Bar value={d.avg_views} max={maxDurViews} tone={best ? 'brand' : 'neutral'} className="mt-3" />
+                    <p className="mt-2 text-xs text-ink-400">{d.video_count} videos</p>
                   </div>
+                );
+              })}
+            </div>
+          </Card>
+
+          {/* Top videos */}
+          <Card>
+            <CardHeader icon={<FiTrendingUp className="h-4 w-4" />} title="Top performing videos" />
+            <ol className="divide-y divide-white/[0.05]">
+              {topVideos.map((v, i) => (
+                <li key={v.video_id}>
+                  <a
+                    href={`https://www.youtube.com/watch?v=${v.video_id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-white/[0.03]"
+                  >
+                    <span className="w-5 shrink-0 font-mono text-xs text-ink-400">{String(i + 1).padStart(2, '0')}</span>
+                    <img src={v.thumbnail} alt="" className="aspect-video w-24 shrink-0 rounded-lg object-cover sm:w-32" loading="lazy" />
+                    <div className="min-w-0 flex-1">
+                      <p className="line-clamp-2 text-sm font-medium text-white">{v.title}</p>
+                      <div className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 font-mono text-xs text-ink-300">
+                        <span className="flex items-center gap-1"><FiEye className="h-3 w-3" />{fmt(v.views)}</span>
+                        <span className="flex items-center gap-1"><FiThumbsUp className="h-3 w-3" />{fmt(v.likes)}</span>
+                        <span className="flex items-center gap-1"><FiMessageCircle className="h-3 w-3" />{v.engagement_rate}%</span>
+                      </div>
+                    </div>
+                    <FiExternalLink className="h-4 w-4 shrink-0 text-ink-500 opacity-0 transition-opacity group-hover:opacity-100" />
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </Card>
+        </div>
+
+        {/* Side column */}
+        <div className="space-y-6">
+          <Card className="relative overflow-hidden p-5">
+            <div className="pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-brand-500/25 blur-3xl" aria-hidden="true" />
+            <p className="eyebrow relative">Recommended strategy</p>
+            <p className="relative mt-3 text-sm leading-relaxed text-ink-100">
+              Publish on <span className="font-semibold text-white">{posting.best_day.day}</span> around{' '}
+              <span className="font-semibold text-white">{localHour(posting.best_hour.hour)}</span>
+              {bestDuration && <> and aim for <span className="font-semibold text-white">{bestDuration.label.toLowerCase()}</span> videos</>}.
+            </p>
+            <Button onClick={goPredict} className="relative mt-4 w-full">Forecast your next video</Button>
+          </Card>
+
+          <Card>
+            <CardHeader title="Engagement spread" />
+            <div className="space-y-4 p-5">
+              <div>
+                <div className="mb-1.5 flex justify-between text-sm">
+                  <span className="text-ink-200">High performers</span>
+                  <span className="font-mono text-emerald-400">{engagement.high_performers}</span>
+                </div>
+                <Bar value={engagement.high_performers} max={overview.total_videos} tone="success" />
+              </div>
+              <div>
+                <div className="mb-1.5 flex justify-between text-sm">
+                  <span className="text-ink-200">Low performers</span>
+                  <span className="font-mono text-brand-400">{engagement.low_performers}</span>
+                </div>
+                <Bar value={engagement.low_performers} max={overview.total_videos} />
+              </div>
+              <div className="border-t border-white/[0.06] pt-4">
+                <p className="text-xs text-ink-300">Consistency score</p>
+                <p className="mt-1 font-mono text-3xl font-semibold tabular-nums text-white">{engagement.consistency_score}%</p>
+                <p className="mt-1 text-xs text-ink-400">How stable engagement is from video to video.</p>
+              </div>
+            </div>
+          </Card>
+
+          {content.common_words_in_top_videos.length > 0 && (
+            <Card>
+              <CardHeader icon={<FiHash className="h-4 w-4" />} title="Words in top titles" description="Recurring terms in this channel's best videos." />
+              <div className="flex flex-wrap gap-2 p-5">
+                {content.common_words_in_top_videos.map((w) => (
+                  <span key={w.word} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 text-sm text-ink-100">
+                    {w.word}<span className="font-mono text-[11px] text-ink-400">×{w.count}</span>
+                  </span>
                 ))}
               </div>
-            )}
-          </div>
+            </Card>
+          )}
         </div>
-      )}
+      </div>
+    </div>
+  );
+}
 
-      {/* Analytics Dashboard */}
-      {analytics && (
-        <div className="p-6 bg-white">
-          {/* Channel Header */}
-          <div className="flex items-center justify-between mb-6 pb-6 border-b border-slate-200">
-            <div className="flex items-center gap-4">
-              <img
-                src={analytics.channel_info.thumbnail}
-                alt={analytics.channel_info.title}
-                className="w-16 h-16 rounded-full"
-              />
-              <div>
-                <h3 className="text-xl font-bold text-slate-900">{analytics.channel_info.title}</h3>
-                <p className="text-slate-600">{formatNumber(analytics.channel_info.subscriber_count)} subscribers</p>
-                <p className="text-sm text-red-600 mt-1 flex items-center justify-center gap-1">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
-                  </svg>
-                  Analyzing {analytics.overview.total_videos} most recent videos
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => {
-                setAnalytics(null);
-                setChannelName('');
-                setSelectedVideo(null);
-              }}
-              className="px-4 py-2 text-slate-600 hover:text-slate-900 font-medium"
-            >
-              ← Search Another Channel
-            </button>
+const PerformanceHistory = () => {
+  const [selected, setSelected] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
+  const [error, setError] = useState(null);
+
+  const load = async (channel) => {
+    setSelected(channel);
+    setError(null);
+    try {
+      const data = await request(API_URL, '/analytics/channel-analytics', {
+        method: 'POST',
+        body: { channel_id: channel.id.channelId, max_videos: 100 },
+        timeout: 120000,
+      });
+      setAnalytics(data);
+    } catch (err) {
+      setError(err.message);
+      setSelected(null);
+    }
+  };
+
+  const reset = () => { setAnalytics(null); setSelected(null); setError(null); };
+
+  if (analytics) return <Dashboard analytics={analytics} onReset={reset} />;
+  if (selected) return <LoadingView channel={selected} />;
+  return (
+    <div className="space-y-4">
+      {error && <div className="mx-auto max-w-2xl"><Alert onDismiss={() => setError(null)}>{error}</Alert></div>}
+      <SearchView onSelect={load} loadingId={selected?.id?.channelId} />
+      <div className="mx-auto grid max-w-2xl gap-3 pt-4 sm:grid-cols-3">
+        {[
+          { icon: FiCalendar, t: 'Posting windows', d: 'Best day and hour for this audience' },
+          { icon: FiClock, t: 'Length sweet spot', d: 'Which durations earn the most views' },
+          { icon: FiHash, t: 'Title keywords', d: 'Words that recur in top performers' },
+        ].map(({ icon: Icon, t, d }) => (
+          <div key={t} className="rounded-xl border border-white/[0.06] p-4">
+            <Icon className="h-4 w-4 text-ink-300" />
+            <p className="mt-3 text-sm font-medium text-white">{t}</p>
+            <p className="mt-1 text-xs text-ink-400">{d}</p>
           </div>
-
-          {/* Overview Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-xl p-4 border border-red-200">
-              <div className="text-sm text-red-700 mb-1">Videos Analyzed</div>
-              <div className="text-2xl font-bold text-red-900">{analytics.overview.total_videos}</div>
-              <div className="text-xs text-red-600 mt-1">Most recent uploads</div>
-            </div>
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
-              <div className="text-sm text-orange-700 mb-1">Avg Views</div>
-              <div className="text-2xl font-bold text-orange-900">{formatNumber(analytics.overview.avg_views)}</div>
-              <div className="text-xs text-orange-600 mt-1">Current performance</div>
-            </div>
-            <div className="bg-gradient-to-br from-coral-50 to-red-100 rounded-xl p-4 border border-red-200">
-              <div className="text-sm text-red-700 mb-1">Avg Engagement</div>
-              <div className="text-2xl font-bold text-red-900">{analytics.overview.avg_engagement_rate}%</div>
-              <div className="text-xs text-red-600 mt-1">Recent trend</div>
-            </div>
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-xl p-4 border border-orange-200">
-              <div className="text-sm text-orange-700 mb-1">Growth Rate</div>
-              <div className={`text-2xl font-bold ${analytics.overview.growth_rate >= 0 ? 'text-orange-900' : 'text-red-900'}`}>
-                {analytics.overview.growth_rate >= 0 ? '+' : ''}{analytics.overview.growth_rate}%
-              </div>
-              <div className="text-xs text-orange-600 mt-1">Recent vs older</div>
-            </div>
-          </div>
-
-          {/* Info Banner */}
-          <div className="mb-6 p-4 bg-gradient-to-r from-orange-50 to-red-50 rounded-lg border border-orange-200">
-            <div className="flex items-start gap-3">
-              <div>
-                <p className="font-semibold text-slate-900 mb-1">Why 100 Most Recent Videos?</p>
-                <p className="text-sm text-slate-700">
-                  Focuses on your latest content to capture your current audience behavior, algorithm performance, and content strategy. 
-                  This ensures recommendations are based on what's working <span className="font-semibold">right now</span>, not outdated data.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Posting Patterns - Insights YouTube Doesn't Show */}
-              <div className="bg-white rounded-xl p-6 border border-slate-200">
-                <h3 className="text-lg font-bold text-slate-900 mb-2 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/>
-                  </svg>
-                  Optimal Posting Times
-                </h3>
-                <p className="text-sm text-slate-600 mb-4">Based on your recent video performance</p>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="bg-white rounded-lg p-4 border border-slate-200">
-                    <div className="text-sm text-slate-600 mb-2">Best Day to Post</div>
-                    <div className="text-xl font-bold text-slate-900">{analytics.posting_patterns.best_day.day}</div>
-                    <div className="text-sm text-orange-600 mt-1">
-                      {formatNumber(analytics.posting_patterns.best_day.avg_views)} avg views
-                    </div>
-                  </div>
-                  <div className="bg-white rounded-lg p-4 border border-slate-200">
-                    <div className="text-sm text-slate-600 mb-2">Best Hour to Post</div>
-                    <div className="text-xl font-bold text-slate-900">{analytics.posting_patterns.best_hour.hour}:00</div>
-                    <div className="text-sm text-orange-600 mt-1">
-                      {formatNumber(analytics.posting_patterns.best_hour.avg_views)} avg views
-                    </div>
-                  </div>
-                </div>
-
-                {/* Day Breakdown */}
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold text-slate-700">Performance by Day:</p>
-                  {getDayOrder().map(day => {
-                    const dayData = analytics.posting_patterns.day_breakdown[day];
-                    if (!dayData) return null;
-                    const maxViews = Math.max(...Object.values(analytics.posting_patterns.day_breakdown).map(d => d.avg_views));
-                    const percentage = (dayData.avg_views / maxViews) * 100;
-                    
-                    return (
-                      <div key={day} className="flex items-center gap-3">
-                        <div className="w-24 text-sm text-slate-700">{day}</div>
-                        <div className="flex-1 bg-slate-200 rounded-full h-6 relative">
-                          <div
-                            className="bg-gradient-to-r from-red-500 to-orange-500 rounded-full h-6 flex items-center justify-end pr-2"
-                            style={{ width: `${percentage}%` }}
-                          >
-                            <span className="text-xs text-white font-medium">{formatNumber(dayData.avg_views)}</span>
-                          </div>
-                        </div>
-                        <div className="w-16 text-sm text-slate-600">{dayData.video_count} videos</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Duration Analysis */}
-              <div className="bg-white rounded-xl p-6 border border-slate-200">
-                <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
-                  </svg>
-                  Video Length Performance
-                </h3>
-                <div className="grid grid-cols-3 gap-4">
-                  {Object.entries(analytics.duration_analysis).map(([key, data]) => (
-                    <div key={key} className="bg-white rounded-lg p-4 border border-slate-200">
-                      <div className="text-sm text-slate-600 mb-2">{data.label}</div>
-                      <div className="text-xl font-bold text-slate-900">{formatNumber(data.avg_views)}</div>
-                      <div className="text-xs text-slate-500 mt-1">{data.video_count} videos</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Top Performing Videos */}
-              <div className="bg-white rounded-xl p-6 border border-slate-200">
-                <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
-                  <svg className="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                  Top Performing Videos
-                </h3>
-                <div className="space-y-3">
-                  {analytics.top_videos.map((video, idx) => (
-                    <div
-                      key={video.video_id}
-                      onClick={() => setSelectedVideo(video)}
-                      className="flex items-start gap-3 p-3 bg-slate-50 rounded-lg hover:bg-red-50 cursor-pointer transition-all border border-slate-200 hover:border-red-300"
-                    >
-                      <div className="flex-shrink-0 w-8 h-8 bg-gradient-to-br from-red-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold">
-                        {idx + 1}
-                      </div>
-                      <img
-                        src={video.thumbnail}
-                        alt={video.title}
-                        className="w-32 h-20 object-cover rounded"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-slate-900 text-sm line-clamp-2">{video.title}</p>
-                        <div className="flex gap-4 mt-2 text-xs text-slate-600">
-                          <span className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
-                              <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
-                            </svg>
-                            {formatNumber(video.views)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z"/>
-                            </svg>
-                            {formatNumber(video.likes)}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd"/>
-                            </svg>
-                            {video.engagement_rate}%
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Content Insights */}
-              {analytics.content_insights.common_words_in_top_videos.length > 0 && (
-                <div className="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6 border border-orange-200">
-                  <h3 className="text-lg font-bold text-red-900 mb-4 flex items-center gap-2">
-                    <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M18 13V5a2 2 0 00-2-2H4a2 2 0 00-2 2v8a2 2 0 002 2h3l3 3 3-3h3a2 2 0 002-2zM5 7a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1zm1 3a1 1 0 100 2h3a1 1 0 100-2H6z" clipRule="evenodd"/>
-                    </svg>
-                    Common Words in Top Videos
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {analytics.content_insights.common_words_in_top_videos.map((item, idx) => (
-                      <span
-                        key={idx}
-                        className="px-3 py-1 bg-white rounded-full text-sm font-medium text-red-900 border border-red-200"
-                      >
-                        {item.word} ({item.count})
-                      </span>
-                    ))}
-                  </div>
-                  <p className="text-sm text-red-700 mt-3">
-                    These words appear frequently in your best-performing videos. Consider using them in future titles.
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Sidebar */}
-            <div className="space-y-6">
-              {/* Engagement Insights */}
-              <div className="bg-white rounded-xl p-6 border border-slate-200">
-                <h3 className="text-lg font-bold text-slate-900 mb-4">Engagement Insights</h3>
-                <div className="space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-700">High Performers</span>
-                      <span className="font-bold text-orange-600">{analytics.engagement_insights.high_performers}</span>
-                    </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2">
-                      <div
-                        className="bg-orange-500 rounded-full h-2"
-                        style={{ width: `${(analytics.engagement_insights.high_performers / analytics.overview.total_videos) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-slate-700">Low Performers</span>
-                      <span className="font-bold text-red-600">{analytics.engagement_insights.low_performers}</span>
-                    </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2">
-                      <div
-                        className="bg-red-500 rounded-full h-2"
-                        style={{ width: `${(analytics.engagement_insights.low_performers / analytics.overview.total_videos) * 100}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                  <div className="pt-4 border-t border-slate-200">
-                    <div className="text-sm text-slate-600 mb-1">Consistency Score</div>
-                    <div className="text-2xl font-bold text-slate-900">{analytics.engagement_insights.consistency_score}%</div>
-                    <p className="text-xs text-slate-500 mt-1">How consistent your engagement rates are</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Selected Video Details */}
-              {selectedVideo && (
-                <div className="bg-red-50 rounded-xl p-6 border border-red-200">
-                  <h3 className="text-lg font-bold text-red-900 mb-4">Video Details</h3>
-                  <img
-                    src={selectedVideo.thumbnail}
-                    alt={selectedVideo.title}
-                    className="w-full rounded-lg mb-3"
-                  />
-                  <p className="font-semibold text-slate-900 text-sm mb-3 line-clamp-2">{selectedVideo.title}</p>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Views:</span>
-                      <span className="font-bold text-slate-900">{formatNumber(selectedVideo.views)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Likes:</span>
-                      <span className="font-bold text-slate-900">{formatNumber(selectedVideo.likes)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-slate-600">Engagement:</span>
-                      <span className="font-bold text-orange-600">{selectedVideo.engagement_rate}%</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Quick Actions */}
-              <div className="bg-gradient-to-br from-red-500 to-orange-600 rounded-xl p-6 text-white">
-                <h3 className="text-lg font-bold mb-2">Current Best Strategy</h3>
-                <p className="text-sm text-red-50 mb-4">
-                  Based on your 100 most recent videos, post on <span className="font-bold">{analytics.posting_patterns.best_day.day}</span> at <span className="font-bold">{analytics.posting_patterns.best_hour.hour}:00</span> for maximum reach with your current audience.
-                </p>
-                <button className="w-full bg-white text-red-600 font-medium py-2 rounded-lg hover:bg-red-50 transition-colors">
-                  Use This Data for Predictions
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 };

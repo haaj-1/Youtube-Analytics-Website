@@ -1,6 +1,8 @@
 // src/components/tools/AccuracyDashboard/AccuracyDashboard.jsx
-import React, { useState } from 'react';
-import './AccuracyDashboard.css';
+import { useState } from 'react';
+import { FiAlertTriangle, FiArrowRight, FiCheck, FiGitBranch, FiImage, FiSliders, FiType } from 'react-icons/fi';
+import { Alert, Badge, Bar, Card } from '../../ui';
+import { cx } from '../../../lib/cx';
 
 // Static model information - no API call needed
 const modelInfo = {
@@ -150,362 +152,300 @@ const modelInfo = {
   ]
 };
 
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'how-it-works', label: 'How it works' },
+  { id: 'performance', label: 'Performance' },
+  { id: 'limitations', label: 'Limitations' },
+];
+
+const componentIcons = [FiType, FiImage, FiGitBranch];
+
+const fmtViews = (n) => (n >= 1e6 ? `${(n / 1e6).toFixed(2)}M` : `${Math.round(n / 1e3)}K`);
+
+function Pipeline() {
+  const inputs = [
+    { label: 'Title + description', model: 'BERT', dims: 768, icon: FiType },
+    { label: 'Thumbnail', model: 'ResNet-18', dims: 512, icon: FiImage },
+    { label: 'Metadata', model: 'Encoders', dims: 14, icon: FiSliders },
+  ];
+  return (
+    <div className="grid items-center gap-4 lg:grid-cols-[1fr_auto_auto_auto_auto]">
+      <div className="space-y-2">
+        {inputs.map(({ label, model, dims, icon: Icon }) => (
+          <div key={label} className="flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3.5 py-2.5">
+            <Icon className="h-4 w-4 shrink-0 text-ink-300" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm text-white">{label}</p>
+              <p className="text-xs text-ink-400">{model}</p>
+            </div>
+            <span className="font-mono text-xs tabular-nums text-ink-200">{dims}d</span>
+          </div>
+        ))}
+      </div>
+      <FiArrowRight className="mx-auto h-4 w-4 rotate-90 text-ink-500 lg:rotate-0" />
+      <div className="rounded-xl border border-white/10 bg-ink-850 px-4 py-3 text-center">
+        <p className="font-mono text-lg font-semibold text-white">1,294</p>
+        <p className="text-xs text-ink-400">feature vector</p>
+      </div>
+      <FiArrowRight className="mx-auto h-4 w-4 rotate-90 text-ink-500 lg:rotate-0" />
+      <div className="rounded-xl border border-brand-500/30 bg-brand-500/[0.07] px-4 py-3 text-center shadow-glow">
+        <p className="text-sm font-semibold text-white">XGBoost</p>
+        <p className="text-xs text-brand-300">→ predicted views</p>
+      </div>
+    </div>
+  );
+}
+
+function CheckList({ items, tone = 'brand' }) {
+  return (
+    <ul className="space-y-2.5">
+      {items.map((t) => (
+        <li key={t} className="flex items-start gap-2.5 text-sm text-ink-200">
+          <FiCheck className={cx('mt-0.5 h-4 w-4 shrink-0', tone === 'brand' ? 'text-brand-400' : 'text-emerald-400')} />
+          {t}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 const AccuracyDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
+  const r2 = (modelInfo.overview.accuracy_r2 * 100).toFixed(1);
+  const { performance_metrics: pm, training_details: td } = modelInfo;
+
+  const onTabKey = (e) => {
+    const i = TABS.findIndex((t) => t.id === activeTab);
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+      const next = TABS[(i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length];
+      setActiveTab(next.id);
+      document.getElementById(`tab-${next.id}`)?.focus();
+    }
+  };
 
   return (
-    <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-2xl border border-red-100 shadow-soft overflow-hidden">
-      {/* Header */}
-      <div className="border-b border-red-100 p-6 bg-white">
-        <h2 className="text-2xl font-bold text-slate-900 mb-2">Model Transparency Dashboard</h2>
-        <p className="text-slate-600">
-          Understanding how our AI predicts YouTube video performance
-        </p>
+    <div className="space-y-6">
+      {/* Headline numbers */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        <Card className="relative overflow-hidden p-5">
+          <div className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full bg-brand-500/25 blur-3xl" aria-hidden="true" />
+          <p className="text-xs text-ink-300">Accuracy (R²)</p>
+          <p className="mt-2 font-mono text-4xl font-semibold tabular-nums text-white">{r2}%</p>
+          <p className="mt-1 text-xs text-ink-400">of variance in views explained</p>
+        </Card>
+        <Card className="p-5">
+          <p className="text-xs text-ink-300">Training data</p>
+          <p className="mt-2 font-mono text-4xl font-semibold tabular-nums text-white">{modelInfo.overview.training_samples.toLocaleString()}</p>
+          <p className="mt-1 text-xs text-ink-400">videos across all categories</p>
+        </Card>
+        <Card className="p-5">
+          <p className="text-xs text-ink-300">Architecture</p>
+          <p className="mt-2 text-2xl font-semibold text-white">Ensemble</p>
+          <p className="mt-1 text-xs text-ink-400">BERT + CNN + XGBoost</p>
+        </Card>
       </div>
 
-      {/* Tabs */}
-      <div className="border-b border-slate-200 px-6">
-        <div className="flex gap-4">
-          {[
-            { id: 'overview', label: 'Overview' },
-            { id: 'how-it-works', label: 'How It Works' },
-            { id: 'performance', label: 'Performance' },
-            { id: 'limitations', label: 'Limitations' }
-          ].map(tab => (
+      <Card>
+        <div role="tablist" aria-label="Model details" onKeyDown={onTabKey} className="flex gap-1 overflow-x-auto border-b border-white/[0.06] px-3">
+          {TABS.map((tab) => (
             <button
               key={tab.id}
+              id={`tab-${tab.id}`}
+              role="tab"
+              aria-selected={activeTab === tab.id}
+              aria-controls={`panel-${tab.id}`}
+              tabIndex={activeTab === tab.id ? 0 : -1}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 font-medium border-b-2 transition-colors ${
-                activeTab === tab.id
-                  ? 'border-red-600 text-red-600'
-                  : 'border-transparent text-slate-600 hover:text-slate-900'
-              }`}
+              className={cx(
+                'relative whitespace-nowrap px-3 py-3.5 text-sm font-medium transition-colors',
+                activeTab === tab.id ? 'text-white' : 'text-ink-300 hover:text-white',
+              )}
             >
               {tab.label}
+              {activeTab === tab.id && <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-brand-500" />}
             </button>
           ))}
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="p-6 bg-white">
-        {/* Overview Tab */}
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
-            {/* Hero Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-xl p-6 text-white">
-                <div className="text-sm font-medium text-red-100 mb-2">Model Accuracy (R²)</div>
-                <div className="text-4xl font-bold mb-2">
-                  {(modelInfo.overview.accuracy_r2 * 100).toFixed(1)}%
-                </div>
-                <div className="text-sm text-red-100">
-                  Explains {(modelInfo.overview.accuracy_r2 * 100).toFixed(1)}% of variance in views
-                </div>
-              </div>
+        <div id={`panel-${activeTab}`} role="tabpanel" aria-labelledby={`tab-${activeTab}`} className="p-5 sm:p-6" key={activeTab}>
+          {activeTab === 'overview' && (
+            <div className="animate-fade-up space-y-8">
+              <section>
+                <h3 className="mb-4 text-base font-semibold">Pipeline</h3>
+                <Pipeline />
+              </section>
 
-              <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-6 text-white">
-                <div className="text-sm font-medium text-orange-100 mb-2">Training Data</div>
-                <div className="text-4xl font-bold mb-2">
-                  {(modelInfo.overview.training_samples / 1000).toFixed(0)}K
-                </div>
-                <div className="text-sm text-orange-100">
-                  Videos analyzed across all categories
-                </div>
-              </div>
-
-              <div className="bg-gradient-to-br from-red-700 to-red-800 rounded-xl p-6 text-white">
-                <div className="text-sm font-medium text-red-100 mb-2">Model Type</div>
-                <div className="text-2xl font-bold mb-2">
-                  Ensemble
-                </div>
-                <div className="text-sm text-red-100">
-                  BERT + CNN + XGBoost
-                </div>
-              </div>
-            </div>
-
-            {/* Model Components */}
-            <div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Model Components</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {modelInfo.components.map((component, idx) => (
-                  <div key={idx} className="bg-slate-50 rounded-xl p-5 border border-slate-200">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-red-500 to-orange-500 rounded-lg flex items-center justify-center">
-                        {idx === 0 ? (
-                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
-                          </svg>
-                        ) : idx === 1 ? (
-                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
-                          </svg>
-                        ) : (
-                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13 7H7v6h6V7z"/><path fillRule="evenodd" d="M7 2a1 1 0 012 0v1h2V2a1 1 0 112 0v1h2a2 2 0 012 2v2h1a1 1 0 110 2h-1v2h1a1 1 0 110 2h-1v2a2 2 0 01-2 2h-2v1a1 1 0 11-2 0v-1H9v1a1 1 0 11-2 0v-1H5a2 2 0 01-2-2v-2H2a1 1 0 110-2h1V9H2a1 1 0 010-2h1V5a2 2 0 012-2h2V2zM5 5h10v10H5V5z" clipRule="evenodd"/>
-                          </svg>
-                        )}
+              <section>
+                <h3 className="mb-4 text-base font-semibold">Components</h3>
+                <div className="grid gap-4 md:grid-cols-3">
+                  {modelInfo.components.map((c, idx) => {
+                    const Icon = componentIcons[idx];
+                    return (
+                      <div key={c.name} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
+                        <div className="mb-3 flex items-center gap-2.5">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/[0.04] text-brand-400">
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <h4 className="font-semibold">{c.name}</h4>
+                        </div>
+                        <p className="text-sm leading-relaxed text-ink-300">{c.purpose}</p>
+                        <dl className="mt-4 space-y-1.5 border-t border-white/[0.06] pt-4 text-xs">
+                          {[['Model', c.model], ['Parameters', c.parameters], ['Output', c.output]].map(([k, v]) => (
+                            <div key={k} className="flex justify-between gap-2">
+                              <dt className="text-ink-400">{k}</dt>
+                              <dd className="font-mono text-ink-100">{v}</dd>
+                            </div>
+                          ))}
+                        </dl>
                       </div>
-                      <h4 className="font-bold text-slate-900">{component.name}</h4>
-                    </div>
-                    <p className="text-sm text-slate-700 mb-3">{component.purpose}</p>
-                    <div className="space-y-1 text-xs text-slate-600">
-                      <div className="flex justify-between">
-                        <span>Model:</span>
-                        <span className="font-medium">{component.model}</span>
+                    );
+                  })}
+                </div>
+              </section>
+
+              <section>
+                <h3 className="mb-4 text-base font-semibold">Feature importance</h3>
+                <div className="space-y-3">
+                  {Object.values(modelInfo.features).map((f) => (
+                    <div key={f.description} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
+                      <div className="mb-3 flex items-baseline justify-between gap-4">
+                        <h4 className="text-sm font-medium">{f.description}</h4>
+                        <span className="font-mono text-xl font-semibold tabular-nums text-white">{f.importance}%</span>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Parameters:</span>
-                        <span className="font-medium">{component.parameters}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>Output:</span>
-                        <span className="font-medium">{component.output}</span>
+                      <Bar value={f.importance} className="h-2" />
+                      <div className="mt-3 flex flex-wrap gap-1.5">
+                        {f.details.map((d) => <Badge key={d}>{d}</Badge>)}
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              </section>
             </div>
+          )}
 
-            {/* Feature Importance */}
-            <div>
-              <h3 className="text-xl font-bold text-slate-900 mb-4">Feature Importance</h3>
-              <div className="space-y-4">
-                {Object.entries(modelInfo.features).map(([key, feature]) => (
-                  <div key={key} className="bg-white border border-slate-200 rounded-xl p-5">
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <h4 className="font-bold text-slate-900 mb-1">{feature.description}</h4>
-                        <p className="text-sm text-slate-600">
-                          {feature.importance}% contribution to predictions
-                        </p>
-                      </div>
-                      <div className="text-3xl font-bold text-red-600">{feature.importance}%</div>
+          {activeTab === 'how-it-works' && (
+            <div className="animate-fade-up space-y-8">
+              <ol className="relative space-y-4 before:absolute before:bottom-4 before:left-[15px] before:top-4 before:w-px before:bg-white/10">
+                {modelInfo.how_it_works.map((s) => (
+                  <li key={s.step} className="relative flex gap-4">
+                    <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-brand-500/40 bg-ink-900 font-mono text-xs text-brand-300">
+                      {s.step}
+                    </span>
+                    <div className="flex-1 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+                      <h4 className="text-sm font-semibold">{s.title}</h4>
+                      <p className="mt-1 text-sm leading-relaxed text-ink-300">{s.description}</p>
                     </div>
-                    <div className="w-full bg-slate-100 rounded-full h-3 mb-3">
-                      <div
-                        className="bg-gradient-to-r from-red-500 to-orange-500 rounded-full h-3"
-                        style={{ width: `${feature.importance}%` }}
-                      ></div>
-                    </div>
-                    <ul className="grid grid-cols-2 gap-2 text-sm text-slate-700">
-                      {feature.details.map((detail, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                          <span className="text-red-500 mt-0.5">•</span>
-                          <span>{detail}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* How It Works Tab */}
-        {activeTab === 'how-it-works' && (
-          <div className="space-y-6">
-            <div className="bg-red-50 border border-red-200 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-red-900 mb-2">Prediction Pipeline</h3>
-              <p className="text-sm text-red-800">
-                Your video data goes through a 5-step process to generate accurate predictions
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              {modelInfo.how_it_works.map((step, idx) => (
-                <div key={idx} className="flex gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                    {step.step}
-                  </div>
-                  <div className="flex-1 bg-slate-50 rounded-xl p-5 border border-slate-200">
-                    <h4 className="font-bold text-slate-900 mb-2">{step.title}</h4>
-                    <p className="text-sm text-slate-700">{step.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-red-900 mb-3">Technical Details</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="font-semibold text-red-900 mb-1">Input Dimensions</p>
-                  <p className="text-red-800">1,294 features total</p>
-                  <ul className="mt-2 space-y-1 text-red-700">
-                    <li>• 768 from BERT (text)</li>
-                    <li>• 512 from CNN (image)</li>
-                    <li>• 14 from metadata</li>
-                  </ul>
-                </div>
-                <div>
-                  <p className="font-semibold text-red-900 mb-1">Processing Time</p>
-                  <p className="text-red-800">~2-3 seconds per prediction</p>
-                  <ul className="mt-2 space-y-1 text-red-700">
-                    <li>• BERT: ~1s</li>
-                    <li>• CNN: ~0.5s</li>
-                    <li>• XGBoost: ~0.1s</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Performance Tab */}
-        {activeTab === 'performance' && (
-          <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {Object.entries(modelInfo.performance_metrics).map(([key, metric]) => (
-                <div key={key} className="bg-white border border-slate-200 rounded-xl p-6">
-                  <div className="text-sm font-medium text-slate-600 mb-2">
-                    {key.toUpperCase().replace('_', ' ')}
-                  </div>
-                  <div className="text-3xl font-bold text-slate-900 mb-3">
-                    {typeof metric.value === 'number' && metric.value < 1
-                      ? (metric.value * 100).toFixed(1) + '%'
-                      : metric.value.toLocaleString()}
-                  </div>
-                  <p className="text-sm text-slate-700 mb-2">{metric.description}</p>
-                  <p className="text-xs text-red-600 font-medium">{metric.interpretation}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="bg-slate-50 rounded-xl p-6 border border-slate-200">
-              <h3 className="text-lg font-bold text-slate-900 mb-4">Training Details</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className="text-sm font-semibold text-slate-700 mb-2">Dataset</p>
-                  <ul className="space-y-2 text-sm text-slate-600">
-                    <li className="flex items-start gap-2">
-                      <span className="text-red-500">•</span>
-                      <span>{modelInfo.training_details.dataset_size.toLocaleString()} videos</span>
-                    </li>
-                    {modelInfo.training_details.data_sources.map((source, idx) => (
-                      <li key={idx} className="flex items-start gap-2">
-                        <span className="text-red-500">•</span>
-                        <span>{source}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-slate-700 mb-2">Training Info</p>
-                  <ul className="space-y-2 text-sm text-slate-600">
-                    <li className="flex justify-between">
-                      <span>Validation Split:</span>
-                      <span className="font-medium">{modelInfo.training_details.validation_split}</span>
-                    </li>
-                    <li className="flex justify-between">
-                      <span>Training Time:</span>
-                      <span className="font-medium">{modelInfo.training_details.training_time}</span>
-                    </li>
-                    <li className="flex justify-between">
-                      <span>Last Retrained:</span>
-                      <span className="font-medium">{modelInfo.training_details.last_retrained}</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-orange-900 mb-3">What This Means</h3>
-              <p className="text-sm text-orange-800 mb-3">
-                An R² score of {(modelInfo.overview.accuracy_r2 * 100).toFixed(1)}% means the model is highly accurate at predicting video performance. 
-                For context:
-              </p>
-              <ul className="space-y-2 text-sm text-orange-800">
-                <li className="flex items-start gap-2">
-                  <span className="text-orange-600">•</span>
-                  <span>90-100%: Excellent prediction accuracy</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-orange-600">•</span>
-                  <span>70-90%: Good prediction accuracy</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-orange-600">•</span>
-                  <span>Below 70%: Limited prediction accuracy</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        )}
-
-        {/* Limitations Tab */}
-        {activeTab === 'limitations' && (
-          <div className="space-y-6">
-            <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-orange-900 mb-2">Important Disclaimer</h3>
-              <p className="text-sm text-orange-800">
-                While the model is highly accurate, it's important to understand its limitations. 
-                Predictions are estimates based on historical data and cannot account for all variables.
-              </p>
-            </div>
-
-            <div className="space-y-4">
-              {modelInfo.limitations.map((limitation, idx) => (
-                <div key={idx} className="bg-white border border-slate-200 rounded-xl p-5">
-                  <div className="flex items-start gap-3">
-                    <div className="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center text-orange-600 font-bold">
-                      !
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-bold text-slate-900 mb-2">{limitation.title}</h4>
-                      <p className="text-sm text-slate-700">{limitation.description}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="bg-red-50 border border-red-200 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-red-900 mb-3">Ethical Considerations</h3>
-              <ul className="space-y-2 text-sm text-red-800">
-                {modelInfo.ethical_considerations.map((consideration, idx) => (
-                  <li key={idx} className="flex items-start gap-2">
-                    <svg className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                    </svg>
-                    <span>{consideration}</span>
                   </li>
                 ))}
-              </ul>
-            </div>
+              </ol>
 
-            <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-xl p-6">
-              <h3 className="text-lg font-bold text-red-900 mb-3">Best Practices</h3>
-              <ul className="space-y-2 text-sm text-red-800">
-                <li className="flex items-start gap-2">
-                  <span className="text-red-600">•</span>
-                  <span>Use predictions as guidance, not absolute truth</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-600">•</span>
-                  <span>Combine AI insights with your creative judgment</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-600">•</span>
-                  <span>Test different approaches and learn from results</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-600">•</span>
-                  <span>Focus on creating quality content first</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-red-600">•</span>
-                  <span>Use personalized models for more accurate predictions</span>
-                </li>
-              </ul>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-xl border border-white/[0.07] p-5">
+                  <p className="eyebrow mb-3">Input dimensions</p>
+                  <p className="font-mono text-2xl font-semibold text-white">1,294</p>
+                  <dl className="mt-3 space-y-1.5 text-sm">
+                    {[['BERT (text)', 768], ['CNN (image)', 512], ['Metadata', 14]].map(([k, v]) => (
+                      <div key={k} className="flex justify-between"><dt className="text-ink-300">{k}</dt><dd className="font-mono text-ink-100">{v}</dd></div>
+                    ))}
+                  </dl>
+                </div>
+                <div className="rounded-xl border border-white/[0.07] p-5">
+                  <p className="eyebrow mb-3">Processing time</p>
+                  <p className="font-mono text-2xl font-semibold text-white">~2–3s</p>
+                  <dl className="mt-3 space-y-1.5 text-sm">
+                    {[['BERT', '~1s'], ['CNN', '~0.5s'], ['XGBoost', '~0.1s']].map(([k, v]) => (
+                      <div key={k} className="flex justify-between"><dt className="text-ink-300">{k}</dt><dd className="font-mono text-ink-100">{v}</dd></div>
+                    ))}
+                  </dl>
+                </div>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+
+          {activeTab === 'performance' && (
+            <div className="animate-fade-up space-y-6">
+              <div className="grid gap-4 md:grid-cols-3">
+                {[
+                  { k: 'R² score', v: `${(pm.r2_score.value * 100).toFixed(1)}%`, m: pm.r2_score },
+                  { k: 'MAE', v: `±${fmtViews(pm.mae.value)}`, m: pm.mae },
+                  { k: 'RMSE', v: fmtViews(pm.rmse.value), m: pm.rmse },
+                ].map(({ k, v, m }) => (
+                  <div key={k} className="rounded-xl border border-white/[0.07] bg-white/[0.02] p-5">
+                    <p className="eyebrow">{k}</p>
+                    <p className="mt-2 font-mono text-3xl font-semibold tabular-nums text-white">{v}</p>
+                    <p className="mt-3 text-sm text-ink-300">{m.description}</p>
+                    <p className="mt-2 text-xs text-brand-300">{m.interpretation}</p>
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-xl border border-white/[0.07] p-5">
+                  <h4 className="mb-3 text-sm font-semibold">Dataset</h4>
+                  <CheckList items={[`${td.dataset_size.toLocaleString()} videos`, ...td.data_sources]} />
+                </div>
+                <div className="rounded-xl border border-white/[0.07] p-5">
+                  <h4 className="mb-3 text-sm font-semibold">Training</h4>
+                  <dl className="space-y-2 text-sm">
+                    {[['Validation split', td.validation_split], ['Training time', td.training_time], ['Last retrained', td.last_retrained]].map(([k, v]) => (
+                      <div key={k} className="flex justify-between gap-4"><dt className="text-ink-300">{k}</dt><dd className="text-ink-100">{v}</dd></div>
+                    ))}
+                  </dl>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-white/[0.07] p-5">
+                <h4 className="text-sm font-semibold">Reading the R² score</h4>
+                <p className="mt-1 text-sm text-ink-300">R² measures how much of the variation in views the model explains.</p>
+                <div className="mt-4 flex h-2 overflow-hidden rounded-full">
+                  <div className="w-[70%] bg-white/10" title="Below 70%: limited" />
+                  <div className="w-[20%] bg-white/25" title="70–90%: good" />
+                  <div className="w-[10%] bg-brand-500" title="90–100%: excellent" />
+                </div>
+                <div className="mt-2 grid grid-cols-[70%_20%_10%] text-[11px] text-ink-400">
+                  <span>Limited &lt;70%</span><span>Good 70–90%</span><span className="text-brand-300">90%+</span>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'limitations' && (
+            <div className="animate-fade-up space-y-6">
+              <Alert tone="warning">
+                Predictions are estimates based on historical data and can't account for every variable. Use them to compare options, not as a promise.
+              </Alert>
+              <div className="grid gap-3 md:grid-cols-2">
+                {modelInfo.limitations.map((l) => (
+                  <div key={l.title} className="flex gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+                    <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
+                    <div>
+                      <h4 className="text-sm font-semibold">{l.title}</h4>
+                      <p className="mt-1 text-sm leading-relaxed text-ink-300">{l.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-xl border border-white/[0.07] p-5">
+                  <h4 className="mb-3 text-sm font-semibold">Ethical considerations</h4>
+                  <CheckList items={modelInfo.ethical_considerations} tone="success" />
+                </div>
+                <div className="rounded-xl border border-white/[0.07] p-5">
+                  <h4 className="mb-3 text-sm font-semibold">Best practices</h4>
+                  <CheckList items={[
+                    'Use predictions as guidance, not absolute truth',
+                    'Combine AI insights with your creative judgment',
+                    'Test different approaches and learn from results',
+                    'Focus on creating quality content first',
+                    'Use personalized models for more accurate predictions',
+                  ]} />
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
     </div>
   );
 };

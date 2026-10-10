@@ -1,91 +1,66 @@
-﻿/** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
-        charcoal: '#2D3436',
-        red: {
-          50: '#fef2f2',
-          100: '#fee2e2',
-          200: '#fecaca',
-          300: '#fca5a5',
-          400: '#f87171',
-          500: '#ef4444',
-          600: '#dc2626',
-          700: '#b91c1c',
-          800: '#991b1b',
-          900: '#7f1d1d',
+        // Neutral surfaces for the dark UI
+        ink: {
+          950: '#06070a',
+          900: '#0b0d11',
+          850: '#101318',
+          800: '#151920',
+          700: '#1d222b',
+          600: '#2a303b',
+          500: '#3a414e',
+          400: '#5c6472',
+          300: '#8a919e',
+          200: '#b5bac4',
+          100: '#dde0e6',
+          50: '#f3f4f6',
         },
-        youtube: {
-          red: '#FF0000',
-          'red-dark': '#CC0000',
-          'red-light': '#FF4444',
+        // Signal accent (YouTube-adjacent red)
+        brand: {
+          50: '#fff1f1',
+          100: '#ffdfdf',
+          200: '#ffc5c5',
+          300: '#ff9d9d',
+          400: '#ff6464',
+          500: '#ff3b3b',
+          600: '#ed1c1c',
+          700: '#c81414',
+          800: '#a51515',
+          900: '#881818',
         },
-        
-        slate: {
-          50: 'rgb(248 250 252)',
-          100: 'rgb(241 245 249)',
-          200: 'rgb(226 232 240)',
-          300: 'rgb(203 213 225)',
-          400: 'rgb(148 163 184)',
-          500: 'rgb(100 116 139)',
-          600: 'rgb(71 85 105)',
-          700: 'rgb(51 65 85)',
-          800: 'rgb(30 41 59)',
-          900: 'rgb(15 23 42)',
-        },
-        blue: {
-          500: 'rgb(59 130 246)', // shows blue-500
-        },
-        purple: {
-          600: 'rgb(147 51 234)', // gradient uses purple
-        }
       },
       fontFamily: {
-        // Keep Inter for general use
-        'inter': ['Inter', 'system-ui', 'sans-serif'],
-        // Add Spline Sans for NLP page
-        'display': ['Spline Sans', 'Inter', 'system-ui', 'sans-serif'],
-      },
-      borderRadius: {
-        // Add rounded-32
-        '32': '32px',
-        'xl': '12px',
-        '2xl': '16px',
-        '3xl': '20px',
-      },
-      spacing: {
-        // Add specific spacing if needed
-        '18': '4.5rem',
-        '88': '22rem',
+        sans: ['Geist', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['"Geist Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
       },
       boxShadow: {
-        'soft': '0 10px 30px -10px rgba(0, 0, 0, 0.4), 0 4px 10px -5px rgba(0, 0, 0, 0.2)',
-        'medium': '0 20px 40px -15px rgba(0, 0, 0, 0.4)',
-        'glow-red': '0 0 30px rgba(220, 38, 38, 0.3)',
-        'glow-red-sm': '0 0 15px rgba(220, 38, 38, 0.2)',
+        glow: '0 0 0 1px rgba(255,59,59,0.35), 0 8px 32px -8px rgba(255,59,59,0.45)',
+        card: '0 1px 0 0 rgba(255,255,255,0.04) inset, 0 12px 32px -16px rgba(0,0,0,0.6)',
       },
-      backgroundImage: {
-        // Add gradients
-        'gradient-youtube': 'linear-gradient(135deg, #FF0000, #CC0000)',
-        'gradient-blue-purple': 'linear-gradient(135deg, #405DE6, #833AB4)',
-        'gradient-light': 'linear-gradient(135deg, rgba(64, 93, 230, 0.1), rgba(131, 58, 180, 0.1))',
+      keyframes: {
+        'fade-up': {
+          from: { opacity: '0', transform: 'translateY(8px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        shimmer: {
+          from: { backgroundPosition: '200% 0' },
+          to: { backgroundPosition: '-200% 0' },
+        },
+        'grow-x': {
+          from: { transform: 'scaleX(0)' },
+          to: { transform: 'scaleX(1)' },
+        },
       },
-      backgroundColor: {
-        'off-white': '#0f1623',
-        'slate-bg': '#080b12',
-        'background-light': '#080b12',
-        'dark-card': '#0f1623',
-        'dark-surface': '#131c2e',
+      animation: {
+        'fade-up': 'fade-up 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both',
+        shimmer: 'shimmer 2.4s linear infinite',
+        'grow-x': 'grow-x 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both',
       },
-      padding: {
-        '10': '2.5rem',
-      }
     },
   },
   plugins: [],
-}
+};
