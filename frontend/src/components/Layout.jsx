@@ -12,7 +12,7 @@ import { useAuth, clearSession } from '../lib/auth';
 const REPO_URL = 'https://github.com/haaj-1/Youtube-Analytics-Website';
 
 const TOOLS = [
-  { to: '/post-performance', label: 'Performance Predictor', icon: FiActivity, match: ['/', '/post-performance'] },
+  { to: '/post-performance', label: 'Performance Predictor', icon: FiActivity },
   { to: '/performance-history', label: 'Channel Analytics', icon: FiBarChart2 },
   { to: '/predictive-accuracy', label: 'Model Transparency', icon: FiCpu },
 ];
@@ -29,7 +29,7 @@ function useCollapsed() {
 
 function SidebarLink({ item, collapsed, pathname }) {
   const Icon = item.icon;
-  const active = item.match ? item.match.includes(pathname) : pathname === item.to;
+  const active = pathname === item.to;
   return (
     <Link
       to={item.to}

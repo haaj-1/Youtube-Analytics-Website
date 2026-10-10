@@ -25,13 +25,13 @@ function App() {
       <Routes>
         {/* Tool pages with sidebar */}
         <Route element={<AppShell />}>
-          <Route path="/" element={<PostPerformancePage />} />
           <Route path="/post-performance" element={<PostPerformancePage />} />
           <Route path="/predictive-accuracy" element={<PredictiveAccuracyPage />} />
           <Route path="/performance-history" element={<PerformanceHistoryPage />} />
         </Route>
 
         <Route element={<PublicLayout />}>
+          <Route path="/" element={<AboutPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />

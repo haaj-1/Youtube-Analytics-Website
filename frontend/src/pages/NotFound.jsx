@@ -10,8 +10,8 @@ export default function NotFoundPage() {
         <h1 className="mt-3 text-4xl font-semibold sm:text-5xl">Page not found</h1>
         <p className="mx-auto mt-3 max-w-sm text-ink-300">The page you're looking for doesn't exist or has moved.</p>
         <div className="mt-8 flex justify-center gap-3">
-          <Button to="/"><FiArrowLeft className="h-4 w-4" /> Back to the app</Button>
-          <Button to="/about" variant="secondary">About PrePost</Button>
+          <Button to="/"><FiArrowLeft className="h-4 w-4" /> Back to home</Button>
+          <Button to="/post-performance" variant="secondary">Open the predictor</Button>
         </div>
       </div>
     </main>

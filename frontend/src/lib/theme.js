@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react';
 
-// The marketing landing page keeps the dark look; every other page is light.
-const DARK_ROUTES = /^\/about\/?$/;
+// The landing page (home and /about) keeps the dark look; every other page is light.
+const DARK_ROUTES = /^\/(about\/?)?$/;
 
 export function useRouteTheme(pathname) {
   useLayoutEffect(() => {
