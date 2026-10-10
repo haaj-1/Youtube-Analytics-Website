@@ -28,7 +28,7 @@ const SignUpPage = () => {
 
   const finish = (data) => {
     saveSession(data.access_token, data.user);
-    navigate(location.state?.from || '/', { replace: true });
+    navigate(location.state?.from || '/post-performance', { replace: true });
   };
 
   const handleGoogleResponse = async (response) => {
